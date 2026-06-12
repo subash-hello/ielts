@@ -1,0 +1,1 @@
+const fs = require('fs'); const file = 'c:/Users/subas/OneDrive/Documents/projects/ielts/backend/src/data/cambridgeListeningTests.js'; let tests = require(file); const test1 = tests['1']; fs.writeFileSync(file, 'module.exports = { \" 1\\\: ' + JSON.stringify(test1, null, 2) + ' };');
