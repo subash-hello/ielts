@@ -1,0 +1,1 @@
+const fs = require('fs'); const file = 'c:/Users/subas/OneDrive/Documents/projects/ielts/backend/src/utils/seeder.js'; let content = fs.readFileSync(file, 'utf8'); content = content.replace(/parts: cambridgeTest.parts/g, 'parts: i % 3 === 0 ? cambridgeListeningTests[\'1\'].parts : listeningTemplates[i % 2].parts'); fs.writeFileSync(file, content);
