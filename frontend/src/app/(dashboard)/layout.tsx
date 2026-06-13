@@ -29,7 +29,8 @@ import {
   MessageSquare,
   Check,
   Sliders,
-  Volume2
+  Volume2,
+  Lock
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AIAssistantSidebar from '@/components/AIAssistantSidebar';
@@ -59,12 +60,16 @@ function SidebarNav({
   collapsed,
   visibleNavItems,
   pathname,
+  user
 }: {
   collapsed: boolean;
   visibleNavItems: any[];
   pathname: string;
+  user: any;
 }) {
   const searchParams = useSearchParams();
+  const restrictedFeatures = ['Speaking', 'Mock Tests', 'Vocabulary', 'AI Tutor'];
+  
   return (
     <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
       {visibleNavItems.map((item) => {
@@ -76,10 +81,25 @@ function SidebarNav({
           ? pathname === itemUrl && currentTab === itemTab
           : pathname === itemUrl && (currentTab === 'dashboard' || !searchParams.get('tab'));
 
+        const isRestricted = restrictedFeatures.includes(item.name) && user?.status === 'pending' && user?.role !== 'admin';
+
         return (
-          <Link key={item.name} href={item.href} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive ? 'bg-accent/15 text-accent border-l-2 border-accent' : 'text-text-muted hover:text-white hover:bg-surface'}`}>
-            <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-accent' : 'text-text-muted group-hover:text-white'}`} />
-            {!collapsed && <span className="whitespace-nowrap">{item.name}</span>}
+          <Link 
+            key={item.name} 
+            href={item.href} 
+            onClick={(e) => {
+              if (isRestricted) {
+                e.preventDefault();
+                toast.error('Access Denied: You must be approved by an admin to use this feature.');
+              }
+            }}
+            className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive ? 'bg-accent/15 text-accent border-l-2 border-accent' : isRestricted ? 'text-text-muted/50 cursor-not-allowed hover:bg-surface/50' : 'text-text-muted hover:text-white hover:bg-surface'}`}
+          >
+            <div className="flex items-center gap-3">
+              <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-accent' : isRestricted ? 'text-text-muted/50' : 'text-text-muted group-hover:text-white'}`} />
+              {!collapsed && <span className="whitespace-nowrap">{item.name}</span>}
+            </div>
+            {!collapsed && isRestricted && <Lock className="w-4 h-4 text-text-muted/50 flex-shrink-0" />}
           </Link>
         );
       })}
@@ -89,7 +109,7 @@ function SidebarNav({
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string; role: string; xp: number; level: number } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; role: string; xp: number; level: number; status?: string } | null>(null);
   const [streak, setStreak] = useState(14);
   const pathname = usePathname();
   const router = useRouter();
@@ -153,6 +173,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   });
 
   const handleDashboardSearchSelect = (item: typeof dashboardSearchableItems[0]) => {
+    const restrictedFeatures = ['Speaking Practice Center', 'Speaking Simulated Exam', 'Full IELTS Mock Tests', 'Active Simulated Exam Desk', 'AI Tutor Alex (Grammar/Chat)', 'Vocabulary & Synonym Builder'];
+    if (restrictedFeatures.includes(item.name) && user?.status === 'pending' && user?.role !== 'admin') {
+      toast.error('Access Denied: You must be approved by an admin to use this feature.');
+      return;
+    }
+
     setDashboardSearchQuery('');
     setDashboardSearchFocused(false);
     
@@ -340,7 +366,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="text-xs text-text-muted px-3">Loading menu...</div>
           </nav>
         }>
-          <SidebarNav collapsed={collapsed} visibleNavItems={visibleNavItems} pathname={pathname} />
+          <SidebarNav collapsed={collapsed} visibleNavItems={visibleNavItems} pathname={pathname} user={user} />
         </Suspense>
 
         {/* Bottom Items */}
@@ -638,7 +664,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <main className="p-6">{children}</main>
+        <main className="p-6">
+          {(() => {
+            const restrictedPaths = ['/speaking', '/mock-test', '/vocabulary', '/ai-tutor'];
+            const isRestrictedPath = restrictedPaths.some(p => pathname.startsWith(p));
+            const isAccessDenied = isRestrictedPath && user?.role !== 'admin' && user?.status === 'pending';
+            
+            if (isAccessDenied) {
+              return (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center border border-border-glass bg-surface/20 rounded-3xl p-8 backdrop-blur-md">
+                  <div className="w-20 h-20 bg-surface flex items-center justify-center rounded-2xl mb-6 shadow-2xl border border-border-glass">
+                    <Lock className="w-10 h-10 text-accent" />
+                  </div>
+                  <h1 className="text-3xl font-extrabold text-white mb-3">Feature Locked</h1>
+                  <p className="text-text-muted max-w-md mx-auto mb-6">
+                    Your account is currently pending administrator approval. Please wait for an admin to review and verify your account to unlock advanced features like Speaking, Mock Tests, Vocabulary, and the AI Tutor.
+                  </p>
+                  <button onClick={() => router.push('/dashboard')} className="px-6 py-3 bg-gradient-to-r from-accent to-accent-bright text-white rounded-xl font-bold shadow-lg shadow-accent/20 hover:scale-105 transition-all">
+                    Return to Dashboard
+                  </button>
+                </div>
+              );
+            }
+            return children;
+          })()}
+        </main>
       </div>
 
       {/* Settings Modal */}
