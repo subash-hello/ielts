@@ -19,7 +19,8 @@ import {
   Shield,
   AlertTriangle,
   RefreshCw,
-  X
+  X,
+  Image as ImageIcon
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import { api } from '@/lib/api';
@@ -896,18 +897,31 @@ function AdminDashboardContent() {
           {/* Input Area */}
           <div className="p-4 border-t border-border-glass bg-surface/30">
             <form onSubmit={handleSendAgentMessage} className="flex gap-2 relative">
+              <button
+                type="button"
+                onClick={() => {
+                  const url = window.prompt("Enter the URL of the image you want the AI to use:");
+                  if (url) {
+                    setAgentInput(prev => prev + (prev ? " " : "") + "[Image: " + url + "]");
+                  }
+                }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-text-muted hover:text-white hover:bg-surface-hover transition-all z-10"
+                title="Attach Image URL"
+              >
+                <ImageIcon className="w-5 h-5" />
+              </button>
               <input 
                 type="text" 
                 value={agentInput}
                 onChange={(e) => setAgentInput(e.target.value)}
                 placeholder="E.g., Generate a hard reading mock test about Space..."
-                className="flex-1 pl-4 pr-12 py-3 rounded-xl bg-surface border border-border-glass text-sm text-white placeholder-text-muted outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                className="flex-1 pl-12 pr-12 py-3 rounded-xl bg-surface border border-border-glass text-sm text-white placeholder-text-muted outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                 disabled={isAgentTyping}
               />
               <button 
                 type="submit" 
                 disabled={isAgentTyping || !agentInput.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white transition-all"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white transition-all z-10"
               >
                 <Sparkles className="w-4 h-4" />
               </button>
