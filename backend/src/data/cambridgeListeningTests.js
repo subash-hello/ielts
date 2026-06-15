@@ -487,38 +487,104 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c2q11",
-            "type": "fillBlank",
-            "text": "• walking around the town centre_____",
+            "type": "matching",
+            "text": "• walking around the town centre",
+            "options": [
+              "A. providing entertainment",
+              "B. providing publicity about a council service",
+              "C. contacting local businesses",
+              "D. giving advice to visitors",
+              "E. collecting feedback on events",
+              "F. selling tickets",
+              "G. introducing guest speakers at an event",
+              "H. encouraging cooperation between local organisations",
+              "I. helping people find their seats"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c2q12",
-            "type": "fillBlank",
-            "text": "• helping at concerts_____",
+            "type": "matching",
+            "text": "• helping at concerts",
+            "options": [
+              "A. providing entertainment",
+              "B. providing publicity about a council service",
+              "C. contacting local businesses",
+              "D. giving advice to visitors",
+              "E. collecting feedback on events",
+              "F. selling tickets",
+              "G. introducing guest speakers at an event",
+              "H. encouraging cooperation between local organisations",
+              "I. helping people find their seats"
+            ],
             "correctAnswer": "I"
           },
           {
             "id": "c2q13",
-            "type": "fillBlank",
-            "text": "• getting involved with community groups_____",
+            "type": "matching",
+            "text": "• getting involved with community groups",
+            "options": [
+              "A. providing entertainment",
+              "B. providing publicity about a council service",
+              "C. contacting local businesses",
+              "D. giving advice to visitors",
+              "E. collecting feedback on events",
+              "F. selling tickets",
+              "G. introducing guest speakers at an event",
+              "H. encouraging cooperation between local organisations",
+              "I. helping people find their seats"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c2q14",
-            "type": "fillBlank",
-            "text": "• helping with a magazine_____",
+            "type": "matching",
+            "text": "• helping with a magazine",
+            "options": [
+              "A. providing entertainment",
+              "B. providing publicity about a council service",
+              "C. contacting local businesses",
+              "D. giving advice to visitors",
+              "E. collecting feedback on events",
+              "F. selling tickets",
+              "G. introducing guest speakers at an event",
+              "H. encouraging cooperation between local organisations",
+              "I. helping people find their seats"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c2q15",
-            "type": "fillBlank",
-            "text": "• participating at lunches for retired people_____",
+            "type": "matching",
+            "text": "• participating at lunches for retired people",
+            "options": [
+              "A. providing entertainment",
+              "B. providing publicity about a council service",
+              "C. contacting local businesses",
+              "D. giving advice to visitors",
+              "E. collecting feedback on events",
+              "F. selling tickets",
+              "G. introducing guest speakers at an event",
+              "H. encouraging cooperation between local organisations",
+              "I. helping people find their seats"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c2q16",
-            "type": "fillBlank",
-            "text": "• helping with the website_____",
+            "type": "matching",
+            "text": "• helping with the website",
+            "options": [
+              "A. providing entertainment",
+              "B. providing publicity about a council service",
+              "C. contacting local businesses",
+              "D. giving advice to visitors",
+              "E. collecting feedback on events",
+              "F. selling tickets",
+              "G. introducing guest speakers at an event",
+              "H. encouraging cooperation between local organisations",
+              "I. helping people find their seats"
+            ],
             "correctAnswer": "B"
           },
           {
@@ -576,32 +642,77 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c2q21",
-            "type": "fillBlank",
-            "text": "• Population_____",
+            "type": "matching",
+            "text": "• Population",
+            "options": [
+              "A. The information given about this was too vague.",
+              "B. This may not be relevant to their course.",
+              "C. This will involve only a small number of statistics.",
+              "D. It will be easy to find facts about this.",
+              "E. The facts about this may not be reliable.",
+              "F. No useful research has been done on this.",
+              "G. The information provided about this was interesting."
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c2q22",
-            "type": "fillBlank",
-            "text": "• Health_____",
+            "type": "matching",
+            "text": "• Health",
+            "options": [
+              "A. The information given about this was too vague.",
+              "B. This may not be relevant to their course.",
+              "C. This will involve only a small number of statistics.",
+              "D. It will be easy to find facts about this.",
+              "E. The facts about this may not be reliable.",
+              "F. No useful research has been done on this.",
+              "G. The information provided about this was interesting."
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c2q23",
-            "type": "fillBlank",
-            "text": "• Economies_____",
+            "type": "matching",
+            "text": "• Economies",
+            "options": [
+              "A. The information given about this was too vague.",
+              "B. This may not be relevant to their course.",
+              "C. This will involve only a small number of statistics.",
+              "D. It will be easy to find facts about this.",
+              "E. The facts about this may not be reliable.",
+              "F. No useful research has been done on this.",
+              "G. The information provided about this was interesting."
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c2q24",
-            "type": "fillBlank",
-            "text": "• Culture_____",
+            "type": "matching",
+            "text": "• Culture",
+            "options": [
+              "A. The information given about this was too vague.",
+              "B. This may not be relevant to their course.",
+              "C. This will involve only a small number of statistics.",
+              "D. It will be easy to find facts about this.",
+              "E. The facts about this may not be reliable.",
+              "F. No useful research has been done on this.",
+              "G. The information provided about this was interesting."
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c2q25",
-            "type": "fillBlank",
-            "text": "• Poverty_____",
+            "type": "matching",
+            "text": "• Poverty",
+            "options": [
+              "A. The information given about this was too vague.",
+              "B. This may not be relevant to their course.",
+              "C. This will involve only a small number of statistics.",
+              "D. It will be easy to find facts about this.",
+              "E. The facts about this may not be reliable.",
+              "F. No useful research has been done on this.",
+              "G. The information provided about this was interesting."
+            ],
             "correctAnswer": "E"
           },
           {
@@ -1018,26 +1129,58 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c3q27",
-            "type": "fillBlank",
-            "text": "• Ruy Blas_____",
+            "type": "matching",
+            "text": "• Ruy Blas",
+            "options": [
+              "A. Its origin is somewhat controversial",
+              "B. It is historically significant for a country",
+              "C. It was effective at attracting audiences",
+              "D. It is included in a recent project",
+              "E. It contains insights into the show",
+              "F. It resembles an artwork"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c3q28",
-            "type": "fillBlank",
-            "text": "• Man of La Mancha_____",
+            "type": "matching",
+            "text": "• Man of La Mancha",
+            "options": [
+              "A. Its origin is somewhat controversial",
+              "B. It is historically significant for a country",
+              "C. It was effective at attracting audiences",
+              "D. It is included in a recent project",
+              "E. It contains insights into the show",
+              "F. It resembles an artwork"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c3q29",
-            "type": "fillBlank",
-            "text": "• The Tragedy of Jane Shore_____",
+            "type": "matching",
+            "text": "• The Tragedy of Jane Shore",
+            "options": [
+              "A. Its origin is somewhat controversial",
+              "B. It is historically significant for a country",
+              "C. It was effective at attracting audiences",
+              "D. It is included in a recent project",
+              "E. It contains insights into the show",
+              "F. It resembles an artwork"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c3q30",
-            "type": "fillBlank",
-            "text": "• The Sailors’ Festival_____",
+            "type": "matching",
+            "text": "• The Sailors’ Festival",
+            "options": [
+              "A. Its origin is somewhat controversial",
+              "B. It is historically significant for a country",
+              "C. It was effective at attracting audiences",
+              "D. It is included in a recent project",
+              "E. It contains insights into the show",
+              "F. It resembles an artwork"
+            ],
             "correctAnswer": "D"
           }
         ]
@@ -1249,38 +1392,98 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c4q15",
-            "type": "fillBlank",
-            "text": "• 1870_____",
+            "type": "matching",
+            "text": "• 1870",
+            "options": [
+              "A. the introduction of pay for the players",
+              "B. a change to the design of the goal",
+              "C. the first use of lights for matches",
+              "D. the introduction of goalkeepers",
+              "E. the first international match",
+              "F. two changes to the rules of the game",
+              "G. the introduction of a fee for spectators",
+              "H. an agreement on the length of a game"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c4q16",
-            "type": "fillBlank",
-            "text": "• 1874_____",
+            "type": "matching",
+            "text": "• 1874",
+            "options": [
+              "A. the introduction of pay for the players",
+              "B. a change to the design of the goal",
+              "C. the first use of lights for matches",
+              "D. the introduction of goalkeepers",
+              "E. the first international match",
+              "F. two changes to the rules of the game",
+              "G. the introduction of a fee for spectators",
+              "H. an agreement on the length of a game"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c4q17",
-            "type": "fillBlank",
-            "text": "• 1875_____",
+            "type": "matching",
+            "text": "• 1875",
+            "options": [
+              "A. the introduction of pay for the players",
+              "B. a change to the design of the goal",
+              "C. the first use of lights for matches",
+              "D. the introduction of goalkeepers",
+              "E. the first international match",
+              "F. two changes to the rules of the game",
+              "G. the introduction of a fee for spectators",
+              "H. an agreement on the length of a game"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c4q18",
-            "type": "fillBlank",
-            "text": "• 1877_____",
+            "type": "matching",
+            "text": "• 1877",
+            "options": [
+              "A. the introduction of pay for the players",
+              "B. a change to the design of the goal",
+              "C. the first use of lights for matches",
+              "D. the introduction of goalkeepers",
+              "E. the first international match",
+              "F. two changes to the rules of the game",
+              "G. the introduction of a fee for spectators",
+              "H. an agreement on the length of a game"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c4q19",
-            "type": "fillBlank",
-            "text": "• 1878_____",
+            "type": "matching",
+            "text": "• 1878",
+            "options": [
+              "A. the introduction of pay for the players",
+              "B. a change to the design of the goal",
+              "C. the first use of lights for matches",
+              "D. the introduction of goalkeepers",
+              "E. the first international match",
+              "F. two changes to the rules of the game",
+              "G. the introduction of a fee for spectators",
+              "H. an agreement on the length of a game"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c4q20",
-            "type": "fillBlank",
-            "text": "• 1880_____",
+            "type": "matching",
+            "text": "• 1880",
+            "options": [
+              "A. the introduction of pay for the players",
+              "B. a change to the design of the goal",
+              "C. the first use of lights for matches",
+              "D. the introduction of goalkeepers",
+              "E. the first international match",
+              "F. two changes to the rules of the game",
+              "G. the introduction of a fee for spectators",
+              "H. an agreement on the length of a game"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -1562,6 +1765,7 @@ const cambridgeListeningTests = {
         "part": 2,
         "title": "Part 2: Questions 11-20",
         "type": "Monologue",
+        "imageUrl": "/images/cambridge_19_test2_map.jpg",
         "audioUrl": "https://engnovate.com/wp-content/uploads/2024/08/cambridge-ielts-19-academic-listening-1-audio-2.mp3",
         "transcript": "It’s great to see so many members of the Twinning Association here tonight. Since the twinning link between our two towns, Stanthorpe here in England and Malatte in France, was established, the relationship between the towns has gone from strength to strength.\nLast month, 25 members of the association from Stanthorpe spent a weekend in Malatte. Our hosts had arranged a great programme. We learned how cheese is produced in the region and had the chance to taste the products. The theme park trip had to be cancelled, but we all had a great time on the final boat trip down the river-that was the real highlight.\nThis is a special year for the Association because it’s 25 years since we were founded. In Malatte, they’re planning to mark this by building a footbridge in the municipal park. We’ve been discussing what to do here and we’ve decided to plant a poplar tree in the museum gardens. We considered buying a garden seat to put there, but the authorities weren’t happy with that idea.\nIn terms of fundraising to support our activities, we’ve done very well. Our pancake evening was well attended and made record profits. And everyone enjoyed the demonstration of French cookery, which was nearly as successful. Numbers for our film show were limited because of the venue so we’re looking for somewhere bigger next year.\nWe’re looking forward to welcoming our French visitors here next week, and I know that many of you here will be hosting individuals or families. The coach from France will arrive at 5 pm on Friday. Don’t try to do too much that first evening as they’ll be tired, so have dinner in the house or garden rather than eating out. The weather looks as if it’ll be OK so you might like to plan a barbecue. Then the next morning’s market day in town, and that’s always a good place to stroll round.\nOn Saturday evening, we’ll all meet up at the football club, where once again we’ll have Toby Sharp and his band performing English and Scottish country songs. Toby will already be well known to many of you as last year he organized our special quiz night and presented the prizes.\n--------\nNow on Sunday, we’ll be taking our visitors to Farley House. You may not all be familiar with it, so here’s a map to help you. You can see the car park at the bottom of the map. There’s an excellent farm shop in the grounds where our visitors can buy local produce – it’s in the old stables, which is the first building you come to. They’re built round a courtyard, and the shop’s in the far corner on the left. There’s also a small café on the right as you go in.\nI know that one or two of our visitors may not be all that mobile. The main entrance to the house has a lot of steps so you might want to use the disabled entry. This is on the far side of the house from the car park.\nChildren will probably be most interested in the adventure playground. That’s at the northern end of the larger lake, in a bend on the path that leads to the lake. There’s lots for children to do there.\nThere are a number of lovely gardens near the house. The kitchen gardens are rectangular and surrounded by a wall. They’re to the north-east of the house, quite near the smaller lake. They’re still in use and have a great collection of fruit and vegetables.\nThe Temple of the Four Winds is a bit more of a walk – but it’s worth it. Take the path from the car park and go past the western sides of the stables and the house. Then when the path forks, take the right-hand path. Go up there with the woods on your left and the temple is right at the end. There are great views over the whole area.\nOK, so that’s . . .",
         "questions": [
@@ -1763,38 +1967,98 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c5q25",
-            "type": "fillBlank",
-            "text": "• Use of local products_____",
+            "type": "matching",
+            "text": "• Use of local products",
+            "options": [
+              "A. This is only relevant to young people.",
+              "B. This may have disappointing results.",
+              "C. This already seems to be widespread.",
+              "D. Retailers should do more to encourage this.",
+              "E. More financial support is needed for this.",
+              "F. Most people know little about this.",
+              "G. There should be stricter regulations about this.",
+              "H. This could be dangerous."
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c5q26",
-            "type": "fillBlank",
-            "text": "• Reduction in unnecessary packaging_____",
+            "type": "matching",
+            "text": "• Reduction in unnecessary packaging",
+            "options": [
+              "A. This is only relevant to young people.",
+              "B. This may have disappointing results.",
+              "C. This already seems to be widespread.",
+              "D. Retailers should do more to encourage this.",
+              "E. More financial support is needed for this.",
+              "F. Most people know little about this.",
+              "G. There should be stricter regulations about this.",
+              "H. This could be dangerous."
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c5q27",
-            "type": "fillBlank",
-            "text": "• Gluten-free and lactose-free food_____",
+            "type": "matching",
+            "text": "• Gluten-free and lactose-free food",
+            "options": [
+              "A. This is only relevant to young people.",
+              "B. This may have disappointing results.",
+              "C. This already seems to be widespread.",
+              "D. Retailers should do more to encourage this.",
+              "E. More financial support is needed for this.",
+              "F. Most people know little about this.",
+              "G. There should be stricter regulations about this.",
+              "H. This could be dangerous."
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c5q28",
-            "type": "fillBlank",
-            "text": "• Use of branded products related to celebrity chefs_____",
+            "type": "matching",
+            "text": "• Use of branded products related to celebrity chefs",
+            "options": [
+              "A. This is only relevant to young people.",
+              "B. This may have disappointing results.",
+              "C. This already seems to be widespread.",
+              "D. Retailers should do more to encourage this.",
+              "E. More financial support is needed for this.",
+              "F. Most people know little about this.",
+              "G. There should be stricter regulations about this.",
+              "H. This could be dangerous."
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c5q29",
-            "type": "fillBlank",
-            "text": "• Development of 'ghost kitchens’ for takeaway food_____",
+            "type": "matching",
+            "text": "• Development of 'ghost kitchens’ for takeaway food",
+            "options": [
+              "A. This is only relevant to young people.",
+              "B. This may have disappointing results.",
+              "C. This already seems to be widespread.",
+              "D. Retailers should do more to encourage this.",
+              "E. More financial support is needed for this.",
+              "F. Most people know little about this.",
+              "G. There should be stricter regulations about this.",
+              "H. This could be dangerous."
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c5q30",
-            "type": "fillBlank",
-            "text": "• Use of mushrooms for common health concerns_____",
+            "type": "matching",
+            "text": "• Use of mushrooms for common health concerns",
+            "options": [
+              "A. This is only relevant to young people.",
+              "B. This may have disappointing results.",
+              "C. This already seems to be widespread.",
+              "D. Retailers should do more to encourage this.",
+              "E. More financial support is needed for this.",
+              "F. Most people know little about this.",
+              "G. There should be stricter regulations about this.",
+              "H. This could be dangerous."
+            ],
             "correctAnswer": "H"
           }
         ]
@@ -2125,26 +2389,58 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c6q25",
-            "type": "fillBlank",
-            "text": "• the high-heeled shoes_____",
+            "type": "matching",
+            "text": "• the high-heeled shoes",
+            "options": [
+              "A. one shoe was missing",
+              "B. the colour of one shoe had faded",
+              "C. one shoe had a hole in it",
+              "D. the shoes were brand new",
+              "E. the shoes were too dirty",
+              "F. the stitching on the shoes was broken"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c6q26",
-            "type": "fillBlank",
-            "text": "• the ankle boots_____",
+            "type": "matching",
+            "text": "• the ankle boots",
+            "options": [
+              "A. one shoe was missing",
+              "B. the colour of one shoe had faded",
+              "C. one shoe had a hole in it",
+              "D. the shoes were brand new",
+              "E. the shoes were too dirty",
+              "F. the stitching on the shoes was broken"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c6q27",
-            "type": "fillBlank",
-            "text": "• the baby shoes_____",
+            "type": "matching",
+            "text": "• the baby shoes",
+            "options": [
+              "A. one shoe was missing",
+              "B. the colour of one shoe had faded",
+              "C. one shoe had a hole in it",
+              "D. the shoes were brand new",
+              "E. the shoes were too dirty",
+              "F. the stitching on the shoes was broken"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c6q28",
-            "type": "fillBlank",
-            "text": "• the trainers_____",
+            "type": "matching",
+            "text": "• the trainers",
+            "options": [
+              "A. one shoe was missing",
+              "B. the colour of one shoe had faded",
+              "C. one shoe had a hole in it",
+              "D. the shoes were brand new",
+              "E. the shoes were too dirty",
+              "F. the stitching on the shoes was broken"
+            ],
             "correctAnswer": "C"
           },
           {
@@ -2326,38 +2622,98 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c7q11",
-            "type": "fillBlank",
-            "text": "• Superheroes_____",
+            "type": "matching",
+            "text": "• Superheroes",
+            "options": [
+              "A. involves painting and drawing",
+              "B. will be led by a prize-winning author",
+              "C. is aimed at children with a disability",
+              "D. involves a drama activity",
+              "E. focuses on new relationships",
+              "F. is aimed at a specific age group",
+              "G. explores an unhappy feeling",
+              "H. raises awareness of a particular culture"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c7q12",
-            "type": "fillBlank",
-            "text": "• Just do it_____",
+            "type": "matching",
+            "text": "• Just do it",
+            "options": [
+              "A. involves painting and drawing",
+              "B. will be led by a prize-winning author",
+              "C. is aimed at children with a disability",
+              "D. involves a drama activity",
+              "E. focuses on new relationships",
+              "F. is aimed at a specific age group",
+              "G. explores an unhappy feeling",
+              "H. raises awareness of a particular culture"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c7q13",
-            "type": "fillBlank",
-            "text": "• Count on me_____",
+            "type": "matching",
+            "text": "• Count on me",
+            "options": [
+              "A. involves painting and drawing",
+              "B. will be led by a prize-winning author",
+              "C. is aimed at children with a disability",
+              "D. involves a drama activity",
+              "E. focuses on new relationships",
+              "F. is aimed at a specific age group",
+              "G. explores an unhappy feeling",
+              "H. raises awareness of a particular culture"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c7q14",
-            "type": "fillBlank",
-            "text": "• Speak up_____",
+            "type": "matching",
+            "text": "• Speak up",
+            "options": [
+              "A. involves painting and drawing",
+              "B. will be led by a prize-winning author",
+              "C. is aimed at children with a disability",
+              "D. involves a drama activity",
+              "E. focuses on new relationships",
+              "F. is aimed at a specific age group",
+              "G. explores an unhappy feeling",
+              "H. raises awareness of a particular culture"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c7q15",
-            "type": "fillBlank",
-            "text": "• Jump for joy_____",
+            "type": "matching",
+            "text": "• Jump for joy",
+            "options": [
+              "A. involves painting and drawing",
+              "B. will be led by a prize-winning author",
+              "C. is aimed at children with a disability",
+              "D. involves a drama activity",
+              "E. focuses on new relationships",
+              "F. is aimed at a specific age group",
+              "G. explores an unhappy feeling",
+              "H. raises awareness of a particular culture"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c7q16",
-            "type": "fillBlank",
-            "text": "• Sticks and stones_____",
+            "type": "matching",
+            "text": "• Sticks and stones",
+            "options": [
+              "A. involves painting and drawing",
+              "B. will be led by a prize-winning author",
+              "C. is aimed at children with a disability",
+              "D. involves a drama activity",
+              "E. focuses on new relationships",
+              "F. is aimed at a specific age group",
+              "G. explores an unhappy feeling",
+              "H. raises awareness of a particular culture"
+            ],
             "correctAnswer": "H"
           },
           {
@@ -2478,32 +2834,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c7q26",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Choose mice which are all the same _____.",
+            "options": [
+              "A. size",
+              "B. escape",
+              "C. age",
+              "D. water",
+              "E. cereal",
+              "F. calculations",
+              "G. changes",
+              "H. colour"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c7q27",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Divide the mice into two groups, each with a different _____.",
+            "options": [
+              "A. size",
+              "B. escape",
+              "C. age",
+              "D. water",
+              "E. cereal",
+              "F. calculations",
+              "G. changes",
+              "H. colour"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c7q28",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Feed group B the same, but also sugar contained in _____.",
+            "options": [
+              "A. size",
+              "B. escape",
+              "C. age",
+              "D. water",
+              "E. cereal",
+              "F. calculations",
+              "G. changes",
+              "H. colour"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c7q29",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Place them in a weighing chamber to prevent _____.",
+            "options": [
+              "A. size",
+              "B. escape",
+              "C. age",
+              "D. water",
+              "E. cereal",
+              "F. calculations",
+              "G. changes",
+              "H. colour"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c7q30",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Do all necessary _____.",
+            "options": [
+              "A. size",
+              "B. escape",
+              "C. age",
+              "D. water",
+              "E. cereal",
+              "F. calculations",
+              "G. changes",
+              "H. colour"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -2715,26 +3121,46 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c8q15",
-            "type": "fillBlank",
-            "text": "• Ceri_____",
+            "type": "matching",
+            "text": "• Ceri",
+            "options": [
+              "A. a lack of confidence",
+              "B. a dislike of running",
+              "C. a lack of time"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c8q16",
-            "type": "fillBlank",
-            "text": "• James_____",
+            "type": "matching",
+            "text": "• James",
+            "options": [
+              "A. a lack of confidence",
+              "B. a dislike of running",
+              "C. a lack of time"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c8q17",
-            "type": "fillBlank",
-            "text": "• Leo_____",
+            "type": "matching",
+            "text": "• Leo",
+            "options": [
+              "A. a lack of confidence",
+              "B. a dislike of running",
+              "C. a lack of time"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c8q18",
-            "type": "fillBlank",
-            "text": "• Mark_____",
+            "type": "matching",
+            "text": "• Mark",
+            "options": [
+              "A. a lack of confidence",
+              "B. a dislike of running",
+              "C. a lack of time"
+            ],
             "correctAnswer": "A"
           },
           {
@@ -2825,32 +3251,77 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c8q26",
-            "type": "fillBlank",
-            "text": "• rare books_____",
+            "type": "matching",
+            "text": "• rare books",
+            "options": [
+              "A. near the entrance",
+              "B. in the attic",
+              "C. at the back of the shop",
+              "D. on a high shelf",
+              "E. near the stairs",
+              "F. in a specially designed space",
+              "G. within the cafe"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c8q27",
-            "type": "fillBlank",
-            "text": "• children’s books_____",
+            "type": "matching",
+            "text": "• children’s books",
+            "options": [
+              "A. near the entrance",
+              "B. in the attic",
+              "C. at the back of the shop",
+              "D. on a high shelf",
+              "E. near the stairs",
+              "F. in a specially designed space",
+              "G. within the cafe"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c8q28",
-            "type": "fillBlank",
-            "text": "• unwanted books_____",
+            "type": "matching",
+            "text": "• unwanted books",
+            "options": [
+              "A. near the entrance",
+              "B. in the attic",
+              "C. at the back of the shop",
+              "D. on a high shelf",
+              "E. near the stairs",
+              "F. in a specially designed space",
+              "G. within the cafe"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c8q29",
-            "type": "fillBlank",
-            "text": "• requested books_____",
+            "type": "matching",
+            "text": "• requested books",
+            "options": [
+              "A. near the entrance",
+              "B. in the attic",
+              "C. at the back of the shop",
+              "D. on a high shelf",
+              "E. near the stairs",
+              "F. in a specially designed space",
+              "G. within the cafe"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c8q30",
-            "type": "fillBlank",
-            "text": "• coursebooks_____",
+            "type": "matching",
+            "text": "• coursebooks",
+            "options": [
+              "A. near the entrance",
+              "B. in the attic",
+              "C. at the back of the shop",
+              "D. on a high shelf",
+              "E. near the stairs",
+              "F. in a specially designed space",
+              "G. within the cafe"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -3069,32 +3540,77 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c9q16",
-            "type": "fillBlank",
-            "text": "• Fundraising_____",
+            "type": "matching",
+            "text": "• Fundraising",
+            "options": [
+              "A. experience on stage",
+              "B. original, new ideas",
+              "C. parenting skills",
+              "D. an understanding of food and diet",
+              "E. retail experience",
+              "F. a good memory",
+              "G. a good level of fitness"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c9q17",
-            "type": "fillBlank",
-            "text": "• Litter collection_____",
+            "type": "matching",
+            "text": "• Litter collection",
+            "options": [
+              "A. experience on stage",
+              "B. original, new ideas",
+              "C. parenting skills",
+              "D. an understanding of food and diet",
+              "E. retail experience",
+              "F. a good memory",
+              "G. a good level of fitness"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c9q18",
-            "type": "fillBlank",
-            "text": "• ‘Playmates’_____",
+            "type": "matching",
+            "text": "• ‘Playmates’",
+            "options": [
+              "A. experience on stage",
+              "B. original, new ideas",
+              "C. parenting skills",
+              "D. an understanding of food and diet",
+              "E. retail experience",
+              "F. a good memory",
+              "G. a good level of fitness"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c9q19",
-            "type": "fillBlank",
-            "text": "• Story club_____",
+            "type": "matching",
+            "text": "• Story club",
+            "options": [
+              "A. experience on stage",
+              "B. original, new ideas",
+              "C. parenting skills",
+              "D. an understanding of food and diet",
+              "E. retail experience",
+              "F. a good memory",
+              "G. a good level of fitness"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c9q20",
-            "type": "fillBlank",
-            "text": "• First aid_____",
+            "type": "matching",
+            "text": "• First aid",
+            "options": [
+              "A. experience on stage",
+              "B. original, new ideas",
+              "C. parenting skills",
+              "D. an understanding of food and diet",
+              "E. retail experience",
+              "F. a good memory",
+              "G. a good level of fitness"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -3615,26 +4131,58 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c10q27",
-            "type": "fillBlank",
-            "text": "• Iceland_____",
+            "type": "matching",
+            "text": "• Iceland",
+            "options": [
+              "A. This country suffered the most severe loss of life.",
+              "B. The impact on agriculture was predictable.",
+              "C. There was a significant increase in deaths of young people.",
+              "D. Animals suffered from a sickness.",
+              "E. This country saw the highest rise in food prices in the world.",
+              "F. It caused a particularly harsh winter."
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c10q28",
-            "type": "fillBlank",
-            "text": "• Egypt_____",
+            "type": "matching",
+            "text": "• Egypt",
+            "options": [
+              "A. This country suffered the most severe loss of life.",
+              "B. The impact on agriculture was predictable.",
+              "C. There was a significant increase in deaths of young people.",
+              "D. Animals suffered from a sickness.",
+              "E. This country saw the highest rise in food prices in the world.",
+              "F. It caused a particularly harsh winter."
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c10q29",
-            "type": "fillBlank",
-            "text": "• UK_____",
+            "type": "matching",
+            "text": "• UK",
+            "options": [
+              "A. This country suffered the most severe loss of life.",
+              "B. The impact on agriculture was predictable.",
+              "C. There was a significant increase in deaths of young people.",
+              "D. Animals suffered from a sickness.",
+              "E. This country saw the highest rise in food prices in the world.",
+              "F. It caused a particularly harsh winter."
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c10q30",
-            "type": "fillBlank",
-            "text": "• USA_____",
+            "type": "matching",
+            "text": "• USA",
+            "options": [
+              "A. This country suffered the most severe loss of life.",
+              "B. The impact on agriculture was predictable.",
+              "C. There was a significant increase in deaths of young people.",
+              "D. Animals suffered from a sickness.",
+              "E. This country saw the highest rise in food prices in the world.",
+              "F. It caused a particularly harsh winter."
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -4198,38 +4746,98 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c12q11",
-            "type": "fillBlank",
-            "text": "• walking around the town centre_____",
+            "type": "matching",
+            "text": "• walking around the town centre",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c12q12",
-            "type": "fillBlank",
-            "text": "• helping at concerts_____",
+            "type": "matching",
+            "text": "• helping at concerts",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "I"
           },
           {
             "id": "c12q13",
-            "type": "fillBlank",
-            "text": "• getting involved with community groups_____",
+            "type": "matching",
+            "text": "• getting involved with community groups",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c12q14",
-            "type": "fillBlank",
-            "text": "• helping with a magazine_____",
+            "type": "matching",
+            "text": "• helping with a magazine",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c12q15",
-            "type": "fillBlank",
-            "text": "• participating at lunches for retired people_____",
+            "type": "matching",
+            "text": "• participating at lunches for retired people",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c12q16",
-            "type": "fillBlank",
-            "text": "• helping with the website_____",
+            "type": "matching",
+            "text": "• helping with the website",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
@@ -4287,32 +4895,82 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c12q21",
-            "type": "fillBlank",
-            "text": "• Population_____",
+            "type": "matching",
+            "text": "• Population",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c12q22",
-            "type": "fillBlank",
-            "text": "• Health_____",
+            "type": "matching",
+            "text": "• Health",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c12q23",
-            "type": "fillBlank",
-            "text": "• Economies_____",
+            "type": "matching",
+            "text": "• Economies",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c12q24",
-            "type": "fillBlank",
-            "text": "• Culture_____",
+            "type": "matching",
+            "text": "• Culture",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c12q25",
-            "type": "fillBlank",
-            "text": "• Poverty_____",
+            "type": "matching",
+            "text": "• Poverty",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
@@ -4729,26 +5387,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c13q27",
-            "type": "fillBlank",
-            "text": "• Ruy Blas_____",
+            "type": "matching",
+            "text": "• Ruy Blas",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c13q28",
-            "type": "fillBlank",
-            "text": "• Man of La Mancha_____",
+            "type": "matching",
+            "text": "• Man of La Mancha",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c13q29",
-            "type": "fillBlank",
-            "text": "• The Tragedy of Jane Shore_____",
+            "type": "matching",
+            "text": "• The Tragedy of Jane Shore",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c13q30",
-            "type": "fillBlank",
-            "text": "• The Sailors’ Festival_____",
+            "type": "matching",
+            "text": "• The Sailors’ Festival",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           }
         ]
@@ -4960,38 +5658,98 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c14q15",
-            "type": "fillBlank",
-            "text": "• 1870_____",
+            "type": "matching",
+            "text": "• 1870",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c14q16",
-            "type": "fillBlank",
-            "text": "• 1874_____",
+            "type": "matching",
+            "text": "• 1874",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c14q17",
-            "type": "fillBlank",
-            "text": "• 1875_____",
+            "type": "matching",
+            "text": "• 1875",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c14q18",
-            "type": "fillBlank",
-            "text": "• 1877_____",
+            "type": "matching",
+            "text": "• 1877",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c14q19",
-            "type": "fillBlank",
-            "text": "• 1878_____",
+            "type": "matching",
+            "text": "• 1878",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c14q20",
-            "type": "fillBlank",
-            "text": "• 1880_____",
+            "type": "matching",
+            "text": "• 1880",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -5474,38 +6232,98 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c15q25",
-            "type": "fillBlank",
-            "text": "• Use of local products_____",
+            "type": "matching",
+            "text": "• Use of local products",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c15q26",
-            "type": "fillBlank",
-            "text": "• Reduction in unnecessary packaging_____",
+            "type": "matching",
+            "text": "• Reduction in unnecessary packaging",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c15q27",
-            "type": "fillBlank",
-            "text": "• Gluten-free and lactose-free food_____",
+            "type": "matching",
+            "text": "• Gluten-free and lactose-free food",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c15q28",
-            "type": "fillBlank",
-            "text": "• Use of branded products related to celebrity chefs_____",
+            "type": "matching",
+            "text": "• Use of branded products related to celebrity chefs",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c15q29",
-            "type": "fillBlank",
-            "text": "• Development of 'ghost kitchens’ for takeaway food_____",
+            "type": "matching",
+            "text": "• Development of 'ghost kitchens’ for takeaway food",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c15q30",
-            "type": "fillBlank",
-            "text": "• Use of mushrooms for common health concerns_____",
+            "type": "matching",
+            "text": "• Use of mushrooms for common health concerns",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           }
         ]
@@ -5836,26 +6654,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c16q25",
-            "type": "fillBlank",
-            "text": "• the high-heeled shoes_____",
+            "type": "matching",
+            "text": "• the high-heeled shoes",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c16q26",
-            "type": "fillBlank",
-            "text": "• the ankle boots_____",
+            "type": "matching",
+            "text": "• the ankle boots",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c16q27",
-            "type": "fillBlank",
-            "text": "• the baby shoes_____",
+            "type": "matching",
+            "text": "• the baby shoes",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c16q28",
-            "type": "fillBlank",
-            "text": "• the trainers_____",
+            "type": "matching",
+            "text": "• the trainers",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
@@ -6037,38 +6895,98 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c17q11",
-            "type": "fillBlank",
-            "text": "• Superheroes_____",
+            "type": "matching",
+            "text": "• Superheroes",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c17q12",
-            "type": "fillBlank",
-            "text": "• Just do it_____",
+            "type": "matching",
+            "text": "• Just do it",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c17q13",
-            "type": "fillBlank",
-            "text": "• Count on me_____",
+            "type": "matching",
+            "text": "• Count on me",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c17q14",
-            "type": "fillBlank",
-            "text": "• Speak up_____",
+            "type": "matching",
+            "text": "• Speak up",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c17q15",
-            "type": "fillBlank",
-            "text": "• Jump for joy_____",
+            "type": "matching",
+            "text": "• Jump for joy",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c17q16",
-            "type": "fillBlank",
-            "text": "• Sticks and stones_____",
+            "type": "matching",
+            "text": "• Sticks and stones",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
@@ -6189,32 +7107,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c17q26",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Choose mice which are all the same _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c17q27",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Divide the mice into two groups, each with a different _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c17q28",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Feed group B the same, but also sugar contained in _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c17q29",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Place them in a weighing chamber to prevent _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c17q30",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Do all necessary _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -6426,26 +7394,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c18q15",
-            "type": "fillBlank",
-            "text": "• Ceri_____",
+            "type": "matching",
+            "text": "• Ceri",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c18q16",
-            "type": "fillBlank",
-            "text": "• James_____",
+            "type": "matching",
+            "text": "• James",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c18q17",
-            "type": "fillBlank",
-            "text": "• Leo_____",
+            "type": "matching",
+            "text": "• Leo",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c18q18",
-            "type": "fillBlank",
-            "text": "• Mark_____",
+            "type": "matching",
+            "text": "• Mark",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
@@ -6536,32 +7544,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c18q26",
-            "type": "fillBlank",
-            "text": "• rare books_____",
+            "type": "matching",
+            "text": "• rare books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c18q27",
-            "type": "fillBlank",
-            "text": "• children’s books_____",
+            "type": "matching",
+            "text": "• children’s books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c18q28",
-            "type": "fillBlank",
-            "text": "• unwanted books_____",
+            "type": "matching",
+            "text": "• unwanted books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c18q29",
-            "type": "fillBlank",
-            "text": "• requested books_____",
+            "type": "matching",
+            "text": "• requested books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c18q30",
-            "type": "fillBlank",
-            "text": "• coursebooks_____",
+            "type": "matching",
+            "text": "• coursebooks",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -6780,32 +7838,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c19q16",
-            "type": "fillBlank",
-            "text": "• Fundraising_____",
+            "type": "matching",
+            "text": "• Fundraising",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c19q17",
-            "type": "fillBlank",
-            "text": "• Litter collection_____",
+            "type": "matching",
+            "text": "• Litter collection",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c19q18",
-            "type": "fillBlank",
-            "text": "• ‘Playmates’_____",
+            "type": "matching",
+            "text": "• ‘Playmates’",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c19q19",
-            "type": "fillBlank",
-            "text": "• Story club_____",
+            "type": "matching",
+            "text": "• Story club",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c19q20",
-            "type": "fillBlank",
-            "text": "• First aid_____",
+            "type": "matching",
+            "text": "• First aid",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -7326,26 +8434,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c20q27",
-            "type": "fillBlank",
-            "text": "• Iceland_____",
+            "type": "matching",
+            "text": "• Iceland",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c20q28",
-            "type": "fillBlank",
-            "text": "• Egypt_____",
+            "type": "matching",
+            "text": "• Egypt",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c20q29",
-            "type": "fillBlank",
-            "text": "• UK_____",
+            "type": "matching",
+            "text": "• UK",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c20q30",
-            "type": "fillBlank",
-            "text": "• USA_____",
+            "type": "matching",
+            "text": "• USA",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -7909,38 +9057,98 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c22q11",
-            "type": "fillBlank",
-            "text": "• walking around the town centre_____",
+            "type": "matching",
+            "text": "• walking around the town centre",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c22q12",
-            "type": "fillBlank",
-            "text": "• helping at concerts_____",
+            "type": "matching",
+            "text": "• helping at concerts",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "I"
           },
           {
             "id": "c22q13",
-            "type": "fillBlank",
-            "text": "• getting involved with community groups_____",
+            "type": "matching",
+            "text": "• getting involved with community groups",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c22q14",
-            "type": "fillBlank",
-            "text": "• helping with a magazine_____",
+            "type": "matching",
+            "text": "• helping with a magazine",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c22q15",
-            "type": "fillBlank",
-            "text": "• participating at lunches for retired people_____",
+            "type": "matching",
+            "text": "• participating at lunches for retired people",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c22q16",
-            "type": "fillBlank",
-            "text": "• helping with the website_____",
+            "type": "matching",
+            "text": "• helping with the website",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
@@ -7998,32 +9206,82 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c22q21",
-            "type": "fillBlank",
-            "text": "• Population_____",
+            "type": "matching",
+            "text": "• Population",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c22q22",
-            "type": "fillBlank",
-            "text": "• Health_____",
+            "type": "matching",
+            "text": "• Health",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c22q23",
-            "type": "fillBlank",
-            "text": "• Economies_____",
+            "type": "matching",
+            "text": "• Economies",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c22q24",
-            "type": "fillBlank",
-            "text": "• Culture_____",
+            "type": "matching",
+            "text": "• Culture",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c22q25",
-            "type": "fillBlank",
-            "text": "• Poverty_____",
+            "type": "matching",
+            "text": "• Poverty",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
@@ -8440,26 +9698,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c23q27",
-            "type": "fillBlank",
-            "text": "• Ruy Blas_____",
+            "type": "matching",
+            "text": "• Ruy Blas",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c23q28",
-            "type": "fillBlank",
-            "text": "• Man of La Mancha_____",
+            "type": "matching",
+            "text": "• Man of La Mancha",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c23q29",
-            "type": "fillBlank",
-            "text": "• The Tragedy of Jane Shore_____",
+            "type": "matching",
+            "text": "• The Tragedy of Jane Shore",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c23q30",
-            "type": "fillBlank",
-            "text": "• The Sailors’ Festival_____",
+            "type": "matching",
+            "text": "• The Sailors’ Festival",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           }
         ]
@@ -8671,38 +9969,98 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c24q15",
-            "type": "fillBlank",
-            "text": "• 1870_____",
+            "type": "matching",
+            "text": "• 1870",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c24q16",
-            "type": "fillBlank",
-            "text": "• 1874_____",
+            "type": "matching",
+            "text": "• 1874",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c24q17",
-            "type": "fillBlank",
-            "text": "• 1875_____",
+            "type": "matching",
+            "text": "• 1875",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c24q18",
-            "type": "fillBlank",
-            "text": "• 1877_____",
+            "type": "matching",
+            "text": "• 1877",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c24q19",
-            "type": "fillBlank",
-            "text": "• 1878_____",
+            "type": "matching",
+            "text": "• 1878",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c24q20",
-            "type": "fillBlank",
-            "text": "• 1880_____",
+            "type": "matching",
+            "text": "• 1880",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -9185,38 +10543,98 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c25q25",
-            "type": "fillBlank",
-            "text": "• Use of local products_____",
+            "type": "matching",
+            "text": "• Use of local products",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c25q26",
-            "type": "fillBlank",
-            "text": "• Reduction in unnecessary packaging_____",
+            "type": "matching",
+            "text": "• Reduction in unnecessary packaging",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c25q27",
-            "type": "fillBlank",
-            "text": "• Gluten-free and lactose-free food_____",
+            "type": "matching",
+            "text": "• Gluten-free and lactose-free food",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c25q28",
-            "type": "fillBlank",
-            "text": "• Use of branded products related to celebrity chefs_____",
+            "type": "matching",
+            "text": "• Use of branded products related to celebrity chefs",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c25q29",
-            "type": "fillBlank",
-            "text": "• Development of 'ghost kitchens’ for takeaway food_____",
+            "type": "matching",
+            "text": "• Development of 'ghost kitchens’ for takeaway food",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c25q30",
-            "type": "fillBlank",
-            "text": "• Use of mushrooms for common health concerns_____",
+            "type": "matching",
+            "text": "• Use of mushrooms for common health concerns",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           }
         ]
@@ -9547,26 +10965,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c26q25",
-            "type": "fillBlank",
-            "text": "• the high-heeled shoes_____",
+            "type": "matching",
+            "text": "• the high-heeled shoes",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c26q26",
-            "type": "fillBlank",
-            "text": "• the ankle boots_____",
+            "type": "matching",
+            "text": "• the ankle boots",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c26q27",
-            "type": "fillBlank",
-            "text": "• the baby shoes_____",
+            "type": "matching",
+            "text": "• the baby shoes",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c26q28",
-            "type": "fillBlank",
-            "text": "• the trainers_____",
+            "type": "matching",
+            "text": "• the trainers",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
@@ -9748,38 +11206,98 @@ const cambridgeListeningTests = {
         "questions": [
           {
             "id": "c27q11",
-            "type": "fillBlank",
-            "text": "• Superheroes_____",
+            "type": "matching",
+            "text": "• Superheroes",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c27q12",
-            "type": "fillBlank",
-            "text": "• Just do it_____",
+            "type": "matching",
+            "text": "• Just do it",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c27q13",
-            "type": "fillBlank",
-            "text": "• Count on me_____",
+            "type": "matching",
+            "text": "• Count on me",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c27q14",
-            "type": "fillBlank",
-            "text": "• Speak up_____",
+            "type": "matching",
+            "text": "• Speak up",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c27q15",
-            "type": "fillBlank",
-            "text": "• Jump for joy_____",
+            "type": "matching",
+            "text": "• Jump for joy",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c27q16",
-            "type": "fillBlank",
-            "text": "• Sticks and stones_____",
+            "type": "matching",
+            "text": "• Sticks and stones",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
@@ -9900,32 +11418,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c27q26",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Choose mice which are all the same _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c27q27",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Divide the mice into two groups, each with a different _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c27q28",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Feed group B the same, but also sugar contained in _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c27q29",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Place them in a weighing chamber to prevent _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c27q30",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Do all necessary _____.",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -10137,26 +11705,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c28q15",
-            "type": "fillBlank",
-            "text": "• Ceri_____",
+            "type": "matching",
+            "text": "• Ceri",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c28q16",
-            "type": "fillBlank",
-            "text": "• James_____",
+            "type": "matching",
+            "text": "• James",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c28q17",
-            "type": "fillBlank",
-            "text": "• Leo_____",
+            "type": "matching",
+            "text": "• Leo",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c28q18",
-            "type": "fillBlank",
-            "text": "• Mark_____",
+            "type": "matching",
+            "text": "• Mark",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
@@ -10247,32 +11855,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c28q26",
-            "type": "fillBlank",
-            "text": "• rare books_____",
+            "type": "matching",
+            "text": "• rare books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c28q27",
-            "type": "fillBlank",
-            "text": "• children’s books_____",
+            "type": "matching",
+            "text": "• children’s books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c28q28",
-            "type": "fillBlank",
-            "text": "• unwanted books_____",
+            "type": "matching",
+            "text": "• unwanted books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c28q29",
-            "type": "fillBlank",
-            "text": "• requested books_____",
+            "type": "matching",
+            "text": "• requested books",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c28q30",
-            "type": "fillBlank",
-            "text": "• coursebooks_____",
+            "type": "matching",
+            "text": "• coursebooks",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -10491,32 +12149,82 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c29q16",
-            "type": "fillBlank",
-            "text": "• Fundraising_____",
+            "type": "matching",
+            "text": "• Fundraising",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c29q17",
-            "type": "fillBlank",
-            "text": "• Litter collection_____",
+            "type": "matching",
+            "text": "• Litter collection",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c29q18",
-            "type": "fillBlank",
-            "text": "• ‘Playmates’_____",
+            "type": "matching",
+            "text": "• ‘Playmates’",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c29q19",
-            "type": "fillBlank",
-            "text": "• Story club_____",
+            "type": "matching",
+            "text": "• Story club",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c29q20",
-            "type": "fillBlank",
-            "text": "• First aid_____",
+            "type": "matching",
+            "text": "• First aid",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -11037,26 +12745,66 @@ const cambridgeListeningTests = {
           },
           {
             "id": "c30q27",
-            "type": "fillBlank",
-            "text": "• Iceland_____",
+            "type": "matching",
+            "text": "• Iceland",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c30q28",
-            "type": "fillBlank",
-            "text": "• Egypt_____",
+            "type": "matching",
+            "text": "• Egypt",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c30q29",
-            "type": "fillBlank",
-            "text": "• UK_____",
+            "type": "matching",
+            "text": "• UK",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c30q30",
-            "type": "fillBlank",
-            "text": "• USA_____",
+            "type": "matching",
+            "text": "• USA",
+            "options": [
+              "A. Option A",
+              "B. Option B",
+              "C. Option C",
+              "D. Option D",
+              "E. Option E",
+              "F. Option F",
+              "G. Option G",
+              "H. Option H"
+            ],
             "correctAnswer": "F"
           }
         ]

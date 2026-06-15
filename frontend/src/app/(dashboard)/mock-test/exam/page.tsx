@@ -1250,6 +1250,24 @@ export default function MockExamPage() {
                       const groups: any[] = [];
                       let tempGroup: any[] = [];
                       const questions = currentPart.questions || [];
+                      const allParts = testData?.listeningParts || [];
+                      const questionOffset = allParts
+                        .slice(0, listenActivePart - 1)
+                        .reduce((sum: number, p: any) => sum + (p.questions?.length || 0), 0);
+
+                      // Helper for Cambridge instructions
+                      const getInstruction = (type: string, isGrouped: boolean, optionCount: number) => {
+                        if (type === 'fillBlank') return { heading: 'Complete the notes below.', instruction: 'Write ONE WORD AND/OR A NUMBER for each answer.' };
+                        if (type === 'matching') return { heading: 'Label the map/plan below.', instruction: 'Choose the correct letter.' };
+                        if (type === 'multipleChoice' || type === 'mcq') {
+                          if (isGrouped) {
+                            const lastLetter = String.fromCharCode(64 + optionCount);
+                            return { heading: `Choose TWO letters, A-${lastLetter}.`, instruction: '' };
+                          }
+                          return { heading: 'Choose the correct letter, A, B or C.', instruction: '' };
+                        }
+                        return { heading: '', instruction: '' };
+                      };
 
                       questions.forEach((q: any) => {
                         if (tempGroup.length === 0) {
@@ -1268,16 +1286,56 @@ export default function MockExamPage() {
                         groups.push(tempGroup);
                       }
 
+                      // Group consecutive groups by type for section headers
+                      const sections: { type: string; isGrouped: boolean; optionCount: number; groups: any[][] }[] = [];
+                      groups.forEach((group) => {
+                        const representative = group[0];
+                        const isGrouped = group.length > 1;
+                        const type = representative.type;
+                        const optionCount = representative.options?.length || 3;
+                        const lastSection = sections[sections.length - 1];
+                        if (lastSection && lastSection.type === type && lastSection.isGrouped === isGrouped) {
+                          lastSection.groups.push(group);
+                        } else {
+                          sections.push({ type, isGrouped, optionCount, groups: [group] });
+                        }
+                      });
+
                       return (
-                        <div className="space-y-3">
-                          {groups.map((group: any[]) => {
-                            const isGrouped = group.length > 1;
-                            const representative = group[0];
+                        <div className="space-y-6">
+                          {sections.map((section, sIdx) => {
+                            const firstGroup = section.groups[0];
+                            const lastGroup = section.groups[section.groups.length - 1];
+                            const firstQ = firstGroup[0];
+                            const lastQ = lastGroup[lastGroup.length - 1];
+                            const firstIdx = questions.findIndex((q: any) => q.id === firstQ.id);
+                            const lastIdx = questions.findIndex((q: any) => q.id === lastQ.id);
+                            const globalFirst = questionOffset + firstIdx + 1;
+                            const globalLast = questionOffset + lastIdx + 1;
+                            const { heading, instruction } = getInstruction(section.type, section.isGrouped, section.optionCount);
+
+                            return (
+                              <div key={`section-${sIdx}`} className="space-y-4">
+                                <div className="bg-accent/10 border border-accent/20 rounded-xl px-4 py-3">
+                                  <h3 className="text-sm font-bold text-accent-bright">
+                                    Questions {globalFirst}{globalLast !== globalFirst ? `–${globalLast}` : ''}
+                                  </h3>
+                                  {heading && <p className="text-xs font-semibold text-accent mt-0.5">{heading}</p>}
+                                  {instruction && <p className="text-[10px] text-text-muted italic mt-0.5">{instruction}</p>}
+                                </div>
+                                <div className="space-y-3">
+                                  {section.groups.map((group: any[]) => {
+                                    const isGrouped = group.length > 1;
+                                    const representative = group[0];
                             const groupIds = group.map((q: any) => q.id);
                             const originalIdx = questions.findIndex((origQ: any) => origQ.id === representative.id);
+                            const globalNum = questionOffset + originalIdx + 1;
 
                             const showMapImage = representative.type === 'mapLabeling' && representative.mapImage;
-                            const showMatchingOptions = representative.type === 'matching' && (originalIdx === 0 || questions[originalIdx - 1].type !== 'matching' || JSON.stringify(questions[originalIdx - 1].options) !== JSON.stringify(representative.options));
+                            const isLetterOnlyOptions = representative.options?.every((opt: string) => !opt.includes('.') && opt.trim().length <= 2);
+                            const showMatchingOptions = representative.type === 'matching' && 
+                              (!isLetterOnlyOptions) && 
+                              (originalIdx === 0 || questions[originalIdx - 1].type !== 'matching' || JSON.stringify(questions[originalIdx - 1].options) !== JSON.stringify(representative.options));
 
                             return (
                               <div key={representative.id} className="space-y-3">
@@ -1318,10 +1376,30 @@ export default function MockExamPage() {
                                 <div className={`bg-surface p-4 rounded-xl border transition-all ${
                                   groupIds.some((id: string) => listenAnswers[id]) ? 'border-accent/20 bg-accent/5' : 'border-border-glass'
                                 }`}>
-                                  <label className="block text-[10px] text-text-muted mb-1.5 font-mono uppercase">
-                                    Question {isGrouped ? `${originalIdx + 1}-\u0024{originalIdx + group.length}` : originalIdx + 1}
-                                  </label>
-                                  <p className="text-xs text-white mb-2.5 leading-relaxed">{representative.text}</p>
+                                  <div className="flex items-start gap-3 mb-2.5">
+                                    <span className="flex-shrink-0 flex items-center justify-center h-6 min-w-[1.5rem] px-1.5 rounded bg-accent/20 text-accent font-bold text-xs">
+                                      {isGrouped ? `${globalNum}–${globalNum + group.length - 1}` : globalNum}
+                                    </span>
+                                    {representative.type === 'fillBlank' && (representative.text.includes('___') || representative.text.includes('___')) ? (
+                                      <p className="text-xs text-white leading-relaxed flex flex-wrap items-baseline gap-1">
+                                        {representative.text.split(/_{3,}/).map((part: string, idx: number, arr: any[]) => (
+                                          <span key={idx} className="flex items-baseline gap-1">
+                                            <span>{part}</span>
+                                            {idx < arr.length - 1 && (
+                                              <input
+                                                onChange={e => setListenAnswers({ ...listenAnswers, [representative.id]: e.target.value })}
+                                                value={listenAnswers[representative.id] || ''}
+                                                className="inline-block w-32 px-2 py-1 mx-1 border border-border-glass bg-primary-dark/50 rounded-md text-center text-xs font-semibold text-cyan-400 focus:border-accent outline-none transition-all"
+                                                placeholder="Type answer..."
+                                              />
+                                            )}
+                                          </span>
+                                        ))}
+                                      </p>
+                                    ) : (
+                                      <p className="text-xs text-white leading-relaxed">{representative.text}</p>
+                                    )}
+                                  </div>
                                   
                                   {representative.type === 'mapLabeling' ? (
                                     <div className="flex flex-wrap gap-1.5">
@@ -1408,14 +1486,19 @@ export default function MockExamPage() {
                                         );
                                       })}
                                     </div>
-                                  ) : (
+                                  ) : representative.type === 'fillBlank' && (representative.text.includes('___') || representative.text.includes('___')) ? null : (
                                     <input
                                       onChange={e => setListenAnswers({ ...listenAnswers, [representative.id]: e.target.value })}
                                       value={listenAnswers[representative.id] || ''}
-                                      className="w-full px-3 py-2 rounded-xl bg-primary-dark/50 border border-border-glass text-xs text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all"
+                                      className="w-full px-3 py-2 rounded-xl bg-primary-dark/50 border border-border-glass text-xs text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all ml-9"
+                                      style={{ width: 'calc(100% - 2.25rem)' }}
                                       placeholder="Enter answer..."
                                     />
                                   )}
+                                </div>
+                              </div>
+                            );
+                          })}
                                 </div>
                               </div>
                             );
