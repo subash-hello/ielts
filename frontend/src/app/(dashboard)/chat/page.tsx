@@ -14,6 +14,7 @@ interface User {
   email: string;
   avatar?: string;
   status: string;
+  role?: string;
 }
 
 interface ChatGroup {
@@ -278,7 +279,7 @@ export default function ChatPage() {
                     </div>
                     <div className="flex-1 text-left min-w-0">
                       <h4 className="text-sm font-bold text-white truncate">{u.name}</h4>
-                      <p className="text-[10px] text-text-muted capitalize">{u.role}</p>
+                      <p className="text-[10px] text-text-muted capitalize">{u.role || 'student'}</p>
                     </div>
                   </button>
                 ))
@@ -437,7 +438,7 @@ export default function ChatPage() {
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-bold text-white">{u.name}</p>
-                          <p className="text-[10px] text-text-muted capitalize">{u.role}</p>
+                          <p className="text-[10px] text-text-muted capitalize">{u.role || 'Student'}</p>
                         </div>
                       </label>
                     ))}
