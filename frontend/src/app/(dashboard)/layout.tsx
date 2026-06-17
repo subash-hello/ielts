@@ -30,7 +30,9 @@ import {
   Check,
   Sliders,
   Volume2,
-  Lock
+  Lock,
+  Folder,
+  MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AIAssistantSidebar from '@/components/AIAssistantSidebar';
@@ -47,6 +49,8 @@ const navItems = [
   { name: 'AI Tutor', href: '/ai-tutor', icon: Bot },
   { name: 'Vocabulary', href: '/vocabulary', icon: BookMarked },
   { name: 'Progress', href: '/progress', icon: BarChart3 },
+  { name: 'Files', href: '/files', icon: Folder },
+  { name: 'Messages', href: '/chat', icon: MessageCircle },
   { name: 'Admin Panel', href: '/admin', icon: Shield },
 ];
 
@@ -160,7 +164,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'AI Tutor Alex (Grammar/Chat)', type: 'AI Assistant', href: '/ai-tutor', icon: Bot },
     { name: 'Vocabulary & Synonym Builder', type: 'View', href: '/vocabulary', icon: BookMarked },
     { name: 'Progress Dashboard & Analytics', type: 'View', href: '/progress', icon: BarChart3 },
+    { name: 'Real-time Chat & Groups', type: 'Social', href: '/chat', icon: MessageCircle },
     { name: 'Admin Control Panel', type: 'Admin', href: '/admin', icon: Shield },
+    { name: 'Files Resource Center', type: 'View', href: '/files', icon: Folder },
     { name: 'System Settings Panel', type: 'Action', href: 'settings', icon: Settings },
     { name: 'Help & FAQ Desk', type: 'Action', href: 'help', icon: HelpCircle },
     { name: 'Sign Out Account', type: 'Action', href: 'logout', icon: LogOut },
@@ -320,6 +326,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'Command Center', href: '/admin?tab=dashboard', icon: LayoutDashboard },
         { name: 'System Directory', href: '/admin?tab=users', icon: Shield },
         { name: 'Content Pool', href: '/admin?tab=content', icon: BookMarked },
+        { name: 'Files', href: '/admin?tab=files', icon: Folder },
+        { name: 'Messages', href: '/chat', icon: MessageCircle },
         { name: 'Student View', href: '/dashboard', icon: Sparkles }
       ]
     : studentNavItems;

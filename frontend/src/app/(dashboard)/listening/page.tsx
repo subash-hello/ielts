@@ -132,6 +132,11 @@ export default function ListeningPage() {
                 {s.difficulty}
               </div>
               <span className="text-[10px] text-text-muted font-mono px-2 py-0.5 rounded bg-surface border border-border-glass">{s.partsCount} Parts</span>
+              {s.completed && (
+                <span className="text-[10px] text-green-400 font-mono px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20 flex items-center gap-1">
+                  ✓ Completed
+                </span>
+              )}
             </div>
             <h3 className="text-base font-bold text-white mb-1">{s.title}</h3>
             <p className="text-xs text-text-muted mb-1 flex items-center gap-2">

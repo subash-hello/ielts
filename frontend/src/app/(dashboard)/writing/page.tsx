@@ -39,7 +39,8 @@ export default function WritingPage() {
             duration: t.content?.taskType === 1 ? '20 min' : '40 min',
             words: t.content?.taskType === 1 ? '150+' : '250+',
             color: t.content?.taskType === 1 ? 'from-accent to-blue-500' : 'from-accent-bright to-pink-400',
-            image: t.content?.image
+            image: t.content?.image,
+            completed: t.completed
           }));
           setTasks(mappedTasks);
         } else {
@@ -81,8 +82,16 @@ export default function WritingPage() {
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}><FileText className="w-6 h-6 text-white" /></div>
             <h3 className="text-lg font-bold text-white mb-1">{t.title}</h3>
             <p className="text-sm text-text-muted mb-4">{t.desc}</p>
-            <div className="flex gap-4 text-xs text-text-muted mb-4"><span className="flex items-center gap-1"><Clock className="w-3 h-3" />{t.duration}</span><span>{t.words} words</span></div>
-            <Link href={`/writing/practice?task=${t.type}&topic=${encodeURIComponent(t.title)}&prompt=${encodeURIComponent(t.desc)}${t.image ? `&image=${encodeURIComponent(t.image)}` : ''}`} className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white text-sm font-semibold text-center hover:shadow-lg hover:shadow-accent/30 transition-all flex items-center justify-center gap-2">Start Writing <ArrowRight className="w-4 h-4" /></Link>
+            <div className="flex gap-4 text-xs text-text-muted mb-4">
+              <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{t.duration}</span>
+              <span>{t.words} words</span>
+              {t.completed && (
+                <span className="text-[10px] text-green-400 font-mono px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20 flex items-center gap-1">
+                  ✓ Completed
+                </span>
+              )}
+            </div>
+            <Link href={`/writing/practice?id=${t.id}&task=${t.type}&topic=${encodeURIComponent(t.title)}&prompt=${encodeURIComponent(t.desc)}${t.image ? `&image=${encodeURIComponent(t.image)}` : ''}`} className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white text-sm font-semibold text-center hover:shadow-lg hover:shadow-accent/30 transition-all flex items-center justify-center gap-2">Start Writing <ArrowRight className="w-4 h-4" /></Link>
           </motion.div>
         ))}
       </div>

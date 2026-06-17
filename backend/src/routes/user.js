@@ -99,4 +99,23 @@ router.get('/progress', auth, async (req, res) => {
   }
 });
 
+router.post('/complete-test', auth, async (req, res) => {
+  try {
+    const { testId } = req.body;
+    if (!testId) {
+      return res.status(400).json({ error: 'Test ID is required' });
+    }
+    if (!req.user.completedTests) {
+      req.user.completedTests = [];
+    }
+    if (!req.user.completedTests.includes(testId)) {
+      req.user.completedTests.push(testId);
+      await req.user.save();
+    }
+    res.json(formatResponse({ success: true }));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

@@ -262,6 +262,11 @@ export default function ReadingPage() {
                           {p.difficulty}
                         </span>
                         <span className="text-[10px] text-text-muted font-mono">{p.length}</span>
+                        {p.completed && (
+                          <span className="text-[10px] text-green-400 font-mono px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20 flex items-center gap-1">
+                            ✓ Completed
+                          </span>
+                        )}
                       </div>
                       <h3 className="text-sm font-bold text-white mb-1 group-hover:text-accent transition-colors leading-snug">{p.title}</h3>
                       <p className="text-xs text-text-muted mb-4">{p.topic}</p>

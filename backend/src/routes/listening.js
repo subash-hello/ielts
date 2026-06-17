@@ -9,6 +9,8 @@ const cambridgeTests = require('../data/cambridgeListeningTests');
 
 router.get('/tests', auth, async (req, res) => {
   try {
+    const completedSet = new Set(req.user.completedTests || []);
+
     // Return all 30 tests
     const testsList = Object.values(cambridgeTests).map(t => ({
       id: t.id,
@@ -16,7 +18,8 @@ router.get('/tests', auth, async (req, res) => {
       difficulty: t.difficulty,
       duration: t.duration,
       partsCount: t.parts.length,
-      questionCount: t.parts.reduce((acc, part) => acc + (part.questions ? part.questions.length : 0), 0)
+      questionCount: t.parts.reduce((acc, part) => acc + (part.questions ? part.questions.length : 0), 0),
+      completed: completedSet.has(t.id)
     }));
 
     // Add DB practice tests if needed
@@ -27,7 +30,8 @@ router.get('/tests', auth, async (req, res) => {
       difficulty: t.difficulty || 'medium',
       duration: t.content?.duration || '30 min',
       partsCount: t.content?.parts?.length || 0,
-      questionCount: t.content?.parts?.reduce((acc, part) => acc + (part.questions ? part.questions.length : 0), 0) || 0
+      questionCount: t.content?.parts?.reduce((acc, part) => acc + (part.questions ? part.questions.length : 0), 0) || 0,
+      completed: completedSet.has(t._id.toString())
     }));
 
     res.json(formatResponse([...testsList, ...mappedDb]));

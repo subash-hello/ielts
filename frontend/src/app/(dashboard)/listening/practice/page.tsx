@@ -237,6 +237,12 @@ function ListeningPracticeContent() {
     return { total, correct, band: band.toFixed(1) };
   }, [testData, answers, submitted]);
 
+  useEffect(() => {
+    if (submitted && testId) {
+      api.post('/user/complete-test', { testId }).catch(console.error);
+    }
+  }, [submitted, testId]);
+
   if (loading) return (
     <div className="flex justify-center items-center h-full min-h-[500px]">
       <Loader2 className="animate-spin text-indigo-600 h-8 w-8" />

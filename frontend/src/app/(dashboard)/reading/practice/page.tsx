@@ -92,6 +92,12 @@ function ReadingPracticeContent() {
     }).catch((err) => {
       console.warn('Could not save test score to profile history:', err);
     });
+    
+    // Mark as completed
+    if (passageId) {
+      api.post('/user/complete-test', { testId: passageId }).catch(console.error);
+    }
+    
     recordStudyActivity();
   };
 

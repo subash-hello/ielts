@@ -58,6 +58,12 @@ function WritingPracticeContent() {
       setEvaluation(res);
       setShowResult(true);
       recordStudyActivity();
+      
+      const testId = searchParams.get('id');
+      if (testId) {
+        api.post('/user/complete-test', { testId }).catch(console.error);
+      }
+      
       toast.success('Evaluation complete!', { id: loadingToast });
     } catch (error: any) {
       toast.error('Evaluation failed: ' + error.message, { id: loadingToast });

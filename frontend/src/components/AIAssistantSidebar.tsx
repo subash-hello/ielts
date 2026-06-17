@@ -33,6 +33,7 @@ interface Message {
 
 export default function AIAssistantSidebar() {
   const [isOpen, setIsOpen] = useState(false); // Controlled by default open effect
+  const [isHidden, setIsHidden] = useState(false); // To completely hide the coach trigger
   const [activeTab, setActiveTab] = useState<'plan' | 'chat' | 'tips'>('plan');
   
   // Daily Plan State
@@ -282,23 +283,37 @@ export default function AIAssistantSidebar() {
     <>
       {/* Floating Trigger Badge */}
       <AnimatePresence>
-        {!isOpen && (
-          <motion.button
+        {!isOpen && !isHidden && (
+          <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 50 }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 px-5 py-4 rounded-full bg-gradient-to-r from-violet-600 via-accent to-accent-bright text-white flex items-center gap-2.5 border border-accent/40 hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_0_20px_rgba(34,211,238,0.45)] hover:shadow-[0_0_30px_rgba(34,211,238,0.7)] cursor-pointer group shadow-2xl"
+            className="fixed bottom-6 right-6 z-50 flex items-center gap-2"
           >
-            <div className="relative flex items-center justify-center">
-              <Bot className="w-5.5 h-5.5 animate-pulse group-hover:rotate-12 transition-transform duration-300" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-neon-green animate-ping" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-neon-green shadow shadow-neon-green" />
-            </div>
-            <span className="text-xs font-black tracking-widest uppercase text-white drop-shadow font-sans">
-              AI STUDY COACH
-            </span>
-          </motion.button>
+            {/* The Hide Button */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); setIsHidden(true); }}
+              className="w-7 h-7 rounded-full bg-surface/80 border border-border-glass text-text-muted hover:text-white hover:bg-red-500/20 hover:border-red-500/30 flex items-center justify-center backdrop-blur-sm transition-all shadow-lg"
+              title="Hide AI Coach"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+
+            {/* The Main Coach Button */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="px-5 py-4 rounded-full bg-gradient-to-r from-violet-600 via-accent to-accent-bright text-white flex items-center gap-2.5 border border-accent/40 hover:scale-105 active:scale-95 transition-all duration-300 shadow-[0_0_20px_rgba(34,211,238,0.45)] hover:shadow-[0_0_30px_rgba(34,211,238,0.7)] cursor-pointer group shadow-2xl"
+            >
+              <div className="relative flex items-center justify-center">
+                <Bot className="w-5.5 h-5.5 animate-pulse group-hover:rotate-12 transition-transform duration-300" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-neon-green animate-ping" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-neon-green shadow shadow-neon-green" />
+              </div>
+              <span className="text-xs font-black tracking-widest uppercase text-white drop-shadow font-sans">
+                AI STUDY COACH
+              </span>
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
 

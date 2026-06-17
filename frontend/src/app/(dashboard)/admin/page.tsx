@@ -20,7 +20,11 @@ import {
   AlertTriangle,
   RefreshCw,
   X,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  Folder,
+  UploadCloud,
+  Download
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import { api } from '@/lib/api';
@@ -65,7 +69,7 @@ function AdminDashboardContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'content' | 'results' | 'ai_agent'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'content' | 'results' | 'ai_agent' | 'files'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('All');
 
@@ -104,6 +108,81 @@ function AdminDashboardContent() {
   ]);
   const [agentInput, setAgentInput] = useState('');
   const [isAgentTyping, setIsAgentTyping] = useState(false);
+
+  // Files Tab States
+  const [livePdfs, setLivePdfs] = useState<any[]>([]);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState('');
+  const [uploadCategory, setUploadCategory] = useState<'Academics'|'General'>('Academics');
+  const [isUploading, setIsUploading] = useState(false);
+
+  const fetchPdfs = async () => {
+    try {
+      const data = await api.get('/pdf');
+      setLivePdfs(data);
+    } catch (err) {
+      console.warn('Failed to fetch pdfs', err);
+    }
+  };
+
+  const handleUploadPdf = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadFile || !uploadTitle.trim()) {
+      toast.error('Please select a file and enter a title.');
+      return;
+    }
+    setIsUploading(true);
+    const loadingToast = toast.loading('Uploading PDF...');
+    try {
+      if (isSandboxMode) throw new Error('Sandbox simulation triggered');
+      const formData = new FormData();
+      formData.append('file', uploadFile);
+      formData.append('title', uploadTitle);
+      formData.append('category', uploadCategory);
+
+      const token = localStorage.getItem('token');
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${baseUrl}/pdf/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Upload failed');
+      }
+      toast.success('PDF uploaded successfully!', { id: loadingToast });
+      setUploadFile(null);
+      setUploadTitle('');
+      fetchPdfs();
+    } catch (err: any) {
+      if (isSandboxMode) {
+        toast.success('[DEMO Sandbox] PDF uploaded successfully!', { id: loadingToast });
+        setUploadFile(null);
+        setUploadTitle('');
+      } else {
+        toast.error('Failed to upload: ' + err.message, { id: loadingToast });
+      }
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDeletePdf = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this PDF?')) return;
+    try {
+      if (isSandboxMode) throw new Error('Sandbox simulation triggered');
+      await api.delete(`/pdf/${id}`);
+      toast.success('PDF deleted successfully!');
+      fetchPdfs();
+    } catch (err: any) {
+      if (isSandboxMode) {
+        toast.success('[DEMO Sandbox] PDF deleted successfully!');
+      } else {
+        toast.error('Failed to delete PDF');
+      }
+    }
+  };
 
   const handleSendAgentMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -229,7 +308,7 @@ function AdminDashboardContent() {
 
   // Synchronize Tab state with URL query search parameters dynamically
   useEffect(() => {
-    if (tabParam === 'users' || tabParam === 'content' || tabParam === 'results' || tabParam === 'ai_agent') {
+    if (tabParam === 'users' || tabParam === 'content' || tabParam === 'results' || tabParam === 'ai_agent' || tabParam === 'files') {
       setActiveTab(tabParam as any);
     } else {
       setActiveTab('dashboard');
@@ -366,6 +445,7 @@ function AdminDashboardContent() {
 
   useEffect(() => {
     fetchLiveData();
+    fetchPdfs();
   }, []);
 
   const usersList = isSandboxMode ? mockUsers : liveUsers;
@@ -431,7 +511,7 @@ function AdminDashboardContent() {
         
         {/* Tab Toggle buttons */}
         <div className="flex flex-wrap bg-surface rounded-xl p-1 border border-border-glass self-start md:self-center gap-1">
-          {(['dashboard', 'users', 'content', 'results', 'ai_agent'] as const).map((tab) => (
+          {(['dashboard', 'users', 'content', 'results', 'ai_agent', 'files'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -926,6 +1006,130 @@ function AdminDashboardContent() {
                 <Sparkles className="w-4 h-4" />
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* FILES TAB */}
+      {activeTab === 'files' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Upload Form */}
+            <div className="lg:col-span-1 glass border border-border-glass rounded-3xl p-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border-glass">
+                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center text-accent">
+                  <UploadCloud className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-white text-lg">Upload File</h3>
+                  <p className="text-xs text-text-muted">Add new PDFs to the repository</p>
+                </div>
+              </div>
+              <form onSubmit={handleUploadPdf} className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted block mb-1.5">File Title</label>
+                  <input
+                    type="text"
+                    value={uploadTitle}
+                    onChange={(e) => setUploadTitle(e.target.value)}
+                    placeholder="E.g. Academic Reading Passages 2026"
+                    className="w-full px-4 py-2.5 rounded-xl bg-surface border border-border-glass text-sm text-white placeholder-text-muted outline-none focus:border-accent transition-all"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted block mb-1.5">Category</label>
+                  <select
+                    value={uploadCategory}
+                    onChange={(e) => setUploadCategory(e.target.value as 'Academics' | 'General')}
+                    className="w-full px-4 py-2.5 rounded-xl bg-surface border border-border-glass text-sm text-white outline-none focus:border-accent cursor-pointer transition-all"
+                  >
+                    <option value="Academics">Academics</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-text-muted block mb-1.5">PDF File</label>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setUploadFile(e.target.files[0]);
+                      }
+                    }}
+                    className="w-full text-sm text-text-muted file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-surface-hover file:text-white hover:file:bg-surface/80 cursor-pointer"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isUploading}
+                  className="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-accent to-accent-bright hover:shadow-lg hover:shadow-accent/20 text-white font-extrabold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <UploadCloud className="w-4 h-4" /> Upload Document
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+
+            {/* List of Files */}
+            <div className="lg:col-span-2 glass border border-border-glass rounded-3xl p-6 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-glass">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-neon/20 flex items-center justify-center text-neon">
+                    <Folder className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-white text-lg">Document Repository</h3>
+                    <p className="text-xs text-text-muted">Manage uploaded PDFs</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-2 space-y-3 max-h-[400px] scrollbar-thin">
+                {livePdfs.length > 0 ? (
+                  livePdfs.map(pdf => (
+                    <div key={pdf._id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-surface/30 border border-border-glass hover:bg-surface/50 transition-all">
+                      <div className="flex items-start gap-4 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 flex-shrink-0">
+                          <FileText className="w-5 h-5 text-accent" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-bold text-white truncate">{pdf.title}</h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20">
+                              {pdf.category}
+                            </span>
+                            <span className="text-[10px] text-text-muted">
+                              {new Date(pdf.uploadedAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDeletePdf(pdf._id)}
+                        className="p-2 rounded-xl text-red-400 hover:text-white hover:bg-red-500 transition-all flex-shrink-0 self-end sm:self-auto"
+                        title="Delete File"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-48 text-center">
+                    <Folder className="w-10 h-10 text-text-muted mb-3 opacity-50" />
+                    <p className="text-sm font-bold text-white mb-1">No Documents Uploaded</p>
+                    <p className="text-xs text-text-muted">Use the form to upload a new PDF.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

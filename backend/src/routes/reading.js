@@ -20,6 +20,7 @@ router.get('/passages', auth, async (req, res) => {
 
   try {
     const dbPassages = await TestContent.find({ type: 'practice_task', subType: 'reading', isActive: true });
+    const completedSet = new Set(req.user.completedTests || []);
     const mappedDb = dbPassages.map(p => ({
       id: p._id.toString(),
       title: p.title,
@@ -27,9 +28,16 @@ router.get('/passages', auth, async (req, res) => {
       questionCount: p.content?.questions?.length || 13,
       timeEstimate: p.content?.timeLimit || p.content?.timeEstimate || 20,
       type: p.content?.type || p.content?.examType || 'academic',
-      topic: p.content?.topic || 'General'
+      topic: p.content?.topic || 'General',
+      completed: completedSet.has(p._id.toString())
     }));
-    res.json(formatResponse([...staticPassages, ...mappedDb]));
+    
+    const mappedStatic = staticPassages.map(p => ({
+      ...p,
+      completed: completedSet.has(p.id)
+    }));
+
+    res.json(formatResponse([...mappedStatic, ...mappedDb]));
   } catch (error) {
     res.json(formatResponse(staticPassages));
   }
