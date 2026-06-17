@@ -41,7 +41,7 @@ function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: 
 
 // ─── Render fill-blank text with inline input ─────────────────────────────────
 function FillBlankInline({ 
-  text, value, onChange, disabled, submitted, correctAnswer, questionNum 
+  text, value, onChange, disabled, submitted, correctAnswer, questionNum, hideText 
 }: {
   text: string;
   value: string;
@@ -50,6 +50,7 @@ function FillBlankInline({
   submitted: boolean;
   correctAnswer: string;
   questionNum: number;
+  hideText?: boolean;
 }) {
   // Check if text contains underscore placeholder
   const hasBlank = text.includes('_____') || text.includes('____') || text.includes('___');
@@ -77,17 +78,19 @@ function FillBlankInline({
     />
   );
 
-  if (hasBlank) {
+  if (hasBlank || hideText) {
     // Split text at the blank and render inline
     const parts = text.split(/_{3,}/);
     return (
       <div className="flex flex-wrap items-baseline gap-1 text-gray-800 text-base leading-relaxed">
-        <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm mr-2">
-          {questionNum}
-        </span>
-        <span>{parts[0]}</span>
+        {!hideText && (
+          <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm mr-2">
+            {questionNum}
+          </span>
+        )}
+        {!hideText && <span>{parts[0]}</span>}
         {inputElement}
-        {parts[1] && <span>{parts[1]}</span>}
+        {!hideText && parts[1] && <span>{parts[1]}</span>}
         {submitted && (
           <span className={`ml-2 text-sm font-semibold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
             {isCorrect ? '✓' : `✗ ${correctAnswer}`}
@@ -310,20 +313,85 @@ function ListeningPracticeContent() {
     return sections;
   };
 
+  const renderCellWithBlanks = (content: string, questions: any[]) => {
+    const parts = content.split(/(\{\{[^}]+\}\})/g);
+    return parts.map((part, idx) => {
+      if (part.startsWith('{{') && part.endsWith('}}')) {
+        const qId = part.slice(2, -2);
+        const question = questions.find((q: any) => q.id === qId);
+        if (!question) return part;
+        const originalIdx = currentPart?.questions?.findIndex((q: any) => q.id === qId) || 0;
+        return (
+          <span key={idx} className="mx-1">
+            <FillBlankInline
+              text={question.text}
+              value={answers[question.id] || ''}
+              onChange={(val) => handleAnswerChange(question.id, val)}
+              disabled={submitted}
+              submitted={submitted}
+              correctAnswer={question.correctAnswer}
+              questionNum={questionOffset + originalIdx + 1}
+              hideText={true}
+            />
+          </span>
+        );
+      }
+      return <span key={idx} dangerouslySetInnerHTML={{ __html: part.replace(/\n/g, '<br />') }} />;
+    });
+  };
+
+  const renderLayouts = () => {
+    if (!currentPart?.displayLayouts) return null;
+    return currentPart.displayLayouts.map((layout: any, lIdx: number) => {
+      if (layout.type === 'table') {
+        return (
+          <div key={`layout-${lIdx}`} className="overflow-x-auto mb-8 bg-white border border-gray-200 rounded-xl shadow-sm">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  {layout.headers.map((h: string, i: number) => (
+                    <th key={i} className="p-4 text-sm font-bold text-gray-800 border-r border-gray-200 last:border-0" dangerouslySetInnerHTML={{ __html: h }} />
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {layout.rows.map((row: string[], rIdx: number) => (
+                  <tr key={rIdx} className="border-b border-gray-200 last:border-0 hover:bg-gray-50/50">
+                    {row.map((cell: string, cIdx: number) => (
+                      <td key={cIdx} className="p-4 text-sm text-gray-700 border-r border-gray-200 last:border-0 align-top">
+                        {renderCellWithBlanks(cell, currentPart.questions)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+      return null;
+    });
+  };
+
   // ─── Render the questions for the current part ──────────────────────────────
   const renderQuestions = () => {
     if (!currentPart?.questions) return null;
 
     const questions = currentPart.questions;
     const hasMap = !!currentPart?.imageUrl;
-    const matchingQuestions = hasMap ? questions.filter((q: any) => q.type === 'matching') : [];
-    const nonMatchingQuestions = hasMap ? questions.filter((q: any) => q.type !== 'matching') : questions;
+    const layoutQuestionIds = currentPart.displayLayouts ? currentPart.displayLayouts.flatMap((l: any) => l.questionIds || []) : [];
+    
+    const matchingQuestions = hasMap ? questions.filter((q: any) => q.type === 'matching' && !layoutQuestionIds.includes(q.id)) : [];
+    const nonMatchingQuestions = hasMap 
+      ? questions.filter((q: any) => q.type !== 'matching' && !layoutQuestionIds.includes(q.id)) 
+      : questions.filter((q: any) => !layoutQuestionIds.includes(q.id));
 
     const nonMatchingGroups = buildQuestionGroups(nonMatchingQuestions);
     const typeSections = buildTypeSections(nonMatchingGroups);
 
     return (
       <div className="space-y-8">
+        {renderLayouts()}
         {/* Non-matching questions */}
         {typeSections.map((section, sIdx) => {
           // Calculate question range for this section
