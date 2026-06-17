@@ -29,7 +29,7 @@ const seedAdmin = async () => {
 
 const seedPdfs = async () => {
   try {
-    const pdfDir = path.join(__dirname, '../../../pdf');
+    const pdfDir = path.join(__dirname, '../../pdf');
     if (!fs.existsSync(pdfDir)) {
       console.log('📦 No PDF directory found, skipping PDF seed.');
       return;
