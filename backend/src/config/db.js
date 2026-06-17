@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Pdf = require('../models/Pdf');
+const fs = require('fs');
+const path = require('path');
 
 const seedAdmin = async () => {
   try {
@@ -24,6 +27,42 @@ const seedAdmin = async () => {
   }
 };
 
+const seedPdfs = async () => {
+  try {
+    const pdfDir = path.join(__dirname, '../../../pdf');
+    if (!fs.existsSync(pdfDir)) {
+      console.log('📦 No PDF directory found, skipping PDF seed.');
+      return;
+    }
+
+    const files = fs.readdirSync(pdfDir);
+    let addedCount = 0;
+    for (const file of files) {
+      if (!file.endsWith('.pdf')) continue;
+      
+      const existing = await Pdf.findOne({ filename: file });
+      if (!existing) {
+        let category = 'Academics';
+        const lowerName = file.toLowerCase();
+        if (lowerName.includes('general')) category = 'General';
+        
+        let title = file.replace('.pdf', '').trim();
+        const pdf = new Pdf({ title, filename: file, category });
+        await pdf.save();
+        addedCount++;
+      }
+    }
+    
+    if (addedCount > 0) {
+      console.log(`📦 Seeded ${addedCount} PDFs from filesystem successfully!`);
+    } else {
+      console.log('📦 All PDFs are already seeded.');
+    }
+  } catch (error) {
+    console.error('❌ Error seeding PDFs:', error.message);
+  }
+};
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ielts-ai', {
@@ -32,8 +71,7 @@ const connectDB = async () => {
     });
     console.log(`📦 MongoDB Connected: ${conn.connection.host}`);
     await seedAdmin();
-    // const { seedDatabaseIfEmpty } = require('../utils/seeder');
-    // await seedDatabaseIfEmpty();
+    await seedPdfs();
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️ Falling back to a local in-memory database so the app can still run...');
@@ -44,6 +82,7 @@ const connectDB = async () => {
       await mongoose.connect(mongoUri);
       console.log(`📦 In-Memory MongoDB Connected! (Mock mode active)`);
       await seedAdmin();
+      await seedPdfs();
       // const { seedDatabaseIfEmpty } = require('../utils/seeder');
       // await seedDatabaseIfEmpty();
     } catch (memError) {
