@@ -19,12 +19,14 @@ const aiTutorRoutes = require('./routes/aiTutor');
 const adminRoutes = require('./routes/admin');
 const vocabularyRoutes = require('./routes/vocabulary');
 const diagnosticRoutes = require('./routes/diagnostic');
+const pdfRoutes = require('./routes/pdf');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: true, // Allow all origins for dev / proxy
     methods: ['GET', 'POST']
   }
 });
@@ -63,6 +65,10 @@ const aiLimiter = process.env.NODE_ENV === 'development'
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static PDFs
+const path = require('path');
+app.use('/pdfs', express.static(path.join(__dirname, '../../pdf')));
+
 // Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -80,6 +86,8 @@ app.use('/api/ai-tutor', aiLimiter, aiTutorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/vocabulary', vocabularyRoutes);
 app.use('/api/diagnostic', aiLimiter, diagnosticRoutes);
+app.use('/api/pdf', pdfRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -87,11 +95,35 @@ app.get('/api/health', (req, res) => {
 });
 
 // Socket.io connection
+const Message = require('./models/Message');
+
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
   
   socket.on('join-room', (roomId) => {
+    if (!roomId) return;
     socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on('send-message', async (data) => {
+    // data: { sender: string, text: string, recipient?: string, group?: string }
+    try {
+      const msg = new Message(data);
+      await msg.save();
+      await msg.populate('sender', 'name');
+
+      if (data.recipient) {
+        // Direct message
+        io.to(data.recipient).emit('receive-message', msg);
+        io.to(data.sender).emit('receive-message', msg); // echo back
+      } else if (data.group) {
+        // Group message
+        io.to(data.group).emit('receive-message', msg);
+      }
+    } catch (err) {
+      console.error('Socket message error:', err);
+    }
   });
 
   socket.on('disconnect', () => {

@@ -111,7 +111,12 @@ router.get('/practice/available', auth, async (req, res) => {
     const query = { type: 'practice_task', isActive: true };
     if (subType) query.subType = subType;
     const tasks = await TestContent.find(query);
-    res.json(formatResponse(tasks));
+    const completedSet = new Set(req.user.completedTests || []);
+    const mappedTasks = tasks.map(t => ({
+      ...t.toObject(),
+      completed: completedSet.has(t._id.toString())
+    }));
+    res.json(formatResponse(mappedTasks));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
