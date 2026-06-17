@@ -67,7 +67,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static PDFs
 const path = require('path');
-app.use('/pdfs', express.static(path.join(__dirname, '../../pdf')));
+app.use('/pdfs', express.static(path.join(__dirname, '../pdf')));
 
 // Logging
 if (process.env.NODE_ENV === 'development') {

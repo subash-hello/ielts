@@ -6,7 +6,7 @@ const fs = require('fs');
 const Pdf = require('../models/Pdf');
 
 // Ensure the pdf directory exists
-const pdfDir = path.join(__dirname, '../../../pdf');
+const pdfDir = path.join(__dirname, '../../pdf');
 if (!fs.existsSync(pdfDir)) {
   fs.mkdirSync(pdfDir, { recursive: true });
 }
