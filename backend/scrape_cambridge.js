@@ -82,6 +82,36 @@ function cleanText(txt) {
   return txt.replace(/\s+/g, ' ').replace(/&nbsp;/g, ' ').replace(/&rsquo;/g, "'").replace(/&ldquo;/g, '"').replace(/&rdquo;/g, '"').replace(/&pound;/g, '£').trim();
 }
 
+// Extract table left column or subheading context
+function extractTableContext(qNumElem, $, initialText) {
+  let finalText = initialText;
+  const td = qNumElem.closest('td');
+  if (td.length) {
+    // Check left sibling cell
+    if (td.prev('td, th').length) {
+      const leftText = cleanText(td.prev('td, th').text());
+      if (leftText) {
+        finalText = leftText + (finalText.startsWith('_') ? ': ' : ' ') + finalText;
+      }
+    }
+    
+    // Check for single-cell rows above (subheadings)
+    let prevTr = td.closest('tr').prev('tr');
+    while (prevTr.length) {
+      const cells = prevTr.find('td, th');
+      if (cells.length === 1 && $(cells[0]).attr('colspan')) {
+         const subheading = cleanText(cells.text());
+         if (subheading) {
+           finalText = subheading + ': ' + finalText;
+         }
+         break;
+      }
+      prevTr = prevTr.prev('tr');
+    }
+  }
+  return finalText;
+}
+
 async function scrapeTest(testId, url) {
   console.log(`Scraping test ${testId} from ${url}...`);
   const html = await fetchHtml(url);
@@ -298,10 +328,13 @@ async function scrapeTest(testId, url) {
           clone.find('.ielts-listening-question-number').remove();
         }
 
+        let finalText = cleanText(clone.text());
+        finalText = extractTableContext(qNumElem, $, finalText);
+
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "fillBlank",
-          text: cleanText(clone.text()),
+          text: finalText,
           correctAnswer
         });
       } else {
@@ -326,10 +359,13 @@ async function scrapeTest(testId, url) {
             clone.find('.ielts-listening-question-number').remove();
           }
 
+          let finalText = cleanText(clone.text());
+          finalText = extractTableContext(qNumElem, $, finalText);
+
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "fillBlank",
-            text: cleanText(clone.text()),
+            text: finalText,
             correctAnswer
           });
         } else {

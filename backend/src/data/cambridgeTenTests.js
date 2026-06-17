@@ -15,25 +15,25 @@ module.exports = {
           {
             "id": "c1q1",
             "type": "fillBlank",
-            "text": "Good for people who are especially keen on _____",
+            "text": "Greyson Street, near the station Good for people who are especially keen on _____",
             "correctAnswer": "Fish"
           },
           {
             "id": "c1q2",
             "type": "fillBlank",
-            "text": "The _____ is a good place for a drink",
+            "text": "Good for people who are especially keen on 1 The _____ is a good place for a drink",
             "correctAnswer": "Roof"
           },
           {
             "id": "c1q3",
             "type": "fillBlank",
-            "text": "_____ food, good for sharing",
+            "text": "In Bow Street next to the cinema: _____ food, good for sharing",
             "correctAnswer": "Spanish"
           },
           {
             "id": "c1q4",
             "type": "fillBlank",
-            "text": "A limited selection of _____ food on the menu",
+            "text": "3 food, good for sharing A limited selection of _____ food on the menu",
             "correctAnswer": "Vegetarian"
           },
           {
@@ -45,31 +45,31 @@ module.exports = {
           {
             "id": "c1q6",
             "type": "fillBlank",
-            "text": "At the top of a _____",
+            "text": "The 5 At the top of a _____",
             "correctAnswer": "Hotel"
           },
           {
             "id": "c1q7",
             "type": "fillBlank",
-            "text": "All the _____ are very good",
+            "text": "At the top of a 6 All the _____ are very good",
             "correctAnswer": "Reviews"
           },
           {
             "id": "c1q8",
             "type": "fillBlank",
-            "text": "Only uses _____ ingredients",
+            "text": "At the top of a 6 Only uses _____ ingredients",
             "correctAnswer": "Local"
           },
           {
             "id": "c1q9",
             "type": "fillBlank",
-            "text": "Set lunch costs £ _____ per person Portions probably of (10) size",
+            "text": "A famous chef All the 7 are very good Only uses 8 ingredients Set lunch costs £ _____ per person Portions probably of (10) size",
             "correctAnswer": "30"
           },
           {
             "id": "c1q10",
             "type": "fillBlank",
-            "text": "Portions probably of _____ size",
+            "text": "A famous chef All the 7 are very good Only uses 8 ingredients Portions probably of _____ size",
             "correctAnswer": "Average"
           }
         ]
@@ -487,38 +487,98 @@ module.exports = {
         "questions": [
           {
             "id": "c2q11",
-            "type": "fillBlank",
-            "text": "• walking around the town centre_____",
+            "type": "matching",
+            "text": "• walking around the town centre",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c2q12",
-            "type": "fillBlank",
-            "text": "• helping at concerts_____",
+            "type": "matching",
+            "text": "• helping at concerts",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "I"
           },
           {
             "id": "c2q13",
-            "type": "fillBlank",
-            "text": "• getting involved with community groups_____",
+            "type": "matching",
+            "text": "• getting involved with community groups",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c2q14",
-            "type": "fillBlank",
-            "text": "• helping with a magazine_____",
+            "type": "matching",
+            "text": "• helping with a magazine",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c2q15",
-            "type": "fillBlank",
-            "text": "• participating at lunches for retired people_____",
+            "type": "matching",
+            "text": "• participating at lunches for retired people",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c2q16",
-            "type": "fillBlank",
-            "text": "• helping with the website_____",
+            "type": "matching",
+            "text": "• helping with the website",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
@@ -576,32 +636,82 @@ module.exports = {
         "questions": [
           {
             "id": "c2q21",
-            "type": "fillBlank",
-            "text": "• Population_____",
+            "type": "matching",
+            "text": "• Population",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c2q22",
-            "type": "fillBlank",
-            "text": "• Health_____",
+            "type": "matching",
+            "text": "• Health",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c2q23",
-            "type": "fillBlank",
-            "text": "• Economies_____",
+            "type": "matching",
+            "text": "• Economies",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c2q24",
-            "type": "fillBlank",
-            "text": "• Culture_____",
+            "type": "matching",
+            "text": "• Culture",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c2q25",
-            "type": "fillBlank",
-            "text": "• Poverty_____",
+            "type": "matching",
+            "text": "• Poverty",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "E"
           },
           {
@@ -748,19 +858,19 @@ module.exports = {
           {
             "id": "c3q1",
             "type": "fillBlank",
-            "text": "Prices range from $105 to $_____ per room per month.",
+            "text": "Peak Rentals Prices range from $105 to $_____ per room per month.",
             "correctAnswer": "239"
           },
           {
             "id": "c3q2",
             "type": "fillBlank",
-            "text": "The furniture is very _____ Delivers in 1-2 days Special offer: free (3) with every living room set",
+            "text": "Prices range from $105 to $1 per room per month. The furniture is very _____ Delivers in 1-2 days Special offer: free (3) with every living room set",
             "correctAnswer": "modern"
           },
           {
             "id": "c3q3",
             "type": "fillBlank",
-            "text": "free _____ with every living room set",
+            "text": "Prices range from $105 to $1 per room per month. free _____ with every living room set",
             "correctAnswer": "lamp"
           },
           {
@@ -772,19 +882,19 @@ module.exports = {
           {
             "id": "c3q5",
             "type": "fillBlank",
-            "text": "12% monthly free for _____",
+            "text": "4 and Oliver 12% monthly free for _____",
             "correctAnswer": "damage"
           },
           {
             "id": "c3q6",
             "type": "fillBlank",
-            "text": "Offers cheapest prices for renting furniture and _____ items",
+            "text": "Larch Furniture Offers cheapest prices for renting furniture and _____ items",
             "correctAnswer": "electronic"
           },
           {
             "id": "c3q7",
             "type": "fillBlank",
-            "text": "Must have own _____ Minimum contract length: six months",
+            "text": "Offers cheapest prices for renting furniture and 6 items Must have own _____ Minimum contract length: six months",
             "correctAnswer": "insurance"
           },
           {
@@ -796,13 +906,13 @@ module.exports = {
           {
             "id": "c3q9",
             "type": "fillBlank",
-            "text": "See the _____ for the most up-to-date prices",
+            "text": "8 Rentals See the _____ for the most up-to-date prices",
             "correctAnswer": "app"
           },
           {
             "id": "c3q10",
             "type": "fillBlank",
-            "text": "_____ are allowed within 7 days of delivery",
+            "text": "See the 9 for the most up-to-date prices: _____ are allowed within 7 days of delivery",
             "correctAnswer": "exchanges"
           }
         ]
@@ -811,7 +921,6 @@ module.exports = {
         "part": 2,
         "title": "Part 2: Questions 11-20",
         "type": "Monologue",
-        "imageUrl": "/images/cambridge_20_test3_map.jpg",
         "audioUrl": "https://engnovate.com/wp-content/uploads/2025/07/cambridge-ielts-20-academic-listening-3-audio-part-2.mp3",
         "transcript": "Hello, I’m Hayden. I’m one of the archaeologists investigating the site here at Bidcuster. This is the third summer for this community project, and most of the people digging here are volunteers. I’m a full-time archaeologist for the town council, but I was asked to join the project by NHA, a charity which sets up projects like this up and down the country. As you can see, we’re next to Bidcaster Castle, which is great because the owners let us use their facilities. So, how did we get to where we are today?\nMany archaeology projects happen when an ancient object is found, and in our case that object was a gold coin. Coins are often found by people using metal detectors to look for things buried in the ground or coins are uncovered when wild animals like rabbits have been digging tunnels. Here, a walker found it on the ground after a rainstorm washed away some of the earth and sand. When the story of the gold coin hit the news, Peter Swift, an amateur historian, contacted me to say he believed there had been a village on this site, centuries before the castle was built. Just by chance, the team found some old maps and documents in our library, which showed 500-year-old drawings of ruined buildings on the grassy area between the outer stone walls of the castle and the river. We knew then we were onto something. Over the three summers the team has been here, we’ve found the remains of several buildings, and more broken pots than you can count. Normally you’d expect to find brooches and other jewellery, but we’re still waiting to uncover any such items. The people who once lived here were skilled at making tools from animal bones, as you’ll see when you visit the exhibition. Besides the discovery of the village, we’ve also found evidence of human activity on the other side of the river. No other houses or huts so far, but we can see the borders of an ancient field system. At one point we found a long wall and thought it was an ancient palace, but it turned out to be a modern wall. This summer’s work will end soon, but we’ll be back next summer. In the meantime, we’re putting on a series of guided tours for school groups this autumn. Oh, and maybe you saw the TV documentary about our project. That suggests the objects we’ve found are going to the town’s museum, but we don’t know that for sure yet.\n----------------------\nWhen you enter the site, please make sure you keep to the paths at all times. There are a few other things, the highlights of the site if you like, that I want to mention. Take a look at the map. Our present location is marked at the bottom. This year, we’ve identified the foundations of an ancient bridge, and it’s really exciting today because a team of divers are in the river searching for lost objects. To reach the bridge, take the main path ahead of you, go straight on, and keep going till the path bends to the left. You’ll see a smaller track leading off to the right. Follow that to take you to the river, where the divers are. You might be interested to see the rubbish pit. This is very near the castle walls in the north-west corner of the site. It actually dates to the time of the castle and not the ancient village. We found oyster shells and fish bones, and we assumed they were thrown from the castle kitchen above. One area we excavated in the first summer uncovered the site of a meeting hall. We knew it was an important building because it had two rows of post holes, deep enough to support a large roof. It is the largest structure in the central area of the site next to the current excavation area. Last year we discovered a fish pond in the ancient village. Normally these were beside a river. The pond here is further away, but it’s possible the river has moved slightly. Anyway, to get there from here, you turn right at the first information board you come to and follow the path into the trees. Before you come out of the trees, you’ll see it on your right. If you reach the river, you’ve gone too far. So, does anyone have…",
         "questions": [
@@ -1018,26 +1127,66 @@ module.exports = {
           },
           {
             "id": "c3q27",
-            "type": "fillBlank",
-            "text": "• Ruy Blas_____",
+            "type": "matching",
+            "text": "• Ruy Blas",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c3q28",
-            "type": "fillBlank",
-            "text": "• Man of La Mancha_____",
+            "type": "matching",
+            "text": "• Man of La Mancha",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c3q29",
-            "type": "fillBlank",
-            "text": "• The Tragedy of Jane Shore_____",
+            "type": "matching",
+            "text": "• The Tragedy of Jane Shore",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c3q30",
-            "type": "fillBlank",
-            "text": "• The Sailors’ Festival_____",
+            "type": "matching",
+            "text": "• The Sailors’ Festival",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           }
         ]
@@ -1249,38 +1398,98 @@ module.exports = {
           },
           {
             "id": "c4q15",
-            "type": "fillBlank",
-            "text": "• 1870_____",
+            "type": "matching",
+            "text": "• 1870",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c4q16",
-            "type": "fillBlank",
-            "text": "• 1874_____",
+            "type": "matching",
+            "text": "• 1874",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c4q17",
-            "type": "fillBlank",
-            "text": "• 1875_____",
+            "type": "matching",
+            "text": "• 1875",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c4q18",
-            "type": "fillBlank",
-            "text": "• 1877_____",
+            "type": "matching",
+            "text": "• 1877",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c4q19",
-            "type": "fillBlank",
-            "text": "• 1878_____",
+            "type": "matching",
+            "text": "• 1878",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c4q20",
-            "type": "fillBlank",
-            "text": "• 1880_____",
+            "type": "matching",
+            "text": "• 1880",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -1763,38 +1972,98 @@ module.exports = {
           },
           {
             "id": "c5q25",
-            "type": "fillBlank",
-            "text": "• Use of local products_____",
+            "type": "matching",
+            "text": "• Use of local products",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c5q26",
-            "type": "fillBlank",
-            "text": "• Reduction in unnecessary packaging_____",
+            "type": "matching",
+            "text": "• Reduction in unnecessary packaging",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c5q27",
-            "type": "fillBlank",
-            "text": "• Gluten-free and lactose-free food_____",
+            "type": "matching",
+            "text": "• Gluten-free and lactose-free food",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c5q28",
-            "type": "fillBlank",
-            "text": "• Use of branded products related to celebrity chefs_____",
+            "type": "matching",
+            "text": "• Use of branded products related to celebrity chefs",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c5q29",
-            "type": "fillBlank",
-            "text": "• Development of 'ghost kitchens’ for takeaway food_____",
+            "type": "matching",
+            "text": "• Development of 'ghost kitchens’ for takeaway food",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c5q30",
-            "type": "fillBlank",
-            "text": "• Use of mushrooms for common health concerns_____",
+            "type": "matching",
+            "text": "• Use of mushrooms for common health concerns",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "H"
           }
         ]
@@ -1922,25 +2191,25 @@ module.exports = {
           {
             "id": "c6q7",
             "type": "fillBlank",
-            "text": "using an app or by _____",
+            "text": "tuning guitars using an app or by _____",
             "correctAnswer": "ear"
           },
           {
             "id": "c6q8",
             "type": "fillBlank",
-            "text": "keeping time while the teacher is _____",
+            "text": "strumming chords using our thumbs keeping time while the teacher is _____",
             "correctAnswer": "Clapping"
           },
           {
             "id": "c6q9",
             "type": "fillBlank",
-            "text": "often listening to a _____ of a song",
+            "text": "playing songs often listening to a _____ of a song",
             "correctAnswer": "recording"
           },
           {
             "id": "c6q10",
             "type": "fillBlank",
-            "text": "playing together, then _____",
+            "text": "playing single notes and simple tunes playing together, then _____",
             "correctAnswer": "alone"
           }
         ]
@@ -2125,26 +2394,66 @@ module.exports = {
           },
           {
             "id": "c6q25",
-            "type": "fillBlank",
-            "text": "• the high-heeled shoes_____",
+            "type": "matching",
+            "text": "• the high-heeled shoes",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c6q26",
-            "type": "fillBlank",
-            "text": "• the ankle boots_____",
+            "type": "matching",
+            "text": "• the ankle boots",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c6q27",
-            "type": "fillBlank",
-            "text": "• the baby shoes_____",
+            "type": "matching",
+            "text": "• the baby shoes",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c6q28",
-            "type": "fillBlank",
-            "text": "• the trainers_____",
+            "type": "matching",
+            "text": "• the trainers",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
@@ -2294,25 +2603,25 @@ module.exports = {
           {
             "id": "c7q7",
             "type": "fillBlank",
-            "text": "a handful of _____ (type of seaweed)",
+            "text": "Shopping: a dozen prawns a handful of _____ (type of seaweed)",
             "correctAnswer": "samphire"
           },
           {
             "id": "c7q8",
             "type": "fillBlank",
-            "text": "beans and a _____ for dessert",
+            "text": "Shopping: Organic shop beans and a _____ for dessert",
             "correctAnswer": "melon"
           },
           {
             "id": "c7q9",
             "type": "fillBlank",
-            "text": "spices and _____",
+            "text": "Shopping: beans and a 8 for dessert spices and _____",
             "correctAnswer": "coconut"
           },
           {
             "id": "c7q10",
             "type": "fillBlank",
-            "text": "a _____ tart",
+            "text": "Shopping: a brown loaf a _____ tart",
             "correctAnswer": "strawberry"
           }
         ]
@@ -2326,38 +2635,98 @@ module.exports = {
         "questions": [
           {
             "id": "c7q11",
-            "type": "fillBlank",
-            "text": "• Superheroes_____",
+            "type": "matching",
+            "text": "• Superheroes",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c7q12",
-            "type": "fillBlank",
-            "text": "• Just do it_____",
+            "type": "matching",
+            "text": "• Just do it",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c7q13",
-            "type": "fillBlank",
-            "text": "• Count on me_____",
+            "type": "matching",
+            "text": "• Count on me",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c7q14",
-            "type": "fillBlank",
-            "text": "• Speak up_____",
+            "type": "matching",
+            "text": "• Speak up",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c7q15",
-            "type": "fillBlank",
-            "text": "• Jump for joy_____",
+            "type": "matching",
+            "text": "• Jump for joy",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c7q16",
-            "type": "fillBlank",
-            "text": "• Sticks and stones_____",
+            "type": "matching",
+            "text": "• Sticks and stones",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "H"
           },
           {
@@ -2478,32 +2847,82 @@ module.exports = {
           },
           {
             "id": "c7q26",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Choose mice which are all the same _____.",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c7q27",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Divide the mice into two groups, each with a different _____.",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "H"
           },
           {
             "id": "c7q28",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Feed group B the same, but also sugar contained in _____.",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "E"
           },
           {
             "id": "c7q29",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Place them in a weighing chamber to prevent _____.",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c7q30",
-            "type": "fillBlank",
+            "type": "matching",
             "text": "Do all necessary _____.",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -2595,61 +3014,61 @@ module.exports = {
           {
             "id": "c8q1",
             "type": "fillBlank",
-            "text": "_____",
+            "text": "Name of supervisor: _____",
             "correctAnswer": "KAEDEN"
           },
           {
             "id": "c8q2",
             "type": "fillBlank",
-            "text": "use _____ in staffroom",
+            "text": "Where to leave coat and bag: use _____ in staffroom",
             "correctAnswer": "locker / lockers"
           },
           {
             "id": "c8q3",
             "type": "fillBlank",
-            "text": "to give _____ number to collect (4)",
+            "text": "See Tiffany in HR: to give _____ number to collect (4)",
             "correctAnswer": "passport"
           },
           {
             "id": "c8q4",
             "type": "fillBlank",
-            "text": "to give (3) number to collect _____",
+            "text": "See Tiffany in HR: to give (3) number to collect _____",
             "correctAnswer": "uniform"
           },
           {
             "id": "c8q5",
             "type": "fillBlank",
-            "text": "on _____ floor",
+            "text": "Location of HR office: on _____ floor",
             "correctAnswer": "third / 3rd"
           },
           {
             "id": "c8q6",
             "type": "fillBlank",
-            "text": "_____",
+            "text": "Supervisor's mobile number:: _____",
             "correctAnswer": "0412665903"
           },
           {
             "id": "c8q7",
             "type": "fillBlank",
-            "text": "Use _____ labels",
+            "text": "Responsibilities: Change price labels Use _____ labels",
             "correctAnswer": "yellow"
           },
           {
             "id": "c8q8",
             "type": "fillBlank",
-            "text": "Re-stock with _____ boxes if needed",
+            "text": "Responsibilities: Sushi takeaway counter Re-stock with _____ boxes if needed",
             "correctAnswer": "plastic"
           },
           {
             "id": "c8q9",
             "type": "fillBlank",
-            "text": "Collect _____ for the fish from the cold-room",
+            "text": "Responsibilities: Clean the serving area, including the weighing scales Collect _____ for the fish from the cold-room",
             "correctAnswer": "ice"
           },
           {
             "id": "c8q10",
             "type": "fillBlank",
-            "text": "Must wear special _____",
+            "text": "Responsibilities: Collect 9 for the fish from the cold-room Must wear special _____",
             "correctAnswer": "gloves"
           }
         ]
@@ -2715,26 +3134,66 @@ module.exports = {
           },
           {
             "id": "c8q15",
-            "type": "fillBlank",
-            "text": "• Ceri_____",
+            "type": "matching",
+            "text": "• Ceri",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c8q16",
-            "type": "fillBlank",
-            "text": "• James_____",
+            "type": "matching",
+            "text": "• James",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c8q17",
-            "type": "fillBlank",
-            "text": "• Leo_____",
+            "type": "matching",
+            "text": "• Leo",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c8q18",
-            "type": "fillBlank",
-            "text": "• Mark_____",
+            "type": "matching",
+            "text": "• Mark",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
@@ -2825,32 +3284,82 @@ module.exports = {
           },
           {
             "id": "c8q26",
-            "type": "fillBlank",
-            "text": "• rare books_____",
+            "type": "matching",
+            "text": "• rare books",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c8q27",
-            "type": "fillBlank",
-            "text": "• children’s books_____",
+            "type": "matching",
+            "text": "• children’s books",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           },
           {
             "id": "c8q28",
-            "type": "fillBlank",
-            "text": "• unwanted books_____",
+            "type": "matching",
+            "text": "• unwanted books",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c8q29",
-            "type": "fillBlank",
-            "text": "• requested books_____",
+            "type": "matching",
+            "text": "• requested books",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c8q30",
-            "type": "fillBlank",
-            "text": "• coursebooks_____",
+            "type": "matching",
+            "text": "• coursebooks",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "G"
           }
         ]
@@ -3069,32 +3578,82 @@ module.exports = {
           },
           {
             "id": "c9q16",
-            "type": "fillBlank",
-            "text": "• Fundraising_____",
+            "type": "matching",
+            "text": "• Fundraising",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "B"
           },
           {
             "id": "c9q17",
-            "type": "fillBlank",
-            "text": "• Litter collection_____",
+            "type": "matching",
+            "text": "• Litter collection",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "G"
           },
           {
             "id": "c9q18",
-            "type": "fillBlank",
-            "text": "• ‘Playmates’_____",
+            "type": "matching",
+            "text": "• ‘Playmates’",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c9q19",
-            "type": "fillBlank",
-            "text": "• Story club_____",
+            "type": "matching",
+            "text": "• Story club",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c9q20",
-            "type": "fillBlank",
-            "text": "• First aid_____",
+            "type": "matching",
+            "text": "• First aid",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           }
         ]
@@ -3349,25 +3908,25 @@ module.exports = {
           {
             "id": "c10q7",
             "type": "fillBlank",
-            "text": "Making sure _____ is clean",
+            "text": "Breakfast supervisor Making sure _____ is clean",
             "correctAnswer": "equipment"
           },
           {
             "id": "c10q8",
             "type": "fillBlank",
-            "text": "Starting salary £_____ per hour Start work at 5.30 a.m.",
+            "text": "Checking portions, etc. are correct Making sure 7 is clean Starting salary £_____ per hour Start work at 5.30 a.m.",
             "correctAnswer": "9.75"
           },
           {
             "id": "c10q9",
             "type": "fillBlank",
-            "text": "Maintaining stock and organising _____",
+            "text": "Junior chef Maintaining stock and organising _____",
             "correctAnswer": "deliveries"
           },
           {
             "id": "c10q10",
             "type": "fillBlank",
-            "text": "No work on a _____ once a month",
+            "text": "Supporting senior chefs Maintaining stock and organising 9 No work on a _____ once a month",
             "correctAnswer": "Sunday"
           }
         ]
@@ -3376,7 +3935,6 @@ module.exports = {
         "part": 2,
         "title": "Part 2: Questions 11-20",
         "type": "Monologue",
-        "imageUrl": "/images/cambridge_18_test2_map.jpg",
         "audioUrl": "https://engnovate.com/wp-content/uploads/2023/08/cambridge-ielts-18-academic-listening-2-audio-2.mp3",
         "transcript": "Hello everyone. It’s good to see that so many members of the public have shown up for our presentation on the new housing development planned on the outskirts of Nunston. I’m Mark Reynolds and I’m Communications Manager at the development.\nI’ll start by giving you a brief overview of our plans for the development. So one thing I’m sure you’ll want to know is why we’ve selected this particular site for a housing development. At present it’s being used for farming, like much of the land around Nunston. But because of the new industrial centre in Nunston, there’s a lot of demand for housing for employees in the region, as many employees are having to commute long distances at present. Of course, there’s also the fact that we have an international airport just 20 minutes’ drive away, but although that’s certainly convenient, it wasn’t one of our major criteria for choosing the site. We were more interested in the fact that there’s an excellent hospital just 15 kilometres away, and a large secondary school even closer than that. One drawback to the site is that it’s on quite a steep slope, but we’ve taken account of that in our planning so it shouldn’t be a major problem.\nWe’ve had a lot of positive feedback about the plans. People like the wide variety of accommodation types and prices, and the fact that it’s only a short drive to get out into the countryside from the development. We were particularly pleased that so many people liked the designs for the layout of the development, with the majority of people saying it generally made a good impression and blended in well with the natural features of the landscape, with provision made for protecting trees and wildlife on the site. Some people have mentioned that they’d like to see more facilities for cyclists, and we’ll look at that, but the overall feedback has been that the design and facilities of the development make it seem a place where people of all ages can live together happily.\n—————\nOk, so I’ll put a map of the proposed development up on the screen. You’ll see it’s bounded on the south side by the main road, which then goes on to Nunston. Another boundary is formed by London Road, on the western side of the development. Inside the development there’ll be about 400 houses and 3 apartment blocks.\nThere’ll also be a school for children up to 11 years old. If you look at the South Entrance at the bottom of the map, there’s a road from there that goes right up through the development. The school will be on that road, at the corner of the second turning to the left.\nA large sports centre is planned with facilities for indoor and outdoor activities. This will be on the western side of the development, just below the road that branches off from London Road.\nThere’ll be a clinic where residents can go if they have any health problems. Can you see the lake towards the top of the map? The clinic will be just below this, to the right of a street of houses.\nThere’ll also be a community centre for people of all ages. On the northeast side of the development, there’ll be a row of specially designed houses specifically for residents over 65, and the community centre will be adjoining this.\nWe haven’t forgotten about shopping. There’ll be a supermarket between the two entrances to the development. We’re planning to leave the three large trees near London Road, and it’ll be just to the south of these.\nIt’s planned to have a playground for younger children. If you look at the road that goes up from the South Entrance, you’ll see it curves round to the left at the top, and the playground will be in that curve, with nice views of the lake.\nOK, so now does anyone …",
         "questions": [
@@ -3615,26 +4173,66 @@ module.exports = {
           },
           {
             "id": "c10q27",
-            "type": "fillBlank",
-            "text": "• Iceland_____",
+            "type": "matching",
+            "text": "• Iceland",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "D"
           },
           {
             "id": "c10q28",
-            "type": "fillBlank",
-            "text": "• Egypt_____",
+            "type": "matching",
+            "text": "• Egypt",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "A"
           },
           {
             "id": "c10q29",
-            "type": "fillBlank",
-            "text": "• UK_____",
+            "type": "matching",
+            "text": "• UK",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "C"
           },
           {
             "id": "c10q30",
-            "type": "fillBlank",
-            "text": "• USA_____",
+            "type": "matching",
+            "text": "• USA",
+            "options": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "E",
+              "F",
+              "G",
+              "H"
+            ],
             "correctAnswer": "F"
           }
         ]

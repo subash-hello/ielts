@@ -1640,12 +1640,15 @@ export default function MockExamPage() {
                               ))}
                             </div>
                           ) : (
-                            <input
-                              onChange={e => setReadAnswers({ ...readAnswers, [q.id]: e.target.value })}
-                              value={readAnswers[q.id] || ''}
-                              className="w-full px-3 py-2 rounded-xl bg-primary-dark/50 border border-border-glass text-xs text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all"
-                              placeholder="Type your answer here..."
-                            />
+                            <div className="space-y-1.5 w-full">
+                              <p className="text-[10px] text-accent italic font-semibold tracking-wide">Write ONE WORD AND/OR A NUMBER for each answer.</p>
+                              <input
+                                onChange={e => setReadAnswers({ ...readAnswers, [q.id]: e.target.value })}
+                                value={readAnswers[q.id] || ''}
+                                className="w-full px-3 py-2 rounded-xl bg-primary-dark/50 border border-border-glass text-xs text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all"
+                                placeholder="Type your answer here..."
+                              />
+                            </div>
                           )}
                         </div>
                       );
