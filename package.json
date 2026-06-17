@@ -1,0 +1,20 @@
+{
+  "name": "ielts-ai-platform-root",
+  "version": "1.0.0",
+  "description": "Root package for running IELTS AI Preparation Platform",
+  "private": true,
+  "scripts": {
+    "install:backend": "npm install --prefix backend",
+    "install:frontend": "npm install --prefix frontend",
+    "install:all": "npm install && npm run install:backend && npm run install:frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "tunnel": "npx cloudflared tunnel --url http://localhost:3002",
+    "dev:global": "concurrently -n \"backend,frontend,tunnel\" -c \"blue,green,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run tunnel\""
+  },
+  "dependencies": {
+    "cloudflared": "^0.7.1",
+    "concurrently": "^8.2.2"
+  }
+}

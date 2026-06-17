@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
   currentLevel: { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'intermediate' },
   lastActive: { type: Date, default: Date.now },
   studyDays: [{ type: Date }],
+  completedTests: [{ type: String }],
   isVerified: { type: Boolean, default: false },
   verificationToken: String,
   resetPasswordToken: String,

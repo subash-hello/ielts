@@ -12,6 +12,9 @@ RUN cd backend && npm install
 # Copy the rest of the backend source code
 COPY backend/ ./backend/
 
+# Copy the PDFs so they are available in the container
+COPY pdf/ /app/pdf/
+
 # Set the working directory to the backend folder
 WORKDIR /app/backend
 
