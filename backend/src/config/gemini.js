@@ -37,18 +37,30 @@ async function callHuggingFaceFallback(promptOrParts) {
     }
   };
 
-  const response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${hfToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
+  let response;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${hfToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-  if (!response.ok) {
+    if (response.ok) break;
+    
     const errText = await response.text();
-    throw new Error(`HF Fallback failed: ${response.status} ${errText}`);
+    if (response.status === 503 && errText.includes('loading')) {
+      console.log(`HF Model loading, waiting 5 seconds (Attempt ${attempt}/3)...`);
+      await sleep(5000);
+    } else {
+      throw new Error(`HF Fallback failed: ${response.status} ${errText}`);
+    }
+  }
+
+  if (!response || !response.ok) {
+    throw new Error(`HF Fallback failed after retries.`);
   }
 
   const result = await response.json();
