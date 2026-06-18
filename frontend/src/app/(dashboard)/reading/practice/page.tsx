@@ -208,7 +208,7 @@ function ReadingPracticeContent() {
                     <input 
                       value={answers[q.id] || ''} 
                       onChange={(e) => !submitted && setAnswer(q.id, e.target.value)} 
-                      placeholder="Type your answer..." 
+                      placeholder={`Type your answer (max ${q.correct ? q.correct.split(/[\\s-]+/).filter(Boolean).length : 1} word${(q.correct ? q.correct.split(/[\\s-]+/).filter(Boolean).length : 1) > 1 ? 's' : ''})...`}
                       className="w-full px-4 py-2.5 rounded-xl bg-primary-dark/50 border border-border-glass text-sm text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all" 
                       disabled={submitted}
                     />

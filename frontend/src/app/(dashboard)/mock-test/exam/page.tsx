@@ -1389,8 +1389,8 @@ export default function MockExamPage() {
                                               <input
                                                 onChange={e => setListenAnswers({ ...listenAnswers, [representative.id]: e.target.value })}
                                                 value={listenAnswers[representative.id] || ''}
-                                                className="inline-block w-32 px-2 py-1 mx-1 border border-border-glass bg-primary-dark/50 rounded-md text-center text-xs font-semibold text-cyan-400 focus:border-accent outline-none transition-all"
-                                                placeholder="Type answer..."
+                                                className="inline-block w-36 px-2 py-1 mx-1 border border-border-glass bg-primary-dark/50 rounded-md text-center text-xs font-semibold text-cyan-400 focus:border-accent outline-none transition-all"
+                                                placeholder={`Max ${representative.correct ? representative.correct.split(/[\\s-]+/).filter(Boolean).length : 1} word${(representative.correct ? representative.correct.split(/[\\s-]+/).filter(Boolean).length : 1) > 1 ? 's' : ''}`}
                                               />
                                             )}
                                           </span>
@@ -1492,7 +1492,7 @@ export default function MockExamPage() {
                                       value={listenAnswers[representative.id] || ''}
                                       className="w-full px-3 py-2 rounded-xl bg-primary-dark/50 border border-border-glass text-xs text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all ml-9"
                                       style={{ width: 'calc(100% - 2.25rem)' }}
-                                      placeholder="Enter answer..."
+                                      placeholder={`Type answer (max ${representative.correct ? representative.correct.split(/[\\s-]+/).filter(Boolean).length : 1} word${(representative.correct ? representative.correct.split(/[\\s-]+/).filter(Boolean).length : 1) > 1 ? 's' : ''})...`}
                                     />
                                   )}
                                 </div>
@@ -1646,7 +1646,7 @@ export default function MockExamPage() {
                                 onChange={e => setReadAnswers({ ...readAnswers, [q.id]: e.target.value })}
                                 value={readAnswers[q.id] || ''}
                                 className="w-full px-3 py-2 rounded-xl bg-primary-dark/50 border border-border-glass text-xs text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all"
-                                placeholder="Type your answer here..."
+                                placeholder={`Type answer (max ${q.correct ? q.correct.split(/[\\s-]+/).filter(Boolean).length : 1} word${(q.correct ? q.correct.split(/[\\s-]+/).filter(Boolean).length : 1) > 1 ? 's' : ''})...`}
                               />
                             </div>
                           )}

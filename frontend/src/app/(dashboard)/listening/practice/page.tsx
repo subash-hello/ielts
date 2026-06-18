@@ -73,7 +73,7 @@ function FillBlankInline({
             : 'border-red-400 bg-red-50' 
           : 'border-indigo-200 bg-white hover:border-indigo-400'
       }`}
-      placeholder="Type answer..."
+      placeholder={`Max ${correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\\s-]+/).filter(Boolean).length)) : 1} word${(correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\\s-]+/).filter(Boolean).length)) : 1) > 1 ? 's' : ''}`}
       style={{ minWidth: '120px' }}
     />
   );
