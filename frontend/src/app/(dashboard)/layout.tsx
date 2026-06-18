@@ -35,7 +35,6 @@ import {
   MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import FloatingNotes from '@/components/FloatingNotes';
 import FloatingSiriCoach from '@/components/FloatingSiriCoach';
 import { getStreakInfo } from '@/lib/streak';
 
@@ -992,7 +991,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         )}
       </AnimatePresence>
-      <FloatingNotes />
       <FloatingSiriCoach />
     </div>
   );
