@@ -145,7 +145,7 @@ async function scrapeTest(bookNum, testNum) {
              if (groupId && dndGroups[groupId]) {
                  options = dndGroups[groupId];
                  // Determine question text based on next sibling (which is usually the paragraph letter for headings)
-                 let nextTextNode = qNumElem.nextAll().last().get(0)?.nextSibling;
+                 let nextTextNode = dropZone.get(0)?.nextSibling;
                  if (nextTextNode && nextTextNode.nodeType === 3 && nextTextNode.nodeValue.trim()) {
                      questionText = `Heading for Paragraph ${nextTextNode.nodeValue.trim()}`;
                  } else {
@@ -155,7 +155,7 @@ async function scrapeTest(bookNum, testNum) {
         }
 
         if (rawQuestionText.includes("Drop heading here")) {
-             let nextTextNode = qNumElem.nextAll().last().get(0)?.nextSibling;
+             let nextTextNode = dropZone.length ? dropZone.get(0)?.nextSibling : qNumElem.nextAll().last().get(0)?.nextSibling;
              if (nextTextNode && nextTextNode.nodeType === 3 && nextTextNode.nodeValue.trim()) {
                  questionText = `Heading for Paragraph ${nextTextNode.nodeValue.trim()}`;
              }
@@ -192,7 +192,7 @@ async function scrapeTest(bookNum, testNum) {
           timeLimit: 20,
           type: "academic",
           topic: `Passage ${partNum}`,
-          passage: passageText.replace(/\\d*Drop heading here([A-Z]?)/g, '$1\\n').replace(/\\d*Drop answer here/g, '___').trim(),
+          passage: passageText.replace(/\d*Drop heading here([A-Z]?)/g, '$1\n\n').replace(/\d*Drop answer here/g, '___').trim(),
           questions
         }
       });
