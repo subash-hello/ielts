@@ -117,7 +117,7 @@ export default function FloatingSiriCoach() {
     
     const apiHistory = [...chatHistory, { 
       role: 'student', 
-      content: `[CONTEXT: The student is currently on this page: ${pathname}]\n\n${transcript}\n\n(IMPORTANT: You are a proactive, monitoring IELTS teacher. Act like you are looking over my shoulder. If I ask for a plan, tell me exactly what to do today/tomorrow. If I ask how to solve a question, teach me step-by-step. Keep your explanation conversational for a voice assistant. Do NOT use markdown symbols like * or #, just use plain English.)` 
+      content: `[CONTEXT: The student is currently on this page: ${pathname}]\n\n${transcript}\n\n(IMPORTANT: You are a proactive IELTS teacher, but you MUST keep your spoken response EXTREMELY short. Limit your reply to 1-3 short sentences MAX. If teaching, just give the single most important step. Do NOT give long lectures. No markdown symbols.)` 
     }];
     
     try {
