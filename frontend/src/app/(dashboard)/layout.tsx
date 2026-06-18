@@ -50,7 +50,7 @@ const navItems = [
   { name: 'Vocabulary', href: '/vocabulary', icon: BookMarked },
   { name: 'Progress', href: '/progress', icon: BarChart3 },
   { name: 'Files', href: '/files', icon: Folder },
-  { name: 'Messages', href: '/chat', icon: MessageCircle },
+  { name: 'Notebook', href: '/notebook', icon: BookOpen },
   { name: 'Admin Panel', href: '/admin', icon: Shield },
 ];
 
@@ -164,7 +164,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'AI Tutor Alex (Grammar/Chat)', type: 'AI Assistant', href: '/ai-tutor', icon: Bot },
     { name: 'Vocabulary & Synonym Builder', type: 'View', href: '/vocabulary', icon: BookMarked },
     { name: 'Progress Dashboard & Analytics', type: 'View', href: '/progress', icon: BarChart3 },
-    { name: 'Real-time Chat & Groups', type: 'Social', href: '/chat', icon: MessageCircle },
+    { name: 'Notebook / Study Notes', type: 'View', href: '/notebook', icon: BookOpen },
     { name: 'Admin Control Panel', type: 'Admin', href: '/admin', icon: Shield },
     { name: 'Files Resource Center', type: 'View', href: '/files', icon: Folder },
     { name: 'System Settings Panel', type: 'Action', href: 'settings', icon: Settings },
