@@ -12,7 +12,7 @@ import {
 // ─── Cambridge-style instruction text generator ───────────────────────────────
 function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number, correctAnswer?: string): { heading: string; instruction: string } {
   if (type === 'fillBlank') {
-    const maxWords = correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+    const maxWords = correctAnswer ? Math.max(...correctAnswer.split('/').map((a: string) => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
     const wordText = maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
     return {
       heading: 'Complete the notes below.',
@@ -75,7 +75,7 @@ function FillBlankInline({
             : 'border-red-400 bg-red-50' 
           : 'border-indigo-200 bg-white hover:border-indigo-400'
       }`}
-      placeholder={`Max ${correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\\s-]+/).filter(Boolean).length)) : 1} word${(correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\\s-]+/).filter(Boolean).length)) : 1) > 1 ? 's' : ''}`}
+      placeholder={`Max ${correctAnswer ? Math.max(...correctAnswer.split('/').map((a: string) => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1} word${(correctAnswer ? Math.max(...correctAnswer.split('/').map((a: string) => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1) > 1 ? 's' : ''}`}
       style={{ minWidth: '120px' }}
     />
   );

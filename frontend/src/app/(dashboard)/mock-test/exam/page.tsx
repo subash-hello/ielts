@@ -1249,7 +1249,7 @@ export default function MockExamPage() {
                     {(() => {
                       function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number, correctAnswer?: string): { heading: string; instruction: string } {
                         if (type === 'fillBlank') {
-                          const maxWords = correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+                          const maxWords = correctAnswer ? Math.max(...correctAnswer.split('/').map((a: string) => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
                           const wordText = maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
                           return { heading: 'Complete the notes below.', instruction: `Write ${wordText} AND/OR A NUMBER for each answer.` };
                         }
@@ -1646,7 +1646,7 @@ export default function MockExamPage() {
                             <div className="space-y-1.5 w-full">
                               <p className="text-[10px] text-accent italic font-semibold tracking-wide">
                                 Write {(() => {
-                                  const maxWords = q.correct ? Math.max(...q.correct.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+                                  const maxWords = q.correct ? Math.max(...q.correct.split('/').map((a: string) => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
                                   return maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
                                 })()} AND/OR A NUMBER for each answer.
                               </p>
