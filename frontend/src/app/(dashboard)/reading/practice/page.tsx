@@ -204,7 +204,16 @@ function ReadingPracticeContent() {
                 
                 {q.type === 'fill' && (
                   <div className="w-full space-y-1.5">
-                    <p className="text-xs text-accent italic font-semibold tracking-wide">Write ONE WORD AND/OR A NUMBER for each answer.</p>
+                    {q.options && q.options.length > 0 ? (
+                      <div className="mb-3 space-y-1 bg-primary-dark/20 p-3 rounded-xl border border-border-glass">
+                        <p className="text-xs text-accent font-semibold mb-2">Options:</p>
+                        {q.options.map((opt, idx) => (
+                          <div key={idx} className="text-xs text-white leading-relaxed">{opt}</div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-accent italic font-semibold tracking-wide">Write ONE WORD AND/OR A NUMBER for each answer.</p>
+                    )}
                     <input 
                       value={answers[q.id] || ''} 
                       onChange={(e) => !submitted && setAnswer(q.id, e.target.value)} 
