@@ -74,17 +74,17 @@ class GenerativeModelWrapper {
   }
 }
 
-// Regular model defaults to gemini-2.5-flash with fallback to stable models
-const getModel = (modelName = 'gemini-2.5-flash') => {
-  const fallbacks = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-latest'];
+// Regular model defaults to gemini-1.5-flash with fallback to stable models
+const getModel = (modelName = 'gemini-1.5-flash') => {
+  const fallbacks = ['gemini-1.5-flash', 'gemini-1.5-flash-latest'];
   // Filter out the primary model name if it's already in the fallbacks
   const filteredFallbacks = fallbacks.filter(f => f !== modelName);
   return new GenerativeModelWrapper(modelName, filteredFallbacks);
 };
 
-// Pro model defaults to gemini-2.5-pro with fallbacks to highly capable/stable models
+// Pro model defaults to gemini-1.5-pro with fallbacks to highly capable/stable models
 const getProModel = () => {
-  return new GenerativeModelWrapper('gemini-2.5-pro', ['gemini-1.5-pro', 'gemini-2.5-flash', 'gemini-1.5-flash']);
+  return new GenerativeModelWrapper('gemini-1.5-pro', ['gemini-1.5-flash']);
 };
 
 module.exports = { genAI, getModel, getProModel };
