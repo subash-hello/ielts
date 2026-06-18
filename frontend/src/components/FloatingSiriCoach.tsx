@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, X, Loader2, Maximize2, Minimize2 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -12,6 +13,7 @@ export default function FloatingSiriCoach() {
   const [state, setState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
   const [transcript, setTranscript] = useState('');
   const [aiResponse, setAiResponse] = useState('');
+  const pathname = usePathname();
   
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
@@ -115,7 +117,7 @@ export default function FloatingSiriCoach() {
     
     const apiHistory = [...chatHistory, { 
       role: 'student', 
-      content: transcript + "\n\n(IMPORTANT: Please respond very concisely and conversationally, exactly like Siri or Gemini. Keep your response to 1-2 short sentences, get straight to the point, and avoid long explanations or markdown formatting as this is a live voice conversation.)" 
+      content: `[CONTEXT: The student is currently on this page: ${pathname}]\n\n${transcript}\n\n(IMPORTANT: You are a proactive, monitoring IELTS teacher. Act like you are looking over my shoulder. If I ask for a plan, tell me exactly what to do today/tomorrow. If I ask how to solve a question, teach me step-by-step. Keep your explanation conversational for a voice assistant. Do NOT use markdown symbols like * or #, just use plain English.)` 
     }];
     
     try {
