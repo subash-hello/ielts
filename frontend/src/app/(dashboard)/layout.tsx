@@ -327,7 +327,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: 'System Directory', href: '/admin?tab=users', icon: Shield },
         { name: 'Content Pool', href: '/admin?tab=content', icon: BookMarked },
         { name: 'Files', href: '/admin?tab=files', icon: Folder },
-        { name: 'Messages', href: '/chat', icon: MessageCircle },
+        { name: 'Notebook', href: '/notebook', icon: BookOpen },
         { name: 'Student View', href: '/dashboard', icon: Sparkles }
       ]
     : studentNavItems;
