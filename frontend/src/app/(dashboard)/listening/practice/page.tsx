@@ -10,11 +10,13 @@ import {
 } from 'lucide-react';
 
 // ─── Cambridge-style instruction text generator ───────────────────────────────
-function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number): { heading: string; instruction: string } {
+function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number, correctAnswer?: string): { heading: string; instruction: string } {
   if (type === 'fillBlank') {
+    const maxWords = correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+    const wordText = maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
     return {
       heading: 'Complete the notes below.',
-      instruction: 'Write ONE WORD AND/OR A NUMBER for each answer.'
+      instruction: `Write ${wordText} AND/OR A NUMBER for each answer.`
     };
   }
   if (type === 'matching') {
@@ -403,10 +405,7 @@ function ListeningPracticeContent() {
           const lastIdx = questions.findIndex((q: any) => q.id === lastQ.id);
           const globalFirst = questionOffset + firstIdx + 1;
           const globalLast = questionOffset + lastIdx + 1;
-
-          const { heading, instruction } = getCambridgeInstruction(
-            section.type, section.isGrouped, section.optionCount
-          );
+          const { heading, instruction } = getCambridgeInstruction(section.type, section.isGrouped, section.optionCount, firstQ.correctAnswer);
 
           return (
             <div key={`section-${sIdx}`} className="space-y-4">

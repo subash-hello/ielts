@@ -212,7 +212,12 @@ function ReadingPracticeContent() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-accent italic font-semibold tracking-wide">Write ONE WORD AND/OR A NUMBER for each answer.</p>
+                      <p className="text-xs text-accent italic font-semibold tracking-wide">
+                        Write {(() => {
+                          const maxWords = q.correct ? Math.max(...q.correct.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+                          return maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
+                        })()} AND/OR A NUMBER for each answer.
+                      </p>
                     )}
                     <input 
                       value={answers[q.id] || ''} 

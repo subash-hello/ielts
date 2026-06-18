@@ -1247,17 +1247,12 @@ export default function MockExamPage() {
                   
                   <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
                     {(() => {
-                      const groups: any[] = [];
-                      let tempGroup: any[] = [];
-                      const questions = currentPart.questions || [];
-                      const allParts = testData?.listeningParts || [];
-                      const questionOffset = allParts
-                        .slice(0, listenActivePart - 1)
-                        .reduce((sum: number, p: any) => sum + (p.questions?.length || 0), 0);
-
-                      // Helper for Cambridge instructions
-                      const getInstruction = (type: string, isGrouped: boolean, optionCount: number) => {
-                        if (type === 'fillBlank') return { heading: 'Complete the notes below.', instruction: 'Write ONE WORD AND/OR A NUMBER for each answer.' };
+                      function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number, correctAnswer?: string): { heading: string; instruction: string } {
+                        if (type === 'fillBlank') {
+                          const maxWords = correctAnswer ? Math.max(...correctAnswer.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+                          const wordText = maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
+                          return { heading: 'Complete the notes below.', instruction: `Write ${wordText} AND/OR A NUMBER for each answer.` };
+                        }
                         if (type === 'matching') return { heading: 'Label the map/plan below.', instruction: 'Choose the correct letter.' };
                         if (type === 'multipleChoice' || type === 'mcq') {
                           if (isGrouped) {
@@ -1267,7 +1262,15 @@ export default function MockExamPage() {
                           return { heading: 'Choose the correct letter, A, B or C.', instruction: '' };
                         }
                         return { heading: '', instruction: '' };
-                      };
+                      }
+                      
+                      const groups: any[] = [];
+                      let tempGroup: any[] = [];
+                      const questions = currentPart.questions || [];
+                      const allParts = testData?.listeningParts || [];
+                      const questionOffset = allParts
+                        .slice(0, listenActivePart - 1)
+                        .reduce((sum: number, p: any) => sum + (p.questions?.length || 0), 0);
 
                       questions.forEach((q: any) => {
                         if (tempGroup.length === 0) {
@@ -1312,7 +1315,7 @@ export default function MockExamPage() {
                             const lastIdx = questions.findIndex((q: any) => q.id === lastQ.id);
                             const globalFirst = questionOffset + firstIdx + 1;
                             const globalLast = questionOffset + lastIdx + 1;
-                            const { heading, instruction } = getInstruction(section.type, section.isGrouped, section.optionCount);
+                            const { heading, instruction } = getCambridgeInstruction(firstQ.type, section.isGrouped, section.optionCount, firstQ.correct);
 
                             return (
                               <div key={`section-${sIdx}`} className="space-y-4">
@@ -1641,7 +1644,12 @@ export default function MockExamPage() {
                             </div>
                           ) : (
                             <div className="space-y-1.5 w-full">
-                              <p className="text-[10px] text-accent italic font-semibold tracking-wide">Write ONE WORD AND/OR A NUMBER for each answer.</p>
+                              <p className="text-[10px] text-accent italic font-semibold tracking-wide">
+                                Write {(() => {
+                                  const maxWords = q.correct ? Math.max(...q.correct.split('/').map(a => a.trim().split(/[\s-]+/).filter(Boolean).length)) : 1;
+                                  return maxWords > 1 ? `NO MORE THAN ${maxWords === 2 ? 'TWO' : maxWords === 3 ? 'THREE' : maxWords} WORDS` : 'ONE WORD';
+                                })()} AND/OR A NUMBER for each answer.
+                              </p>
                               <input
                                 onChange={e => setReadAnswers({ ...readAnswers, [q.id]: e.target.value })}
                                 value={readAnswers[q.id] || ''}
