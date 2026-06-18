@@ -35,7 +35,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import AIAssistantSidebar from '@/components/AIAssistantSidebar';
+import FloatingNotes from '@/components/FloatingNotes';
 import { getStreakInfo } from '@/lib/streak';
 
 const navItems = [
@@ -991,7 +991,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         )}
       </AnimatePresence>
-      <AIAssistantSidebar />
+      <FloatingNotes />
     </div>
   );
 }
