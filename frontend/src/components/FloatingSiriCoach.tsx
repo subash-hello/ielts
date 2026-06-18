@@ -113,8 +113,13 @@ export default function FloatingSiriCoach() {
 
     const newHistory = [...chatHistory, { role: 'student', content: transcript }];
     
+    const apiHistory = [...chatHistory, { 
+      role: 'student', 
+      content: transcript + "\n\n(IMPORTANT: Please respond very concisely and conversationally, exactly like Siri or Gemini. Keep your response to 1-2 short sentences, get straight to the point, and avoid long explanations or markdown formatting as this is a live voice conversation.)" 
+    }];
+    
     try {
-      const response = await api.post('/ai-tutor/chat', { messages: newHistory });
+      const response = await api.post('/ai-tutor/chat', { messages: apiHistory });
       const reply = response.reply;
       
       setAiResponse(reply);
