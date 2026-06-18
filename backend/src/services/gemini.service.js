@@ -148,30 +148,31 @@ ${chatHistory}
 
 Respond naturally as their personalized human tutor (do NOT include any 'Alex:', 'Tutor:', or 'Bot:' prefixes).`;
     try {
-      const result = await model.generateContent(prompt);
+      // Add an 8-second timeout to prevent Vercel Serverless 10s timeout (504 Gateway Timeout)
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('TIMEOUT_VERCEL')), 8000);
+      });
+      const result = await Promise.race([model.generateContent(prompt), timeoutPromise]);
       return result.response.text();
     } catch (error) {
-      if (error.message && error.message.includes('429 Too Many Requests')) {
-        console.warn('Gemini API rate limit reached in Tutor Chat. Using smart fallback response.');
-        
-        const lastStudentMsg = messages && messages.length > 0 ? messages[messages.length - 1].content : '';
-        const lowText = (lastStudentMsg || '').toLowerCase();
-        
-        let reply = "Hello! I am experiencing a temporary connection delay with the central AI database because so many students are practicing right now. However, I am still here to help you locally!\n\nTo improve your score today, let's practice expanding your vocabulary. Try using the C1/C2 word **'exacerbate'** (meaning: to make a problem worse) or **'alleviate'** (meaning: to make suffering less severe) in a sentence about technology or the environment!";
+      console.warn('Gemini API or Vercel Timeout in Tutor Chat. Using smart fallback response. Error:', error.message);
+      
+      const lastStudentMsg = messages && messages.length > 0 ? messages[messages.length - 1].content : '';
+      const lowText = (lastStudentMsg || '').toLowerCase();
+      
+      let reply = "Hello! I am experiencing a temporary connection delay with the central AI database because so many students are practicing right now. However, I am still here to help you locally!\n\nTo improve your score today, let's practice expanding your vocabulary. Try using the C1/C2 word **'exacerbate'** (meaning: to make a problem worse) or **'alleviate'** (meaning: to make suffering less severe) in a sentence about technology or the environment!";
 
-        if (lowText.includes('start') || lowText.includes('how to')) {
-          reply = "💡 **How to Start Your IELTS Preparation (Local Tutor Guide)**:\n\nDon't worry about database connection delays, let's kick off your study plan right now:\n\n1. **Diagnostic Mock Test**: Navigate to the *Mock Tests* section on the left menu and start *Mock Test 1*. This establishes your baseline score across Reading, Writing, Speaking, and Listening.\n2. **Target Speaking Fundamentals**: Go to *Speaking Practice* (Part 1). Start recording simple answers about daily life. Remember: always speak for 2–4 full sentences.\n3. **Learn IELTS Rubrics**: Read the *Teacher Tips* panel inside the AI Study Coach on the right sidebar to understand how band scores are graded.";
-        } else if (lowText.includes('plan') || lowText.includes('program') || lowText.includes('daily')) {
-          reply = "📅 **Your Daily IELTS Program (Study Coach Checklist)**:\n\nEven with central database delays, you can follow this highly effective daily program locally:\n\n* **Task 1 (Speaking)**: Go to *Speaking Practice* and record answers for hometown and daily topics. Focus on continuous flow without stuttering.\n* **Task 2 (Listening)**: Complete *Part 1: Hotel Booking* in the Listening section. Pay close attention to spelling.\n* **Task 3 (Vocabulary)**: Open the *Vocabulary* tab and memorize 5 synonyms for common words like 'important' (e.g. *paramount*, *crucial*).\n\nMark these tasks as complete in your Daily Program checklist on the right sidebar to collect XP!";
-        } else if (lowText.includes('speaking') || lowText.includes('score')) {
-          reply = "🗣️ **Teacher Guide: Scoring 8.0+ in IELTS Speaking**:\n\nTo maximize your speaking score, focus on these four official criteria:\n\n1. **Fluency & Coherence**: Practice speaking continuously without pausing to search for words. Use natural connective fillers like: *'That's a complex question, but from my perspective...'*.\n2. **Lexical Resource**: Swap common words for high-band synonyms (e.g. use *'aggravate'* or *'exacerbate'* instead of *'make worse'*).\n3. **Grammatical Range**: Mix simple and complex sentences. Use relative clauses (*'which has subsequently led to...'*).\n4. **Pronunciation**: Pronounce word endings clearly and vary your intonation to sound natural.";
-        } else if (lowText.includes('writing') || lowText.includes('essay')) {
-          reply = "✍️ **Teacher Guide: Mastering IELTS Writing Task 2**:\n\nWriting Task 2 contributes two-thirds of your overall writing score. Focus on these structures:\n\n1. **Word Count**: You must write at least 250 words, or you will face a penalty. Aim for 260-280 words.\n2. **Introduction**: Start with a background sentence paraphrasing the prompt, followed by a clear thesis statement expressing your position.\n3. **Body Paragraphs**: Structure each paragraph with: 1) A clear Topic Sentence, 2) Explanation/Extension, 3) Concrete Example.\n4. **Advanced Cohesion**: Use cohesive devices to transition between ideas (e.g., *'nevertheless'*, *'predominantly'*, *'consequently'*, *'on the other hand'*).";
-        }
-
-        return reply;
+      if (lowText.includes('start') || lowText.includes('how to')) {
+        reply = "💡 **How to Start Your IELTS Preparation (Local Tutor Guide)**:\n\nDon't worry about database connection delays, let's kick off your study plan right now:\n\n1. **Diagnostic Mock Test**: Navigate to the *Mock Tests* section on the left menu and start *Mock Test 1*. This establishes your baseline score across Reading, Writing, Speaking, and Listening.\n2. **Target Speaking Fundamentals**: Go to *Speaking Practice* (Part 1). Start recording simple answers about daily life. Remember: always speak for 2–4 full sentences.\n3. **Learn IELTS Rubrics**: Read the *Teacher Tips* panel inside the AI Study Coach on the right sidebar to understand how band scores are graded.";
+      } else if (lowText.includes('plan') || lowText.includes('program') || lowText.includes('daily')) {
+        reply = "📅 **Your Daily IELTS Program (Study Coach Checklist)**:\n\nEven with central database delays, you can follow this highly effective daily program locally:\n\n* **Task 1 (Speaking)**: Go to *Speaking Practice* and record answers for hometown and daily topics. Focus on continuous flow without stuttering.\n* **Task 2 (Listening)**: Complete *Part 1: Hotel Booking* in the Listening section. Pay close attention to spelling.\n* **Task 3 (Vocabulary)**: Open the *Vocabulary* tab and memorize 5 synonyms for common words like 'important' (e.g. *paramount*, *crucial*).\n\nMark these tasks as complete in your Daily Program checklist on the right sidebar to collect XP!";
+      } else if (lowText.includes('speaking') || lowText.includes('score')) {
+        reply = "🗣️ **Teacher Guide: Scoring 8.0+ in IELTS Speaking**:\n\nTo maximize your speaking score, focus on these four official criteria:\n\n1. **Fluency & Coherence**: Practice speaking continuously without pausing to search for words. Use natural connective fillers like: *'That's a complex question, but from my perspective...'*.\n2. **Lexical Resource**: Swap common words for high-band synonyms (e.g. use *'aggravate'* or *'exacerbate'* instead of *'make worse'*).\n3. **Grammatical Range**: Mix simple and complex sentences. Use relative clauses (*'which has subsequently led to...'*).\n4. **Pronunciation**: Pronounce word endings clearly and vary your intonation to sound natural.";
+      } else if (lowText.includes('writing') || lowText.includes('essay')) {
+        reply = "✍️ **Teacher Guide: Mastering IELTS Writing Task 2**:\n\nWriting Task 2 contributes two-thirds of your overall writing score. Focus on these structures:\n\n1. **Word Count**: You must write at least 250 words, or you will face a penalty. Aim for 260-280 words.\n2. **Introduction**: Start with a background sentence paraphrasing the prompt, followed by a clear thesis statement expressing your position.\n3. **Body Paragraphs**: Structure each paragraph with: 1) A clear Topic Sentence, 2) Explanation/Extension, 3) Concrete Example.\n4. **Advanced Cohesion**: Use cohesive devices to transition between ideas (e.g., *'nevertheless'*, *'predominantly'*, *'consequently'*, *'on the other hand'*).";
       }
-      throw error;
+
+      return reply;
     }
   }
 
