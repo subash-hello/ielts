@@ -37,7 +37,7 @@ export default function FloatingSiriCoach() {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         const rec = new SpeechRecognition();
-        rec.continuous = true;
+        rec.continuous = false; // Auto-stop when user pauses
         rec.interimResults = true;
         rec.lang = 'en-US';
 
