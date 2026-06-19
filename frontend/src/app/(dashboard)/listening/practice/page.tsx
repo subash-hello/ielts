@@ -81,15 +81,15 @@ function FillBlankInline({
     // Split text at the blank and render inline
     const parts = text.split(/_{3,}/);
     return (
-      <div className="flex flex-wrap items-baseline gap-1 text-gray-800 text-base leading-relaxed">
-        <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm mr-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-3 text-gray-800 text-[15px] leading-loose">
+        <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-white border border-indigo-200 text-indigo-700 font-bold text-sm mr-2 shadow-sm">
           {questionNum}
         </span>
         <span>{parts[0]}</span>
         {inputElement}
         {parts[1] && <span>{parts[1]}</span>}
         {submitted && (
-          <span className={`ml-2 text-sm font-semibold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+          <span className={`ml-2 text-sm font-semibold flex items-center gap-1 ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
             {isCorrect ? '✓' : `✗ ${correctAnswer}`}
           </span>
         )}
@@ -99,17 +99,17 @@ function FillBlankInline({
 
   // No inline blank — show text then input below
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-start gap-3">
-        <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
+        <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-white border border-indigo-200 text-indigo-700 font-bold text-sm shadow-sm">
           {questionNum}
         </span>
-        <span className="text-gray-800 text-base">{text}</span>
+        <span className="text-gray-800 text-[15px] leading-relaxed">{text}</span>
       </div>
-      <div className="ml-10">
+      <div className="ml-10 flex items-center gap-3">
         {inputElement}
         {submitted && (
-          <span className={`ml-2 text-sm font-semibold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+          <span className={`text-sm font-semibold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
             {isCorrect ? '✓ Correct' : `✗ Correct: ${correctAnswer}`}
           </span>
         )}
@@ -356,7 +356,7 @@ function ListeningPracticeContent() {
               </div>
 
               {/* Questions in this section */}
-              <div className="space-y-4">
+              <div className={section.type === 'fillBlank' ? "bg-white border-2 border-indigo-50/80 rounded-2xl p-6 shadow-sm space-y-5" : "space-y-4"}>
                 {section.type === 'matching' ? (() => {
                   const options = section.groups[0][0].options || [];
                   const showOptions = options.some((opt: string) => opt.includes('.') || opt.trim().length > 2);
@@ -444,7 +444,7 @@ function ListeningPracticeContent() {
                   // ── Fill Blank ──
                   if (representative.type === 'fillBlank') {
                     return (
-                      <div key={representative.id} className="py-2">
+                      <div key={representative.id} className="py-1">
                         <FillBlankInline
                           text={representative.text}
                           value={answers[representative.id] || ''}
