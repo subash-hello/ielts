@@ -316,7 +316,7 @@ function ListeningPracticeContent() {
 
     const questions = currentPart.questions;
     const matchingQuestions = questions.filter((q: any) => q.type === 'matching');
-    const hasMap = !!currentPart?.imageUrl || matchingQuestions.length > 0;
+    const hasMap = !!currentPart?.imageUrl || questions.some((q: any) => q.type === 'mapLabeling');
     const nonMatchingQuestions = hasMap ? questions.filter((q: any) => q.type !== 'matching') : questions;
 
     const nonMatchingGroups = buildQuestionGroups(nonMatchingQuestions);
@@ -366,46 +366,55 @@ function ListeningPracticeContent() {
                         {section.groups.map((group: any) => {
                           const q = group[0];
                           const originalIdx = questions.findIndex((origQ: any) => origQ.id === q.id);
+                          const currentAnswer = answers[q.id];
+                          
                           return (
-                            <div key={q.id} className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-indigo-100 transition-colors">
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center">
-                                  <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-50 text-indigo-700 font-bold text-sm mr-3 border border-indigo-100">
-                                    {questionOffset + originalIdx + 1}
-                                  </span>
-                                  <span className="text-gray-800 font-semibold text-sm">{q.text}</span>
-                                </div>
-                                <select
-                                  value={answers[q.id] || ''}
-                                  onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                                  disabled={submitted}
-                                  className="w-28 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50 font-medium text-gray-700 text-sm"
-                                >
-                                  <option value="">Select...</option>
-                                  {q.options?.map((opt: string, i: number) => {
-                                    const firstDot = opt.indexOf('.');
-                                    const val = firstDot !== -1 ? opt.substring(0, firstDot).trim() : opt.trim();
-                                    return <option key={i} value={val}>{val}</option>;
-                                  })}
-                                </select>
+                            <div key={q.id} className="p-4 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-indigo-200 transition-all flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3 flex-1">
+                                <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-50 text-indigo-700 font-bold text-sm border border-indigo-100">
+                                  {questionOffset + originalIdx + 1}
+                                </span>
+                                <span className="text-gray-800 font-medium text-[15px]">{q.text}</span>
                               </div>
+                              
+                              <div 
+                                className={`w-32 h-11 flex-shrink-0 border-2 border-dashed rounded-lg flex items-center justify-center transition-colors ${submitted ? 'bg-gray-50 border-gray-200' : 'bg-indigo-50/40 border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50'}`}
+                                onDragOver={(e) => { if (!submitted) e.preventDefault(); }}
+                                onDrop={(e) => {
+                                  if (submitted) return;
+                                  e.preventDefault();
+                                  const letter = e.dataTransfer.getData('text/plain');
+                                  if (letter) handleAnswerChange(q.id, letter);
+                                }}
+                              >
+                                {currentAnswer ? (
+                                  <div className="flex items-center justify-between w-full px-3">
+                                    <span className="font-bold text-indigo-700 mx-auto text-base">{currentAnswer}</span>
+                                    {!submitted && (
+                                      <button 
+                                        onClick={() => handleAnswerChange(q.id, '')}
+                                        className="text-gray-400 hover:text-red-500 text-[10px] bg-white rounded-full h-4 w-4 flex items-center justify-center shadow-sm focus:outline-none"
+                                        title="Clear answer"
+                                      >✕</button>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <span className="text-[11px] font-semibold text-indigo-300 uppercase tracking-wide">Drop here</span>
+                                )}
+                              </div>
+                              
                               {submitted && (() => {
                                 const userAns = (answers[q.id] || '').trim().toLowerCase();
                                 const correctAns = (q.correctAnswer || '').trim().toLowerCase();
                                 const isCorrect = correctAns.split('/').map((s: string) => s.trim()).includes(userAns);
                                 return (
-                                  <div className={`mt-4 p-3 rounded-lg flex items-start gap-2 ${isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-                                    {isCorrect ? <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" /> : <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />}
-                                    <div>
-                                      <p className={`text-xs font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
-                                        {isCorrect ? 'Correct!' : 'Incorrect'}
-                                      </p>
-                                      {!isCorrect && (
-                                        <p className="text-[11px] text-gray-600 mt-0.5">
-                                          Correct answer: <span className="font-bold uppercase">{q.correctAnswer}</span>
-                                        </p>
-                                      )}
-                                    </div>
+                                  <div className="ml-2 flex-shrink-0 w-16">
+                                    {isCorrect ? <CheckCircle className="h-6 w-6 text-green-500 ml-auto" /> : (
+                                      <div className="flex flex-col items-end">
+                                        <AlertCircle className="h-5 w-5 text-red-500 mb-0.5" />
+                                        <span className="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Ans: {q.correctAnswer}</span>
+                                      </div>
+                                    )}
                                   </div>
                                 );
                               })()}
@@ -413,19 +422,38 @@ function ListeningPracticeContent() {
                           );
                         })}
                       </div>
+                      
                       {showOptions && (
                         <div className="w-full lg:col-span-6 sticky top-6">
-                          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-                            <h4 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100">Options</h4>
-                            <div className="space-y-3">
+                          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                            <h4 className="text-[14px] font-bold text-gray-800 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2 italic">
+                              Drag and drop an option to fill in each blank.
+                            </h4>
+                            <div className="grid grid-cols-1 gap-2.5">
                               {options.map((opt: string, i: number) => {
                                 const firstDot = opt.indexOf('.');
                                 const letter = firstDot !== -1 ? opt.substring(0, firstDot).trim() : opt.trim().charAt(0);
                                 const text = firstDot !== -1 ? opt.substring(firstDot + 1).trim() : opt.trim();
+                                
+                                const isUsed = Object.values(answers).includes(letter);
+                                
                                 return (
-                                  <div key={i} className="flex items-start text-sm bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <span className="font-bold text-indigo-700 mr-3 mt-0.5 min-w-[20px]">{letter}</span>
-                                    <span className="text-gray-700">{text}</span>
+                                  <div 
+                                    key={i} 
+                                    draggable={!submitted}
+                                    onDragStart={(e) => {
+                                      e.dataTransfer.setData('text/plain', letter);
+                                    }}
+                                    className={`flex items-center text-sm p-2.5 rounded-lg border transition-all ${
+                                      submitted 
+                                        ? 'bg-gray-50 border-gray-100 text-gray-400' 
+                                        : isUsed 
+                                          ? 'bg-indigo-50 border-indigo-200 opacity-60 cursor-grab' 
+                                          : 'bg-white border-gray-200 hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5 cursor-grab active:cursor-grabbing shadow-sm'
+                                    }`}
+                                  >
+                                    <span className="font-bold text-indigo-700 bg-indigo-50/80 h-7 w-7 rounded flex items-center justify-center mr-3 border border-indigo-100 shadow-sm">{letter}</span>
+                                    <span className={submitted ? 'text-gray-500' : 'text-gray-700 font-medium'}>{text}</span>
                                   </div>
                                 );
                               })}
