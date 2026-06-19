@@ -315,8 +315,8 @@ function ListeningPracticeContent() {
     if (!currentPart?.questions) return null;
 
     const questions = currentPart.questions;
-    const hasMap = !!currentPart?.imageUrl;
-    const matchingQuestions = hasMap ? questions.filter((q: any) => q.type === 'matching') : [];
+    const matchingQuestions = questions.filter((q: any) => q.type === 'matching');
+    const hasMap = !!currentPart?.imageUrl || matchingQuestions.length > 0;
     const nonMatchingQuestions = hasMap ? questions.filter((q: any) => q.type !== 'matching') : questions;
 
     const nonMatchingGroups = buildQuestionGroups(nonMatchingQuestions);
@@ -650,10 +650,13 @@ function ListeningPracticeContent() {
                   <div className="border border-gray-200 rounded-xl p-4 bg-gray-50/50 shadow-sm">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Map Reference</p>
                     <img 
-                      src={currentPart.imageUrl} 
+                      src={currentPart.imageUrl || 'https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'} 
                       alt="Map Labeling Reference" 
-                      className="w-full h-auto rounded-lg shadow-sm border border-gray-100 bg-white" 
+                      className="w-full h-auto rounded-lg shadow-sm border border-gray-100 bg-white object-cover opacity-80" 
                     />
+                    {!currentPart.imageUrl && (
+                      <p className="text-[10px] text-center text-gray-400 mt-2 italic">Placeholder map. Please update the test with a real map image in the Admin Panel.</p>
+                    )}
                   </div>
                 </div>
                 
