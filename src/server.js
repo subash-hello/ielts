@@ -89,6 +89,7 @@ app.use('/api/diagnostic', aiLimiter, diagnosticRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/chat', chatRoutes);
 
+app.get('/', (req, res) => res.json({status: 'ok'}));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
