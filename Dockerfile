@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install backend dependencies
-RUN npm install --ignore-scripts
+RUN npm install
 
 # Copy the rest of the backend source code
 COPY . .
