@@ -88,7 +88,7 @@ const connectDB = async () => {
     } catch (memError) {
       console.error('❌ Failed to start in-memory database:', memError.message);
       if (process.env.NODE_ENV === 'production') {
-        process.exit(1);
+        // process.exit(1); console.error('Disabled exit to debug HF hanging');
       }
     }
   }
