@@ -3,6 +3,8 @@ const { auth } = require('../middleware/auth');
 const geminiService = require('../services/gemini.service');
 const Essay = require('../models/Essay');
 const Progress = require('../models/Progress');
+const TestContent = require('../models/TestContent');
+const mongoose = require('mongoose');
 const { formatResponse } = require('../utils/helpers');
 
 const router = express.Router();
@@ -57,6 +59,39 @@ router.get('/history', auth, async (req, res) => {
   try {
     const essays = await Essay.find({ userId: req.user._id }).sort({ createdAt: -1 }).limit(20).select('-content -modelAnswer');
     res.json(formatResponse(essays));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/test/:id', auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      const dbTest = await TestContent.findById(id);
+      if (dbTest && dbTest.content) {
+        let parts = dbTest.content.parts || [];
+        // Support legacy schema fallback
+        if (parts.length === 0 && (dbTest.content.prompt || dbTest.content.imageUrl)) {
+           parts = [{
+             title: dbTest.content.taskType === 1 ? "Writing Task 1" : "Writing Task 2",
+             instruction: dbTest.content.taskType === 1 ? "You should spend about 20 minutes on this task." : "You should spend about 40 minutes on this task.",
+             imageUrl: dbTest.content.image || dbTest.content.imageUrl,
+             text: dbTest.content.prompt || dbTest.content.text,
+           }];
+        }
+        
+        return res.json(formatResponse({
+          id: dbTest._id.toString(),
+          title: dbTest.title,
+          difficulty: dbTest.difficulty,
+          parts: parts
+        }));
+      }
+    }
+
+    return res.status(404).json({ error: 'Test not found' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

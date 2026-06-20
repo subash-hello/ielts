@@ -1,65 +1,83 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, Clock, Send, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Clock, Send, CheckCircle, AlertCircle, TrendingUp, RefreshCw, Layers } from 'lucide-react';
 import { recordStudyActivity } from '@/lib/streak';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
 
-const mockPrompt = 'Some people believe that the best way to reduce crime is to give longer prison sentences. Others, however, believe there are better alternative ways of reducing crime. Discuss both views and give your opinion.';
-
-const mockResult = {
-  overall: 7.0,
-  criteria: [
-    { name: 'Task Achievement', score: 7.0 },
-    { name: 'Coherence & Cohesion', score: 7.0 },
-    { name: 'Lexical Resource', score: 6.5 },
-    { name: 'Grammar Range', score: 7.5 },
-  ],
-  feedback: 'Your essay presents both views clearly and your opinion is well-supported. The paragraphing is logical and you use cohesive devices effectively. Consider using a wider range of academic vocabulary and more complex sentence structures to achieve a higher band.',
-  corrections: [
-    { original: 'crime is very common in today world', corrected: 'crime is increasingly prevalent in today\'s world' },
-    { original: 'people thinks that', corrected: 'people believe that' },
-    { original: 'this will make criminals to afraid', corrected: 'this would serve as a deterrent for criminals' },
-  ],
-  vocabulary: [
-    { basic: 'reduce', advanced: 'mitigate / alleviate / diminish' },
-    { basic: 'important', advanced: 'paramount / crucial / pivotal' },
-    { basic: 'bad', advanced: 'detrimental / adverse / deleterious' },
-    { basic: 'help', advanced: 'facilitate / foster / promote' },
-  ],
-};
-
 function WritingPracticeContent() {
   const searchParams = useSearchParams();
-  const task = searchParams.get('task');
-  const title = searchParams.get('topic') || (task === '1' ? 'Task 1' : 'Task 2 — Essay Writing');
-  const prompt = searchParams.get('prompt') || mockPrompt;
-  const image = searchParams.get('image');
-  const initialTime = task === '1' ? 20 * 60 : 40 * 60;
-  const wordLimit = task === '1' ? 150 : 250;
+  const testId = searchParams.get('id');
 
-  const [content, setContent] = useState('');
-  const [timeLeft, setTimeLeft] = useState(initialTime);
-  const [showResult, setShowResult] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [testData, setTestData] = useState<any>(null);
+  
+  const [activeTab, setActiveTab] = useState(0);
+  const [contents, setContents] = useState<string[]>([]);
+  const [evaluations, setEvaluations] = useState<any[]>([]);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [evaluation, setEvaluation] = useState<any>(null);
-  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const [timeLeft, setTimeLeft] = useState(60 * 60);
+
+  useEffect(() => {
+    if (!testId) {
+      setLoading(false);
+      return;
+    }
+    const fetchTest = async () => {
+      try {
+        const res = await api.get(`/writing/test/${testId}`);
+        setTestData(res);
+        const numParts = res.parts?.length || 1;
+        setContents(Array(numParts).fill(''));
+        setEvaluations(Array(numParts).fill(null));
+        
+        let initialTime = 60 * 60; // 60 mins default
+        if (numParts === 1) {
+          const titleLower = (res.parts[0]?.title || '').toLowerCase();
+          initialTime = titleLower.includes('task 1') ? 20 * 60 : 40 * 60;
+        }
+        setTimeLeft(initialTime);
+      } catch (err) {
+        toast.error('Failed to load test data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTest();
+  }, [testId]);
+
+  useEffect(() => {
+    if (loading || timeLeft <= 0) return;
+    const t = setInterval(() => setTimeLeft((p) => Math.max(0, p - 1)), 1000);
+    return () => clearInterval(t);
+  }, [loading, timeLeft]);
 
   const handleSubmit = async () => {
+    const content = contents[activeTab];
+    const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
     if (wordCount < 50) return;
+
     setIsEvaluating(true);
     const loadingToast = toast.loading('AI is evaluating your essay...');
     try {
-      const res = await api.post('/writing/evaluate', { content, taskType: Number(task) || 2, prompt });
-      setEvaluation(res);
-      setShowResult(true);
+      const currentPart = testData.parts[activeTab];
+      const taskType = (currentPart.title || '').toLowerCase().includes('task 1') ? 1 : 2;
+      const prompt = currentPart.text || currentPart.instruction || 'Writing Task';
+      
+      const res = await api.post('/writing/evaluate', { content, taskType, prompt });
+      
+      setEvaluations(prev => {
+        const newEv = [...prev];
+        newEv[activeTab] = res;
+        return newEv;
+      });
+      
       recordStudyActivity();
       
-      const testId = searchParams.get('id');
       if (testId) {
         api.post('/user/complete-test', { testId }).catch(console.error);
       }
@@ -72,117 +90,255 @@ function WritingPracticeContent() {
     }
   };
 
-  useEffect(() => {
-    if (showResult || timeLeft <= 0) return;
-    const t = setInterval(() => setTimeLeft((p) => p - 1), 1000);
-    return () => clearInterval(t);
-  }, [showResult, timeLeft]);
+  const handleReset = () => {
+    setEvaluations(prev => {
+      const newEv = [...prev];
+      newEv[activeTab] = null;
+      return newEv;
+    });
+    setContents(prev => {
+      const newContents = [...prev];
+      newContents[activeTab] = '';
+      return newContents;
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-accent animate-spin mx-auto mb-4" />
+          <p className="text-text-muted text-sm font-semibold">Loading practice tasks...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!testData || !testData.parts || testData.parts.length === 0) {
+    return (
+      <div className="text-center py-20 text-text-muted">
+        <p>No test data found. Please select a valid test.</p>
+        <Link href="/writing" className="text-accent mt-4 inline-block hover:underline">Return to Writing Practice</Link>
+      </div>
+    );
+  }
+
+  const currentPart = testData.parts[activeTab];
+  const content = contents[activeTab];
+  const evaluation = evaluations[activeTab];
+  const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
+  const isTask1 = (currentPart.title || '').toLowerCase().includes('task 1');
+  const wordLimit = isTask1 ? 150 : 250;
 
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Link href="/writing" className="flex items-center gap-2 text-text-muted hover:text-white text-sm"><ArrowLeft className="w-4 h-4" />Back</Link>
-        <div className={`flex items-center gap-2 text-sm font-mono ${timeLeft < 300 ? 'text-danger' : 'text-text-muted'}`}><Clock className="w-4 h-4" />{mins}:{secs.toString().padStart(2, '0')}</div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between bg-surface/50 p-4 rounded-xl border border-border-glass backdrop-blur-md">
+        <div className="flex items-center gap-4">
+          <Link href="/writing" className="flex items-center gap-2 text-text-muted hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Back</span>
+          </Link>
+          <div className="h-6 w-px bg-border-glass"></div>
+          <div>
+            <h1 className="text-white font-bold text-lg">{testData.title || 'Writing Practice Test'}</h1>
+            <p className="text-xs text-text-muted">{testData.parts.length} Part{testData.parts.length > 1 ? 's' : ''}</p>
+          </div>
+        </div>
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg font-mono font-bold ${timeLeft < 300 ? 'bg-danger/10 text-danger border border-danger/20' : 'bg-surface border border-border-glass text-text-muted'}`}>
+          <Clock className="w-4 h-4" />
+          {mins}:{secs.toString().padStart(2, '0')}
+        </div>
       </div>
 
-      {!showResult ? (
-        <>
-          <div className="glass-card rounded-xl p-5">
-            <p className="text-xs text-accent font-semibold mb-2">{title}</p>
-            <p className="text-sm text-white leading-relaxed mb-4">{prompt}</p>
-            {image && (
-              <div className="rounded-xl overflow-hidden border border-border-glass bg-white p-4 flex justify-center mb-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image} alt={title} className="w-full max-h-[500px] object-contain rounded-lg" />
+      {testData.parts.length > 1 && (
+        <div className="flex gap-2 p-1 bg-surface border border-border-glass rounded-xl overflow-x-auto no-scrollbar">
+          {testData.parts.map((part: any, idx: number) => (
+            <button
+              key={idx}
+              onClick={() => setActiveTab(idx)}
+              className={`flex-1 py-3 px-6 rounded-lg text-sm font-semibold transition-all whitespace-nowrap flex items-center justify-center gap-2 ${
+                activeTab === idx 
+                  ? 'bg-gradient-to-r from-accent to-accent-bright text-white shadow-lg' 
+                  : 'text-text-muted hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              {part.title || `Task ${idx + 1}`}
+              {evaluations[idx] && <CheckCircle className="w-3 h-3 text-neon-green ml-1" />}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="grid lg:grid-cols-2 gap-6"
+        >
+          {/* Left Column: Instructions and Question */}
+          <div className="space-y-6">
+            <div className="glass-card rounded-2xl p-6 border-l-4 border-l-accent flex flex-col h-full">
+              <h2 className="text-xl font-bold text-white mb-2">{currentPart.title || `Task ${activeTab + 1}`}</h2>
+              {currentPart.instruction && (
+                <p className="text-sm text-text-muted italic mb-4 p-3 bg-surface rounded-lg border border-border-glass">
+                  {currentPart.instruction}
+                </p>
+              )}
+              
+              <div className="prose prose-invert max-w-none text-sm text-white/90 leading-relaxed flex-grow">
+                {currentPart.text && (
+                  <div className="mb-6 bg-white/5 p-4 rounded-xl border border-white/10" dangerouslySetInnerHTML={{ __html: currentPart.text.replace(/\n/g, '<br/>') }} />
+                )}
+                
+                {currentPart.imageUrl && (
+                  <div className="rounded-xl overflow-hidden border border-border-glass bg-white p-2 flex justify-center mb-6 shadow-xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={currentPart.imageUrl} alt={currentPart.title} className="w-full max-h-[400px] object-contain rounded-lg" />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div className="relative">
-            <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Start writing your essay here..." className="w-full h-[400px] p-6 rounded-2xl bg-primary-dark/80 border border-border-glass text-white placeholder-text-muted text-sm leading-relaxed resize-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all font-sans" />
-            <div className="absolute bottom-4 right-4 flex items-center gap-3">
-              <span className={`text-xs font-mono ${wordCount >= wordLimit ? 'text-neon-green' : 'text-text-muted'}`}>{wordCount} / {wordLimit} words</span>
             </div>
           </div>
-          <button onClick={handleSubmit} disabled={wordCount < 50 || isEvaluating} className="w-full py-3.5 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-accent/30 transition-all">
-            {isEvaluating ? (
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+
+          {/* Right Column: Writing Area or Evaluation */}
+          <div className="h-full">
+            {!evaluation ? (
+              <div className="flex flex-col h-full space-y-4">
+                <div className="relative flex-grow min-h-[400px]">
+                  <textarea 
+                    value={content} 
+                    onChange={(e) => {
+                      const newContents = [...contents];
+                      newContents[activeTab] = e.target.value;
+                      setContents(newContents);
+                    }} 
+                    placeholder="Start writing your essay here..." 
+                    className="absolute inset-0 w-full h-full p-6 rounded-2xl bg-primary-dark/80 border border-border-glass text-white placeholder-text-muted text-sm leading-relaxed resize-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all font-sans" 
+                  />
+                  <div className="absolute bottom-4 right-4 flex items-center gap-3 bg-surface/80 backdrop-blur px-3 py-1.5 rounded-lg border border-border-glass">
+                    <span className={`text-xs font-mono font-bold ${wordCount >= wordLimit ? 'text-neon-green' : 'text-text-muted'}`}>
+                      {wordCount} / {wordLimit} words
+                    </span>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={handleSubmit} 
+                  disabled={wordCount < 50 || isEvaluating} 
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-accent/30 transition-all"
+                >
+                  {isEvaluating ? (
+                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                  {isEvaluating ? 'Evaluating using AI...' : 'Submit Task for Evaluation'}
+                </button>
+                {wordCount < 50 && wordCount > 0 && (
+                  <p className="text-center text-xs text-warning">Please write at least 50 words to enable AI evaluation.</p>
+                )}
+              </div>
             ) : (
-              <Send className="w-4 h-4" />
-            )}
-            {isEvaluating ? 'Evaluating...' : 'Submit for AI Evaluation'}
-          </button>
-        </>
-      ) : (
-        evaluation && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-          <div className="text-center"><p className="text-sm text-text-muted mb-2">Overall Band Score</p><p className="text-5xl font-bold font-mono gradient-text">{evaluation.scores.overall}</p></div>
+              <div className="glass-card rounded-2xl p-6 h-full overflow-y-auto no-scrollbar space-y-6 border-t-4 border-t-neon-green">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-neon-green" /> 
+                      Evaluation Complete
+                    </h3>
+                    <p className="text-xs text-text-muted mt-1">AI has analyzed your response.</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-text-muted mb-1">Band Score</p>
+                    <p className="text-4xl font-bold font-mono text-neon-green drop-shadow-[0_0_8px_rgba(57,255,20,0.4)]">
+                      {evaluation.scores.overall}
+                    </p>
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { name: 'Task Achievement', score: evaluation.scores.taskAchievement },
-              { name: 'Coherence & Cohesion', score: evaluation.scores.coherence },
-              { name: 'Lexical Resource', score: evaluation.scores.lexical },
-              { name: 'Grammar Range', score: evaluation.scores.grammar },
-            ].map((c) => (
-              <div key={c.name} className="glass-card rounded-xl p-4 text-center">
-                <p className="text-xs text-text-muted mb-1">{c.name}</p>
-                <p className="text-2xl font-bold font-mono text-white">{c.score}</p>
-                <div className="mt-2 h-1.5 bg-surface rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${(c.score / 9) * 100}%` }} transition={{ duration: 1 }} className="h-full bg-gradient-to-r from-accent to-neon rounded-full" /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { name: 'Task Achievement', score: evaluation.scores.taskAchievement },
+                    { name: 'Coherence', score: evaluation.scores.coherence },
+                    { name: 'Lexical Resource', score: evaluation.scores.lexical },
+                    { name: 'Grammar', score: evaluation.scores.grammar },
+                  ].map((c) => (
+                    <div key={c.name} className="bg-surface/50 border border-border-glass rounded-lg p-3 text-center">
+                      <p className="text-[10px] uppercase tracking-wider text-text-muted mb-1">{c.name}</p>
+                      <p className="text-lg font-bold font-mono text-white">{c.score}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-semibold text-white mb-2 border-b border-border-glass pb-1">Feedback</h4>
+                    <p className="text-sm text-text-muted leading-relaxed">{evaluation.feedback}</p>
+                  </div>
+                  
+                  {evaluation.improvements && evaluation.improvements.length > 0 && (
+                    <div className="bg-warning/5 border border-warning/20 rounded-lg p-4">
+                      <h4 className="text-sm font-semibold text-warning flex items-center gap-2 mb-2">
+                        <TrendingUp className="w-4 h-4" /> Areas for Improvement
+                      </h4>
+                      <ul className="space-y-1.5">
+                        {evaluation.improvements.map((imp: string, i: number) => (
+                          <li key={i} className="text-xs text-white/80 flex items-start gap-2">
+                            <span className="text-warning mt-0.5">•</span>
+                            {imp}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {evaluation.corrections && evaluation.corrections.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2 border-b border-border-glass pb-1">
+                        <AlertCircle className="w-4 h-4 text-accent" /> Grammar Corrections
+                      </h4>
+                      <div className="space-y-3">
+                        {evaluation.corrections.map((c: any, i: number) => (
+                          <div key={i} className="text-sm bg-surface p-3 rounded-lg border border-border-glass">
+                            <p className="text-danger line-through mb-1 opacity-80">{c.original}</p>
+                            <p className="text-neon-green mb-1">✓ {c.corrected}</p>
+                            <p className="text-xs text-text-muted italic">{c.explanation}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 flex gap-3">
+                  <button onClick={handleReset} className="flex-1 py-3 rounded-xl border border-border-glass text-white font-medium text-sm hover:bg-white/5 transition-colors">
+                    Rewrite Essay
+                  </button>
+                  {testData.parts.length > 1 && activeTab < testData.parts.length - 1 && (
+                    <button onClick={() => setActiveTab(activeTab + 1)} className="flex-1 py-3 rounded-xl bg-accent text-white font-bold text-sm hover:bg-accent-bright transition-colors shadow-lg shadow-accent/20">
+                      Next Task
+                    </button>
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
-
-          <div className="glass-card rounded-xl p-5"><h3 className="text-sm font-semibold text-white mb-2">Detailed Feedback</h3><p className="text-sm text-text-muted leading-relaxed">{evaluation.feedback}</p></div>
-
-          {evaluation.improvements && evaluation.improvements.length > 0 && (
-            <div className="glass-card rounded-xl p-5 border-l-4 border-accent bg-gradient-to-r from-accent/5 to-transparent">
-              <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-accent" />Areas for Improvement to Increase Band Score</h3>
-              <ul className="space-y-2">
-                {evaluation.improvements.map((imp: string, i: number) => (
-                  <li key={i} className="text-sm text-text-muted flex items-start gap-2">
-                    <span className="text-accent mt-0.5">•</span>
-                    {imp}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2"><AlertCircle className="w-4 h-4 text-warning" />Corrections</h3>
-            <div className="space-y-3">
-              {evaluation.corrections.map((c: any, i: number) => (
-                <div key={i} className="text-sm"><p className="text-danger line-through">{c.original}</p><p className="text-neon-green">✓ {c.corrected}</p><p className="text-xs text-text-muted mt-1">{c.explanation}</p></div>
-              ))}
-            </div>
-          </div>
-
-          <div className="glass-card rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-white mb-3">Vocabulary Upgrades</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {evaluation.vocabularySuggestions.map((v: any, i: number) => (
-                <div key={i} className="bg-surface rounded-lg p-3"><p className="text-xs text-text-muted">Instead of: <span className="text-white">{v.basic}</span></p><p className="text-xs text-neon-green mt-1">Try: {v.advanced}</p></div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <Link href="/writing" className="flex-1 py-3 rounded-xl glass text-white font-medium text-center text-sm">Back</Link>
-            <button onClick={() => { setShowResult(false); setEvaluation(null); setContent(''); setTimeLeft(initialTime); }} className="flex-1 py-3 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-semibold text-sm">Write Another</button>
+            )}
           </div>
         </motion.div>
-        )
-      )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
 export default function WritingPracticePage() {
   return (
-    <Suspense fallback={<div className="text-white">Loading...</div>}>
+    <Suspense fallback={<div className="flex justify-center items-center h-screen"><span className="animate-spin h-8 w-8 border-4 border-accent border-t-transparent rounded-full"></span></div>}>
       <WritingPracticeContent />
     </Suspense>
   );

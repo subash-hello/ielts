@@ -31,17 +31,22 @@ export default function WritingPage() {
         const res = await api.get('/mock-test/practice/available?subType=writing');
         if (res && res.length > 0) {
           // Map DB structure to UI structure
-          const mappedTasks = res.map((t: any, index: number) => ({
-            id: t._id,
-            type: t.content?.taskType || (index % 2 === 0 ? 1 : 2),
-            title: t.title,
-            desc: t.content?.prompt || 'Writing practice task',
-            duration: t.content?.taskType === 1 ? '20 min' : '40 min',
-            words: t.content?.taskType === 1 ? '150+' : '250+',
-            color: t.content?.taskType === 1 ? 'from-accent to-blue-500' : 'from-accent-bright to-pink-400',
-            image: t.content?.image,
-            completed: t.completed
-          }));
+          const mappedTasks = res.map((t: any, index: number) => {
+            const hasParts = t.content?.parts && t.content.parts.length > 0;
+            const taskType = hasParts ? 3 : (t.content?.taskType || (index % 2 === 0 ? 1 : 2));
+            const color = taskType === 1 ? 'from-accent to-blue-500' : (taskType === 2 ? 'from-accent-bright to-pink-400' : 'from-indigo-500 to-purple-500');
+            return {
+              id: t._id,
+              type: taskType,
+              title: t.title,
+              desc: hasParts ? `Full Writing Test (${t.content.parts.length} Tasks)` : (t.content?.prompt || 'Writing practice task'),
+              duration: hasParts ? '60 min' : (taskType === 1 ? '20 min' : '40 min'),
+              words: hasParts ? '400+' : (taskType === 1 ? '150+' : '250+'),
+              color: color,
+              image: t.content?.image,
+              completed: t.completed
+            };
+          });
           setTasks(mappedTasks);
         } else {
           setTasks(fallbackPracticeTasks);
@@ -91,7 +96,7 @@ export default function WritingPage() {
                 </span>
               )}
             </div>
-            <Link href={`/writing/practice?id=${t.id}&task=${t.type}&topic=${encodeURIComponent(t.title)}&prompt=${encodeURIComponent(t.desc)}${t.image ? `&image=${encodeURIComponent(t.image)}` : ''}`} className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white text-sm font-semibold text-center hover:shadow-lg hover:shadow-accent/30 transition-all flex items-center justify-center gap-2">Start Writing <ArrowRight className="w-4 h-4" /></Link>
+            <Link href={`/writing/practice?id=${t.id}`} className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white text-sm font-semibold text-center hover:shadow-lg hover:shadow-accent/30 transition-all flex items-center justify-center gap-2">Start Writing <ArrowRight className="w-4 h-4" /></Link>
           </motion.div>
         ))}
       </div>
