@@ -63,6 +63,28 @@ const seedPdfs = async () => {
   }
 };
 
+const fixTestImages = async () => {
+  try {
+    const TestContent = require('../models/TestContent');
+    await TestContent.updateMany(
+      { "content.parts.imageUrl": "https://www.ielts-mentor.com/images/writings/ielts-writing-task-1-bar-chart-tea-coffee.png" },
+      { $set: { "content.parts.$[elem].imageUrl": "https://subash-2064-ielts-backend.hf.space/images/coffee_tea.png" } },
+      { arrayFilters: [{ "elem.imageUrl": "https://www.ielts-mentor.com/images/writings/ielts-writing-task-1-bar-chart-tea-coffee.png" }] }
+    );
+    await TestContent.updateMany(
+      { "content.parts.imageUrl": "https://www.ielts-mentor.com/images/writings/academic-writing-task-1-line-graph-tourists.png" },
+      { $set: { "content.parts.$[elem].imageUrl": "https://subash-2064-ielts-backend.hf.space/images/tourist.png" } },
+      { arrayFilters: [{ "elem.imageUrl": "https://www.ielts-mentor.com/images/writings/academic-writing-task-1-line-graph-tourists.png" }] }
+    );
+    await TestContent.updateMany(
+      { "content.parts.imageUrl": "https://www.ielts-mentor.com/images/writings/writing-task-1-process-diagram.png" },
+      { $set: { "content.parts.$[elem].imageUrl": "https://subash-2064-ielts-backend.hf.space/images/geothermal.png" } },
+      { arrayFilters: [{ "elem.imageUrl": "https://www.ielts-mentor.com/images/writings/writing-task-1-process-diagram.png" }] }
+    );
+    console.log('Fixed writing test image URLs');
+  } catch (e) { console.error('Image fix error', e); }
+};
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ielts-ai', {
@@ -72,6 +94,7 @@ const connectDB = async () => {
     console.log(`📦 MongoDB Connected: ${conn.connection.host}`);
     await seedAdmin();
     await seedPdfs();
+    await fixTestImages();
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️ Falling back to a local in-memory database so the app can still run...');

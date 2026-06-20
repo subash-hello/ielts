@@ -65,9 +65,10 @@ const aiLimiter = process.env.NODE_ENV === 'development'
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static PDFs
+// Serve static PDFs and images
 const path = require('path');
 app.use('/pdfs', express.static(path.join(__dirname, '../pdf')));
+app.use('/images', express.static(path.join(__dirname, '../public/images')));
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
