@@ -118,6 +118,9 @@ function WritingPracticeContent() {
     return (
       <div className="text-center py-20 text-text-muted">
         <p>No test data found. Please select a valid test.</p>
+        <pre className="mt-4 p-4 bg-black/50 rounded-lg text-left overflow-auto max-w-2xl mx-auto">
+          {JSON.stringify({ testId, testData }, null, 2)}
+        </pre>
         <Link href="/writing" className="text-accent mt-4 inline-block hover:underline">Return to Writing Practice</Link>
       </div>
     );

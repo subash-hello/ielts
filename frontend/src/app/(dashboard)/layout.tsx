@@ -154,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'Speaking Practice Center', type: 'Practice', href: '/speaking', icon: Mic },
     { name: 'Speaking Simulated Exam', type: 'Practice', href: '/speaking/practice', icon: Mic },
     { name: 'Writing Practice Evaluator', type: 'Practice', href: '/writing', icon: PenTool },
-    { name: 'Writing Task 1 & 2 Practice', type: 'Practice', href: '/writing/practice', icon: PenTool },
+    { name: 'Writing Task 1 & 2 Practice', type: 'Practice', href: '/writing', icon: PenTool },
     { name: 'Reading Passages & Practice', type: 'Practice', href: '/reading', icon: BookOpen },
     { name: 'Reading Test Simulator', type: 'Practice', href: '/reading/practice', icon: BookOpen },
     { name: 'Listening Audio Practice', type: 'Practice', href: '/listening', icon: Headphones },
