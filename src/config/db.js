@@ -76,8 +76,8 @@ const connectDB = async () => {
     console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️ Falling back to a local in-memory database so the app can still run...');
     try {
-      const { MongoMemoryServer } = require('mongodb-memory-server');
-      const mongoServer = await MongoMemoryServer.create();
+      // const { MongoMemoryServer } = require('mongodb-memory-server');
+      throw new Error('MongoMemoryServer removed');
       const mongoUri = mongoServer.getUri();
       await mongoose.connect(mongoUri);
       console.log(`📦 In-Memory MongoDB Connected! (Mock mode active)`);
