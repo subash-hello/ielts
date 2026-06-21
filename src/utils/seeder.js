@@ -1,5 +1,6 @@
 const TestContent = require('../models/TestContent');
 const cambridgeListeningTests = require('../data/cambridgeListeningTests');
+const cambridgeReadingTests = require('../data/cambridgeReadingTests');
 
 // Define 10 high-quality, completely unique IELTS templates
 const listeningTemplates = [
@@ -839,7 +840,24 @@ const seedDatabaseIfEmpty = async () => {
       });
     }
 
-    // 3. Seed 50 Writing Practice Tasks
+    // 3. Seed Cambridge Reading Tests
+    for (const [id, cambridgeTest] of Object.entries(cambridgeReadingTests)) {
+      if (!cambridgeTest) continue;
+      practiceToInsert.push({
+        title: cambridgeTest.title,
+        type: 'practice_task',
+        subType: 'reading',
+        difficulty: cambridgeTest.difficulty || 'medium',
+        content: {
+          parts: cambridgeTest.parts,
+          duration: '60 min',
+          type: 'Full Reading Test'
+        },
+        isActive: true
+      });
+    }
+
+    // 4. Seed 50 Writing Practice Tasks
     for (let i = 1; i <= 50; i++) {
       const taskIndex = (i - 1) % distinctWritingPrompts.length;
       const taskData = distinctWritingPrompts[taskIndex];
