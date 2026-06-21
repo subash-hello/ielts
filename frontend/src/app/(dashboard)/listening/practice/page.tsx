@@ -429,11 +429,12 @@ function ListeningPracticeContent() {
                             <h4 className="text-[14px] font-bold text-gray-800 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2 italic">
                               Drag and drop an option to fill in each blank.
                             </h4>
-                            <div className="grid grid-cols-1 gap-2.5">
+                            <div className={options.every((opt: string) => opt.replace(/^[A-Z]\.?/, '').trim() === '') ? "flex flex-wrap gap-3" : "grid grid-cols-1 gap-2.5"}>
                               {options.map((opt: string, i: number) => {
                                 const firstDot = opt.indexOf('.');
                                 const letter = firstDot !== -1 ? opt.substring(0, firstDot).trim() : opt.trim().charAt(0);
                                 const text = firstDot !== -1 ? opt.substring(firstDot + 1).trim() : opt.trim();
+                                const isMapLabeling = !text;
                                 
                                 const isUsed = Object.values(answers).includes(letter);
                                 
@@ -444,7 +445,7 @@ function ListeningPracticeContent() {
                                     onDragStart={(e) => {
                                       e.dataTransfer.setData('text/plain', letter);
                                     }}
-                                    className={`flex items-center text-sm p-2.5 rounded-lg border transition-all ${
+                                    className={`flex items-center text-sm ${isMapLabeling ? 'p-2 justify-center min-w-[3rem]' : 'p-2.5'} rounded-lg border transition-all ${
                                       submitted 
                                         ? 'bg-gray-50 border-gray-100 text-gray-400' 
                                         : isUsed 
@@ -452,8 +453,8 @@ function ListeningPracticeContent() {
                                           : 'bg-white border-gray-200 hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5 cursor-grab active:cursor-grabbing shadow-sm'
                                     }`}
                                   >
-                                    <span className="font-bold text-indigo-700 bg-indigo-50/80 h-7 w-7 rounded flex items-center justify-center mr-3 border border-indigo-100 shadow-sm">{letter}</span>
-                                    <span className={submitted ? 'text-gray-500' : 'text-gray-700 font-medium'}>{text}</span>
+                                    <span className={`font-bold text-indigo-700 bg-indigo-50/80 h-7 w-7 rounded flex items-center justify-center border border-indigo-100 shadow-sm ${!isMapLabeling ? 'mr-3' : ''}`}>{letter}</span>
+                                    {!isMapLabeling && <span className={submitted ? 'text-gray-500' : 'text-gray-700 font-medium'}>{text}</span>}
                                   </div>
                                 );
                               })}
