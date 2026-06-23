@@ -440,7 +440,8 @@ function ListeningPracticeContent() {
       const tagName = el.tagName.toLowerCase();
 
       // Check if it's a question item (MCQ, matching, or fillBlank)
-      if (el.classList.contains('ielts-listening-question-item')) {
+      // We do NOT intercept table rows (tr) because they represent radio grids
+      if (el.classList.contains('ielts-listening-question-item') && tagName !== 'tr') {
         const optionsDivs = el.querySelectorAll('.ielts-listening-option');
         if (optionsDivs.length > 0) {
           const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
@@ -465,9 +466,37 @@ function ListeningPracticeContent() {
           }
         }
       }
+
+      // Handle radio buttons inside matching table grids
+      if (tagName === 'input' && el.getAttribute('type') === 'radio') {
+        const parentRow = el.closest('tr');
+        if (parentRow) {
+          const qNumText = parentRow.querySelector('.ielts-listening-question-number')?.textContent || '';
+          const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+          if (!isNaN(qNum)) {
+            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            if (question) {
+              const value = el.getAttribute('value') || '';
+              const checked = answers[question.id] === value;
+              return (
+                <input
+                  key={key}
+                  type="radio"
+                  name={question.id}
+                  value={value}
+                  checked={checked}
+                  disabled={submitted}
+                  onChange={() => handleAnswerChange(question.id, value)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer"
+                />
+              );
+            }
+          }
+        }
+      }
       
-      // Hide static input tags
-      if (tagName === 'input') {
+      // Hide static input tags (but preserve radio buttons)
+      if (tagName === 'input' && el.getAttribute('type') !== 'radio') {
         return null;
       }
 
@@ -508,6 +537,33 @@ function ListeningPracticeContent() {
         props.className = `${props.className || ''} border border-indigo-100/50 bg-indigo-50/70 px-4 py-3.5 text-left font-bold text-indigo-900 text-sm tracking-wide uppercase`;
       } else if (tagName === 'td') {
         props.className = `${props.className || ''} border border-indigo-50 px-4 py-3.5 text-gray-700 text-sm leading-relaxed font-medium align-middle`;
+        
+        // Append validation feedback for matching question cell
+        if (el.classList.contains('ielts-listening-matching-question-cell')) {
+          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+          const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+          if (!isNaN(qNum)) {
+            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            if (question && submitted) {
+              const userAns = (answers[question.id] || '').trim().toLowerCase();
+              const correctAns = (question.correctAnswer || '').trim().toLowerCase();
+              const isCorrect = userAns === correctAns;
+              
+              return (
+                <td key={key} className={props.className}>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1">{children}</span>
+                    {isCorrect ? (
+                      <span className="text-green-600 font-bold text-[10px] bg-green-50 px-1.5 py-0.5 rounded border border-green-150 flex-shrink-0">✓ Correct</span>
+                    ) : (
+                      <span className="text-red-600 font-bold text-[10px] bg-red-50 px-1.5 py-0.5 rounded border border-red-150 flex-shrink-0">✗ Ans: {question.correctAnswer}</span>
+                    )}
+                  </div>
+                </td>
+              );
+            }
+          }
+        }
       } else if (tagName === 'ul') {
         props.className = `${props.className || ''} space-y-3 my-4 pl-1`;
       } else if (tagName === 'li') {
