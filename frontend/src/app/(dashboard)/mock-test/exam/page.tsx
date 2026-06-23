@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -1246,7 +1246,23 @@ export default function MockExamPage() {
                   </div>
                   
                   <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
-                    {(() => {
+                    {currentPart.layoutHtml ? (
+                      <HtmlLayoutRenderer 
+                        htmlContent={currentPart.layoutHtml}
+                        questions={currentPart.questions || []}
+                        questionOffset={(() => {
+                          const allParts = testData?.listeningParts || [];
+                          return allParts
+                            .slice(0, listenActivePart - 1)
+                            .reduce((sum: number, p: any) => sum + (p.questions?.length || 0), 0);
+                        })()}
+                        listenAnswers={listenAnswers}
+                        onAnswerChange={(questionId, value) => {
+                          setListenAnswers(prev => ({ ...prev, [questionId]: value }));
+                        }}
+                      />
+                    ) : (
+                      (() => {
                       const groups: any[] = [];
                       let tempGroup: any[] = [];
                       const questions = currentPart.questions || [];
@@ -1505,7 +1521,8 @@ export default function MockExamPage() {
                           })}
                         </div>
                       );
-                    })()}
+                    })()
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -2194,3 +2211,224 @@ export default function MockExamPage() {
     </div>
   );
 }
+
+interface HtmlLayoutRendererProps {
+  htmlContent: string;
+  questions: any[];
+  questionOffset: number;
+  listenAnswers: Record<string, string>;
+  onAnswerChange: (questionId: string, value: string) => void;
+}
+
+const RenderMCQ = ({ question, globalQNum, listenAnswers, onAnswerChange }: { question: any; globalQNum: number; listenAnswers: Record<string, string>; onAnswerChange: (questionId: string, value: string) => void }) => {
+  const isSelected = (opt: string) => {
+    const userAns = listenAnswers[question.id] || '';
+    return userAns === opt || userAns.trim().toLowerCase() === opt.trim().split('.')[0].trim().toLowerCase();
+  };
+  
+  return (
+    <div className="p-4 bg-primary-dark/30 backdrop-blur-md rounded-2xl border border-border-glass space-y-3 my-4 hover:border-accent/30 transition-all text-left">
+      <div className="flex items-start gap-2.5">
+        <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-accent/20 text-accent font-bold text-[11px]">
+          {globalQNum}
+        </span>
+        <p className="text-white font-semibold text-xs leading-relaxed">{question.text}</p>
+      </div>
+      <div className="grid grid-cols-1 gap-2 pl-8">
+        {question.options?.map((opt: string, i: number) => {
+          const checked = isSelected(opt);
+          return (
+            <label key={i} className={`flex items-center p-2.5 border rounded-xl cursor-pointer transition-all ${
+              checked 
+                ? 'bg-accent/15 border-accent/40 shadow-sm font-semibold text-white' 
+                : 'bg-primary-dark/20 border-border-glass hover:bg-primary-dark/40 text-text-muted hover:text-white'
+            }`}>
+              <input
+                type="radio"
+                name={question.id}
+                value={opt}
+                checked={checked}
+                onChange={() => onAnswerChange(question.id, opt)}
+                className="h-3.5 w-3.5 text-accent focus:ring-accent border-border-glass bg-primary-dark/50"
+              />
+              <span className={`ml-2.5 text-xs ${checked ? 'text-white font-semibold' : 'text-text-muted'}`}>{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const RenderFillBlank = ({ question, globalQNum, listenAnswers, onAnswerChange }: { question: any; globalQNum: number; listenAnswers: Record<string, string>; onAnswerChange: (questionId: string, value: string) => void }) => {
+  const value = listenAnswers[question.id] || '';
+  return (
+    <span className="inline-flex items-center gap-1.5 mx-1 my-0.5">
+      <span className="flex-shrink-0 flex items-center justify-center h-5 w-5 rounded-full bg-accent/20 text-accent font-bold text-[9px] border border-accent/30 shadow-sm">
+        {globalQNum}
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onAnswerChange(question.id, e.target.value)}
+        className="inline-block w-36 px-2 py-1 border border-border-glass bg-primary-dark/50 rounded-md text-center text-xs font-semibold text-cyan-400 focus:border-accent outline-none transition-all"
+        placeholder="..."
+        style={{ minWidth: '100px' }}
+      />
+    </span>
+  );
+};
+
+const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnswers, onAnswerChange }: HtmlLayoutRendererProps) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const doc = useMemo(() => {
+    if (typeof window === 'undefined' || !mounted) return null;
+    return new DOMParser().parseFromString(htmlContent, 'text/html');
+  }, [htmlContent, mounted]);
+
+  if (!mounted || !doc) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-primary-dark/40 rounded w-1/4"></div>
+        <div className="h-4 bg-primary-dark/40 rounded w-1/2"></div>
+        <div className="h-4 bg-primary-dark/40 rounded w-3/4"></div>
+      </div>
+    );
+  }
+
+  const renderNode = (node: Node, key: string): React.ReactNode => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node.textContent;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return null;
+    }
+
+    const el = node as HTMLElement;
+    const tagName = el.tagName.toLowerCase();
+
+    // Check if it's a question item (MCQ, matching, or fillBlank)
+    if (el.classList.contains('ielts-listening-question-item') && tagName !== 'tr') {
+      const optionsDivs = el.querySelectorAll('.ielts-listening-option');
+      if (optionsDivs.length > 0) {
+        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+        const qNum = parseInt(qNumText.trim(), 10);
+        if (!isNaN(qNum)) {
+          const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          if (question) {
+            const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
+            const globalQNum = questionOffset + origIdx + 1;
+            return <RenderMCQ key={key} question={question} globalQNum={globalQNum} listenAnswers={listenAnswers} onAnswerChange={onAnswerChange} />;
+          }
+        }
+      } else {
+        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
+        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+        
+        if (!isNaN(qNum)) {
+          const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          if (question) {
+            const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
+            const globalQNum = questionOffset + origIdx + 1;
+            return <RenderFillBlank key={key} question={question} globalQNum={globalQNum} listenAnswers={listenAnswers} onAnswerChange={onAnswerChange} />;
+          }
+        }
+      }
+    }
+
+    // Handle radio buttons inside matching table grids
+    if (tagName === 'input' && el.getAttribute('type') === 'radio') {
+      const parentRow = el.closest('tr');
+      if (parentRow) {
+        const qNumText = parentRow.querySelector('.ielts-listening-question-number')?.textContent || '';
+        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+        if (!isNaN(qNum)) {
+          const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          if (question) {
+            const value = el.getAttribute('value') || '';
+            const checked = listenAnswers[question.id] === value;
+            return (
+              <input
+                key={key}
+                type="radio"
+                name={question.id}
+                value={value}
+                checked={checked}
+                onChange={() => onAnswerChange(question.id, value)}
+                className="h-4 w-4 text-accent focus:ring-accent border-border-glass bg-primary-dark/50 cursor-pointer"
+              />
+            );
+          }
+        }
+      }
+    }
+    
+    // Hide static input tags (but preserve radio buttons)
+    if (tagName === 'input' && el.getAttribute('type') !== 'radio') {
+      return null;
+    }
+
+    // Remove WordPress/engnovate dynamic elements
+    if (
+      el.classList.contains('ielts-listening-section-start-time-button') || 
+      tagName === 'audio' || 
+      el.classList.contains('ielts-listening-part-audio')
+    ) {
+      return null;
+    }
+
+    const children = Array.from(node.childNodes).map((child, idx) => renderNode(child, `${key}-${idx}`));
+
+    const props: any = { key };
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name === 'class') {
+        props.className = attr.value;
+      } else if (attr.name === 'style') {
+        const styleObj: any = {};
+        attr.value.split(';').forEach(pair => {
+          const [k, v] = pair.split(':');
+          if (k && v) {
+            const camelKey = k.trim().replace(/-./g, x => x[1].toUpperCase());
+            styleObj[camelKey] = v.trim();
+          }
+        });
+        props.style = styleObj;
+      } else {
+        props[attr.name] = attr.value;
+      }
+    }
+
+    // Format elements to look premium and match Tailwind dark glassmorphism aesthetics
+    if (tagName === 'table') {
+      props.className = `${props.className || ''} w-full my-6 border-collapse border border-border-glass/40 shadow-lg rounded-2xl overflow-hidden bg-primary-dark/30 backdrop-blur-md`;
+    } else if (tagName === 'th') {
+      props.className = `${props.className || ''} border border-border-glass/30 bg-primary-dark/50 px-4 py-3 text-left font-bold text-accent text-xs tracking-wide uppercase`;
+    } else if (tagName === 'td') {
+      props.className = `${props.className || ''} border border-border-glass/20 px-4 py-3 text-white text-xs leading-relaxed font-medium align-middle`;
+    } else if (tagName === 'ul') {
+      props.className = `${props.className || ''} space-y-3.5 my-4 pl-1`;
+    } else if (tagName === 'li') {
+      props.className = `${props.className || ''} text-white text-xs leading-relaxed list-none flex items-start gap-2`;
+    } else if (tagName === 'h2' || tagName === 'h3') {
+      props.className = `${props.className || ''} text-sm font-bold text-accent mt-6 mb-2 border-b pb-1.5 border-border-glass/20`;
+    } else if (tagName === 'p') {
+      props.className = `${props.className || ''} text-text-muted text-xs leading-relaxed my-2`;
+    } else if (tagName === 'strong') {
+      props.className = `${props.className || ''} text-white font-semibold`;
+    } else if (tagName === 'em') {
+      props.className = `${props.className || ''} text-text-muted italic text-[10px]`;
+    }
+
+    return React.createElement(tagName, props, children);
+  };
+
+  return (
+    <div className="ielts-scraped-layout prose prose-invert max-w-none space-y-6 text-left">
+      {Array.from(doc.body.childNodes).map((child, idx) => renderNode(child, `root-${idx}`))}
+    </div>
+  );
+};
