@@ -289,13 +289,25 @@ async function scrapeTest(testId, url, testTitle) {
       }
     }
 
+    let layoutHtml = '';
+    const sectionElem = $('.ielts-listening-question-section').eq(partNum - 1);
+    if (sectionElem.length) {
+      const clone = sectionElem.clone();
+      clone.find('.ielts-listening-section-start-time-button').remove();
+      clone.find('audio').remove();
+      clone.find('.ielts-listening-part-audio').remove();
+      clone.find('input[type="text"]').val('').attr('value', '');
+      layoutHtml = cleanText(clone.html());
+    }
+
     parts.push({
       part: partNum,
       title: `Part ${partNum}: Questions ${startQ}-${endQ}`,
       type: partNum === 1 ? 'Conversation' : partNum === 2 ? 'Monologue' : partNum === 3 ? 'Academic Discussion' : 'Academic Lecture',
       audioUrl,
       transcript: transcriptText || `This is the transcript for Part ${partNum} of Cambridge IELTS ${testTitle}.`,
-      questions
+      questions,
+      layoutHtml
     });
   }
 

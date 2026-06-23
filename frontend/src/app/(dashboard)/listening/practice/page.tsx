@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
@@ -130,6 +130,11 @@ function ListeningPracticeContent() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -310,9 +315,238 @@ function ListeningPracticeContent() {
     return sections;
   };
 
+  // ─── Scraped HTML Layout Renderer ──────────────────────────────────────────
+  const renderFillBlank = (question: any, globalQNum: number, key: string) => {
+    const value = answers[question.id] || '';
+    const userAns = value.trim().toLowerCase();
+    const correctAnswers = (question.correctAnswer || '').split('/').map((s: string) => s.trim().toLowerCase());
+    const isCorrect = submitted && correctAnswers.includes(userAns);
+
+    return (
+      <span key={key} className="inline-flex items-center gap-1.5 mx-1 my-0.5">
+        <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] border border-indigo-100 shadow-sm">
+          {globalQNum}
+        </span>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+          disabled={submitted}
+          className={`inline-block w-40 px-3 py-1.5 border rounded-md text-center font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner text-sm ${
+            submitted 
+              ? isCorrect 
+                ? 'border-green-500 bg-green-50' 
+                : 'border-red-400 bg-red-50' 
+              : 'border-indigo-200 bg-white hover:border-indigo-400'
+          }`}
+          placeholder="..."
+          style={{ minWidth: '120px' }}
+        />
+        {submitted && (
+          <span className={`text-xs font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+            {isCorrect ? '✓' : `✗ ${question.correctAnswer}`}
+          </span>
+        )}
+      </span>
+    );
+  };
+
+  const renderMCQ = (question: any, globalQNum: number, key: string) => {
+    const isSelected = (opt: string) => {
+      const userAns = answers[question.id] || '';
+      return userAns === opt || userAns.trim().toLowerCase() === opt.trim().split('.')[0].trim().toLowerCase();
+    };
+
+    return (
+      <div key={key} className="p-5 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-indigo-50 shadow-sm space-y-4 my-5 hover:border-indigo-100 transition-all">
+        <div className="flex items-start gap-3">
+          <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
+            {globalQNum}
+          </span>
+          <p className="text-gray-800 font-semibold text-[15px] leading-relaxed">{question.text}</p>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-2.5 pl-10">
+          {question.options?.map((opt: string, i: number) => {
+            const checked = isSelected(opt);
+            return (
+              <label key={i} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all border ${
+                checked 
+                  ? 'bg-indigo-50/60 border-indigo-200 shadow-sm font-semibold' 
+                  : 'bg-white border-gray-150 hover:bg-gray-50/80 hover:border-gray-250'
+              }`}>
+                <input
+                  type="radio"
+                  name={question.id}
+                  value={opt}
+                  checked={checked}
+                  onChange={() => handleAnswerChange(question.id, opt)}
+                  disabled={submitted}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                />
+                <span className="ml-3 text-[14px] text-gray-700">{opt}</span>
+              </label>
+            );
+          })}
+        </div>
+
+        {submitted && (() => {
+          const userAns = (answers[question.id] || '').trim().toLowerCase();
+          const correctAns = (question.correctAnswer || '').trim().toLowerCase();
+          const userLetter = userAns.includes('.') ? userAns.split('.')[0].trim() : userAns;
+          const isCorrect = correctAns.split('/').map((s: string) => s.trim().toLowerCase()).includes(userLetter);
+
+          return (
+            <div className={`ml-10 mt-3 p-3.5 rounded-xl flex items-start gap-2.5 ${isCorrect ? 'bg-green-50/60 border border-green-150' : 'bg-red-50/60 border border-red-150'}`}>
+              {isCorrect ? (
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+              )}
+              <div>
+                <p className={`text-sm font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                  {isCorrect ? 'Correct!' : 'Incorrect'}
+                </p>
+                {!isCorrect && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    Correct answer: <span className="font-bold uppercase bg-white px-2 py-0.5 rounded border border-gray-150 text-indigo-700">{question.correctAnswer}</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    );
+  };
+
+  const HtmlLayoutRenderer = ({ htmlContent }: { htmlContent: string }) => {
+    const doc = useMemo(() => {
+      if (typeof window === 'undefined') return null;
+      return new DOMParser().parseFromString(htmlContent, 'text/html');
+    }, [htmlContent]);
+
+    if (!doc) return null;
+
+    const renderNode = (node: Node, key: string): React.ReactNode => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent;
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        return null;
+      }
+
+      const el = node as HTMLElement;
+      const tagName = el.tagName.toLowerCase();
+
+      // Check if it's an MCQ wrapper
+      if (el.classList.contains('ielts-listening-question-item')) {
+        const optionsDivs = el.querySelectorAll('.ielts-listening-option');
+        if (optionsDivs.length > 0) {
+          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+          const qNum = parseInt(qNumText.trim(), 10);
+          if (!isNaN(qNum)) {
+            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            if (question) {
+              return renderMCQ(question, qNum, key);
+            }
+          }
+        }
+      }
+
+      // Check if it's a fillBlank question span/input wrapper
+      if (
+        el.classList.contains('ielts-listening-question-item') || 
+        el.id?.startsWith('ielts-listening-question-number-') || 
+        el.querySelector('.ielts-listening-question-number')
+      ) {
+        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
+        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+        
+        if (!isNaN(qNum)) {
+          const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          if (question) {
+            const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
+            const globalQNum = questionOffset + origIdx + 1;
+            return renderFillBlank(question, globalQNum, key);
+          }
+        }
+      }
+      
+      // Hide static input tags
+      if (tagName === 'input') {
+        return null;
+      }
+
+      // Remove WordPress/engnovate dynamic elements
+      if (
+        el.classList.contains('ielts-listening-section-start-time-button') || 
+        tagName === 'audio' || 
+        el.classList.contains('ielts-listening-part-audio')
+      ) {
+        return null;
+      }
+
+      const children = Array.from(el.childNodes).map((child, idx) => renderNode(child, `${key}-${idx}`));
+
+      const props: any = { key };
+      for (const attr of Array.from(el.attributes)) {
+        if (attr.name === 'class') {
+          props.className = attr.value;
+        } else if (attr.name === 'style') {
+          const styleObj: any = {};
+          attr.value.split(';').forEach(pair => {
+            const [k, v] = pair.split(':');
+            if (k && v) {
+              const camelKey = k.trim().replace(/-./g, x => x[1].toUpperCase());
+              styleObj[camelKey] = v.trim();
+            }
+          });
+          props.style = styleObj;
+        } else {
+          props[attr.name] = attr.value;
+        }
+      }
+
+      // Format elements to look premium and match Tailwind aesthetics
+      if (tagName === 'table') {
+        props.className = `${props.className || ''} w-full my-6 border-collapse border border-indigo-100 shadow-sm rounded-2xl overflow-hidden bg-white/60 backdrop-blur-sm`;
+      } else if (tagName === 'th') {
+        props.className = `${props.className || ''} border border-indigo-100/50 bg-indigo-50/70 px-4 py-3.5 text-left font-bold text-indigo-900 text-sm tracking-wide uppercase`;
+      } else if (tagName === 'td') {
+        props.className = `${props.className || ''} border border-indigo-50 px-4 py-3.5 text-gray-700 text-sm leading-relaxed font-medium align-middle`;
+      } else if (tagName === 'ul') {
+        props.className = `${props.className || ''} space-y-3 my-4 pl-1`;
+      } else if (tagName === 'li') {
+        props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed list-none flex items-start gap-2`;
+      }
+
+      return React.createElement(tagName, props, children);
+    };
+
+    return (
+      <div className="ielts-scraped-layout prose max-w-none space-y-6">
+        {Array.from(doc.body.childNodes).map((child, idx) => renderNode(child, `root-${idx}`))}
+      </div>
+    );
+  };
+
   // ─── Render the questions for the current part ──────────────────────────────
   const renderQuestions = () => {
     if (!currentPart?.questions) return null;
+
+    if (currentPart.layoutHtml) {
+      if (!isMounted) {
+        return (
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-40 bg-gray-200 rounded"></div>
+          </div>
+        );
+      }
+      return <HtmlLayoutRenderer htmlContent={currentPart.layoutHtml} />;
+    }
 
     const questions = currentPart.questions;
     const matchingQuestions = questions.filter((q: any) => q.type === 'matching');
