@@ -520,7 +520,11 @@ function ListeningPracticeContent() {
           attr.value.split(';').forEach(pair => {
             const [k, v] = pair.split(':');
             if (k && v) {
-              const camelKey = k.trim().replace(/-./g, x => x[1].toUpperCase());
+              const trimmedKey = k.trim();
+              if (trimmedKey.toLowerCase() === 'color') {
+                return; // Skip inline color to prevent theme contrast issues
+              }
+              const camelKey = trimmedKey.replace(/-./g, x => x[1].toUpperCase());
               styleObj[camelKey] = v.trim();
             }
           });
@@ -578,11 +582,26 @@ function ListeningPracticeContent() {
         props.className = `${props.className || ''} text-gray-500 italic text-xs`;
       }
 
+      // Add custom styles for drag and drop matching option panel elements
+      if (el.classList.contains('dnd-panel') || el.classList.contains('options-dnd-panel')) {
+        props.className = `${props.className || ''} bg-indigo-50/30 rounded-2xl p-5 border border-indigo-100/50 my-6 shadow-sm`;
+      } else if (el.classList.contains('dnd-panel-instruction')) {
+        props.className = `${props.className || ''} text-xs font-semibold text-indigo-700 mb-3.5`;
+      } else if (el.classList.contains('dnd-cards-container')) {
+        props.className = `${props.className || ''} flex flex-wrap gap-2.5`;
+      } else if (el.classList.contains('dnd-card')) {
+        props.className = `${props.className || ''} px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-900 border border-indigo-100/80 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-default select-none`;
+      } else if (el.classList.contains('dnd-label')) {
+        props.className = `${props.className || ''} text-indigo-500 font-bold`;
+      } else if (el.classList.contains('dnd-text')) {
+        props.className = `${props.className || ''} text-indigo-950 font-medium`;
+      }
+
       return React.createElement(tagName, props, children);
     };
 
     return (
-      <div className="ielts-scraped-layout prose max-w-none space-y-6">
+      <div className="ielts-scraped-layout prose max-w-none space-y-6 text-gray-800">
         {Array.from(doc.body.childNodes).map((child, idx) => renderNode(child, `root-${idx}`))}
       </div>
     );

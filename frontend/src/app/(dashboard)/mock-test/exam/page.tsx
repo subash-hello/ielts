@@ -2392,7 +2392,11 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
         attr.value.split(';').forEach(pair => {
           const [k, v] = pair.split(':');
           if (k && v) {
-            const camelKey = k.trim().replace(/-./g, x => x[1].toUpperCase());
+            const trimmedKey = k.trim();
+            if (trimmedKey.toLowerCase() === 'color') {
+              return; // Skip inline color to prevent theme contrast issues
+            }
+            const camelKey = trimmedKey.replace(/-./g, x => x[1].toUpperCase());
             styleObj[camelKey] = v.trim();
           }
         });
@@ -2423,11 +2427,26 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
       props.className = `${props.className || ''} text-text-muted italic text-[10px]`;
     }
 
+    // Add custom styles for drag and drop matching option panel elements
+    if (el.classList.contains('dnd-panel') || el.classList.contains('options-dnd-panel')) {
+      props.className = `${props.className || ''} bg-primary-dark/30 rounded-2xl p-5 border border-border-glass/40 my-6 shadow-sm`;
+    } else if (el.classList.contains('dnd-panel-instruction')) {
+      props.className = `${props.className || ''} text-xs font-semibold text-accent mb-3.5`;
+    } else if (el.classList.contains('dnd-cards-container')) {
+      props.className = `${props.className || ''} flex flex-wrap gap-2.5`;
+    } else if (el.classList.contains('dnd-card')) {
+      props.className = `${props.className || ''} px-3 py-1.5 bg-accent/10 hover:bg-accent/20 text-accent-bright border border-accent/20 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-default select-none`;
+    } else if (el.classList.contains('dnd-label')) {
+      props.className = `${props.className || ''} text-accent font-bold`;
+    } else if (el.classList.contains('dnd-text')) {
+      props.className = `${props.className || ''} text-white font-medium`;
+    }
+
     return React.createElement(tagName, props, children);
   };
 
   return (
-    <div className="ielts-scraped-layout prose prose-invert max-w-none space-y-6 text-left">
+    <div className="ielts-scraped-layout prose prose-invert max-w-none space-y-6 text-left text-white">
       {Array.from(doc.body.childNodes).map((child, idx) => renderNode(child, `root-${idx}`))}
     </div>
   );
