@@ -2325,6 +2325,8 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
             return <RenderMCQ key={key} question={question} globalQNum={globalQNum} listenAnswers={listenAnswers} onAnswerChange={onAnswerChange} />;
           }
         }
+      } else if (el.querySelector('.options-drop-zone') || el.querySelector('.dnd-zone')) {
+        // If it contains a drop zone, let it render recursively to preserve comment text.
       } else {
         const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
         const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
@@ -2336,6 +2338,20 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
             const globalQNum = questionOffset + origIdx + 1;
             return <RenderFillBlank key={key} question={question} globalQNum={globalQNum} listenAnswers={listenAnswers} onAnswerChange={onAnswerChange} />;
           }
+        }
+      }
+    }
+
+    // Intercept matching/drop zone elements and render a React input
+    if (el.classList.contains('options-drop-zone') || el.classList.contains('dnd-zone')) {
+      const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
+      const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+      if (!isNaN(qNum)) {
+        const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+        if (question) {
+          const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
+          const globalQNum = questionOffset + origIdx + 1;
+          return <RenderFillBlank key={key} question={question} globalQNum={globalQNum} listenAnswers={listenAnswers} onAnswerChange={onAnswerChange} />;
         }
       }
     }
