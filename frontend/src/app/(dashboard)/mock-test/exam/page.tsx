@@ -1258,7 +1258,11 @@ export default function MockExamPage() {
                         })()}
                         listenAnswers={listenAnswers}
                         onAnswerChange={(questionId, value) => {
-                          setListenAnswers(prev => ({ ...prev, [questionId]: value }));
+                          if (typeof questionId === 'object' && questionId !== null) {
+                            setListenAnswers(prev => ({ ...prev, ...questionId }));
+                          } else {
+                            setListenAnswers(prev => ({ ...prev, [questionId]: value || '' }));
+                          }
                         }}
                       />
                     ) : (
@@ -2217,10 +2221,82 @@ interface HtmlLayoutRendererProps {
   questions: any[];
   questionOffset: number;
   listenAnswers: Record<string, string>;
-  onAnswerChange: (questionId: string, value: string) => void;
+  onAnswerChange: (questionId: string | Record<string, string>, value?: string) => void;
 }
 
-const RenderMCQ = ({ question, globalQNum, listenAnswers, onAnswerChange }: { question: any; globalQNum: number; listenAnswers: Record<string, string>; onAnswerChange: (questionId: string, value: string) => void }) => {
+const RenderGroupedMCQ = ({ groupQuestions, qNumDisplay, listenAnswers, onAnswerChange }: { groupQuestions: any[]; qNumDisplay: string; listenAnswers: Record<string, string>; onAnswerChange: (questionId: string | Record<string, string>, value?: string) => void }) => {
+  const representative = groupQuestions[0];
+  const groupLength = groupQuestions.length;
+
+  const selectedChoices = groupQuestions.map((q: any) => {
+    const val = listenAnswers[q.id] || '';
+    return val.includes('.') ? val.split('.')[0].trim() : val.trim();
+  }).filter(Boolean);
+
+  const isSelected = (opt: string) => {
+    const letter = opt.trim().split('.')[0].trim();
+    const optVal = opt.includes('.') ? letter : opt;
+    return selectedChoices.includes(optVal);
+  };
+
+  const handleChoiceChange = (opt: string) => {
+    const letter = opt.trim().split('.')[0].trim();
+    const optVal = opt.includes('.') ? letter : opt;
+
+    const newChoices = [...selectedChoices];
+    if (newChoices.includes(optVal)) {
+      const idx = newChoices.indexOf(optVal);
+      newChoices.splice(idx, 1);
+    } else {
+      if (newChoices.length < groupLength) {
+        newChoices.push(optVal);
+      } else {
+        newChoices.shift();
+        newChoices.push(optVal);
+      }
+    }
+
+    const updates: Record<string, string> = {};
+    groupQuestions.forEach((q: any, idx: number) => {
+      updates[q.id] = newChoices[idx] || '';
+    });
+    onAnswerChange(updates, '');
+  };
+
+  return (
+    <div className="p-4 bg-primary-dark/30 backdrop-blur-md rounded-2xl border border-border-glass space-y-3 my-4 hover:border-accent/30 transition-all text-left">
+      <div className="flex items-start gap-2.5">
+        <span className="flex-shrink-0 flex items-center justify-center h-7 min-w-[3rem] px-1.5 rounded-full bg-accent/20 text-accent font-bold text-[10px]">
+          {qNumDisplay}
+        </span>
+        <p className="text-white font-semibold text-xs leading-relaxed">{representative.text}</p>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-2 pl-8">
+        {representative.options?.map((opt: string, i: number) => {
+          const checked = isSelected(opt);
+          return (
+            <label key={i} className={`flex items-center p-2.5 border rounded-xl cursor-pointer transition-all border ${
+              checked 
+                ? 'bg-accent/15 border-accent/40 shadow-sm font-semibold text-white' 
+                : 'bg-primary-dark/20 border-border-glass hover:bg-primary-dark/40 text-text-muted hover:text-white'
+            }`}>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => handleChoiceChange(opt)}
+                className="h-3.5 w-3.5 text-accent focus:ring-accent border-border-glass bg-primary-dark/50 rounded"
+              />
+              <span className={`ml-2.5 text-xs ${checked ? 'text-white font-semibold' : 'text-text-muted'}`}>{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const RenderMCQ = ({ question, globalQNum, listenAnswers, onAnswerChange }: { question: any; globalQNum: number; listenAnswers: Record<string, string>; onAnswerChange: (questionId: any, value?: any) => void }) => {
   const isSelected = (opt: string) => {
     const userAns = listenAnswers[question.id] || '';
     return userAns === opt || userAns.trim().toLowerCase() === opt.trim().split('.')[0].trim().toLowerCase();
@@ -2260,7 +2336,7 @@ const RenderMCQ = ({ question, globalQNum, listenAnswers, onAnswerChange }: { qu
   );
 };
 
-const RenderFillBlank = ({ question, globalQNum, listenAnswers, onAnswerChange }: { question: any; globalQNum: number; listenAnswers: Record<string, string>; onAnswerChange: (questionId: string, value: string) => void }) => {
+const RenderFillBlank = ({ question, globalQNum, listenAnswers, onAnswerChange }: { question: any; globalQNum: number; listenAnswers: Record<string, string>; onAnswerChange: (questionId: any, value?: any) => void }) => {
   const value = listenAnswers[question.id] || '';
   return (
     <span className="inline-flex items-center gap-1.5 mx-1 my-0.5">
@@ -2325,11 +2401,34 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
     if (el.classList.contains('ielts-listening-question-item') && tagName !== 'tr') {
       const optionsDivs = el.querySelectorAll('.ielts-listening-option');
       if (optionsDivs.length > 0) {
-        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
-        const qNum = parseInt(qNumText.trim(), 10);
-        if (!isNaN(qNum)) {
-          const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
-          if (question) {
+        const qNumEls = Array.from(el.querySelectorAll('.ielts-listening-question-number'));
+        let qNums = qNumEls.map(numEl => parseInt(numEl.textContent?.trim().replace(/[^\d]/g, '') || '', 10)).filter(n => !isNaN(n));
+        if (qNums.length === 0) {
+          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+          const qNum = parseInt(qNumText.trim(), 10);
+          if (!isNaN(qNum)) {
+            qNums = [qNum];
+          }
+        }
+
+        if (qNums.length > 0) {
+          const groupQuestions = qNums.map(num => questions.find((q: any) => q.id.endsWith(`q${num}`))).filter(Boolean);
+          if (groupQuestions.length > 1) {
+            const firstOrigIdx = questions.findIndex((origQ: any) => origQ.id === groupQuestions[0].id);
+            const startQ = questionOffset + firstOrigIdx + 1;
+            const endQ = startQ + groupQuestions.length - 1;
+            const qNumDisplay = startQ === endQ ? `${startQ}` : `${startQ}–${endQ}`;
+            return (
+              <RenderGroupedMCQ
+                key={key}
+                groupQuestions={groupQuestions}
+                qNumDisplay={qNumDisplay}
+                listenAnswers={listenAnswers}
+                onAnswerChange={onAnswerChange}
+              />
+            );
+          } else if (groupQuestions.length === 1) {
+            const question = groupQuestions[0];
             const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
             const globalQNum = questionOffset + origIdx + 1;
             return <RenderMCQ key={key} question={question} globalQNum={globalQNum} listenAnswers={listenAnswers} onAnswerChange={onAnswerChange} />;

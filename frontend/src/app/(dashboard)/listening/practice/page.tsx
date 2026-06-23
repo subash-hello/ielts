@@ -265,8 +265,12 @@ function ListeningPracticeContent() {
   const currentPart = parts[activePart];
 
   // Handle answer change
-  const handleAnswerChange = (qId: string, val: string) => {
-    setAnswers(prev => ({ ...prev, [qId]: val }));
+  const handleAnswerChange = (qId: string | Record<string, string>, val: string) => {
+    if (typeof qId === 'object' && qId !== null) {
+      setAnswers(prev => ({ ...prev, ...qId }));
+    } else {
+      setAnswers(prev => ({ ...prev, [qId]: val }));
+    }
   };
 
   // ─── Group consecutive questions with identical text+options ─────────────────
@@ -434,6 +438,111 @@ function ListeningPracticeContent() {
     );
   };
 
+  const renderGroupedMCQ = (groupQuestions: any[], qNums: number[], key: string) => {
+    const representative = groupQuestions[0];
+    const groupLength = groupQuestions.length;
+    
+    const firstOrigIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === groupQuestions[0].id);
+    const startQ = questionOffset + firstOrigIdx + 1;
+    const endQ = startQ + groupLength - 1;
+    const qNumDisplay = startQ === endQ ? `${startQ}` : `${startQ}–${endQ}`;
+
+    const selectedChoices = groupQuestions.map((q: any) => {
+      const val = answers[q.id] || '';
+      return val.includes('.') ? val.split('.')[0].trim() : val.trim();
+    }).filter(Boolean);
+
+    const isSelected = (opt: string) => {
+      const letter = opt.trim().split('.')[0].trim();
+      const optVal = opt.includes('.') ? letter : opt;
+      return selectedChoices.includes(optVal);
+    };
+
+    const handleChoiceChange = (opt: string) => {
+      const letter = opt.trim().split('.')[0].trim();
+      const optVal = opt.includes('.') ? letter : opt;
+
+      const newChoices = [...selectedChoices];
+      if (newChoices.includes(optVal)) {
+        const idx = newChoices.indexOf(optVal);
+        newChoices.splice(idx, 1);
+      } else {
+        if (newChoices.length < groupLength) {
+          newChoices.push(optVal);
+        } else {
+          newChoices.shift();
+          newChoices.push(optVal);
+        }
+      }
+
+      const updates: Record<string, string> = {};
+      groupQuestions.forEach((q: any, idx: number) => {
+        updates[q.id] = newChoices[idx] || '';
+      });
+      handleAnswerChange(updates, '');
+    };
+
+    return (
+      <div key={key} className="p-5 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-indigo-50 shadow-sm space-y-4 my-5 hover:border-indigo-100 transition-all">
+        <div className="flex items-start gap-3">
+          <span className="flex-shrink-0 flex items-center justify-center h-8 min-w-[3.5rem] px-2 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
+            {qNumDisplay}
+          </span>
+          <p className="text-gray-800 font-semibold text-[15px] leading-relaxed">{representative.text}</p>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-2.5 pl-10">
+          {representative.options?.map((opt: string, i: number) => {
+            const checked = isSelected(opt);
+            return (
+              <label key={i} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all border ${
+                checked 
+                  ? 'bg-indigo-50/60 border-indigo-200 shadow-sm font-semibold' 
+                  : 'bg-white border-gray-150 hover:bg-gray-50/80 hover:border-gray-250'
+              }`}>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => handleChoiceChange(opt)}
+                  disabled={submitted}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <span className="ml-3 text-[14px] text-gray-700">{opt}</span>
+              </label>
+            );
+          })}
+        </div>
+
+        {submitted && (() => {
+          const allCorrectAnswers = groupQuestions.flatMap((q: any) => (q.correctAnswer || '').split('/').map((s: string) => s.trim().toLowerCase()));
+          
+          return (
+            <div className="ml-10 mt-3 p-3.5 bg-indigo-50/30 border border-indigo-100 rounded-xl space-y-2">
+              <p className="text-sm font-bold text-indigo-900">Correction & Feedback</p>
+              {groupQuestions.map((q: any, idx: number) => {
+                const userAns = (answers[q.id] || '').trim().toLowerCase();
+                const isCorrect = userAns && allCorrectAnswers.includes(userAns);
+                const displayNum = startQ + idx;
+                
+                return (
+                  <div key={q.id} className="flex items-center gap-2 text-xs">
+                    <span className="font-bold text-gray-600">Q{displayNum}:</span>
+                    <span className="font-semibold text-gray-800">{answers[q.id] || '(Blank)'}</span>
+                    {isCorrect ? (
+                      <span className="text-green-600 font-bold">✓ Correct</span>
+                    ) : (
+                      <span className="text-red-600 font-bold">✗ Ans: {q.correctAnswer}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </div>
+    );
+  };
+
   const HtmlLayoutRenderer = ({ htmlContent }: { htmlContent: string }) => {
     const doc = useMemo(() => {
       if (typeof window === 'undefined') return null;
@@ -458,12 +567,25 @@ function ListeningPracticeContent() {
       if (el.classList.contains('ielts-listening-question-item') && tagName !== 'tr') {
         const optionsDivs = el.querySelectorAll('.ielts-listening-option');
         if (optionsDivs.length > 0) {
-          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
-          const qNum = parseInt(qNumText.trim(), 10);
-          if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
-            if (question) {
-              return renderMCQ(question, qNum, key);
+          const qNumEls = Array.from(el.querySelectorAll('.ielts-listening-question-number'));
+          let qNums = qNumEls.map(numEl => parseInt(numEl.textContent?.trim().replace(/[^\d]/g, '') || '', 10)).filter(n => !isNaN(n));
+          if (qNums.length === 0) {
+            const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+            const qNum = parseInt(qNumText.trim(), 10);
+            if (!isNaN(qNum)) {
+              qNums = [qNum];
+            }
+          }
+
+          if (qNums.length > 0) {
+            const groupQuestions = qNums.map(num => currentPart.questions.find((q: any) => q.id.endsWith(`q${num}`))).filter(Boolean);
+            if (groupQuestions.length > 1) {
+              return renderGroupedMCQ(groupQuestions, qNums, key);
+            } else if (groupQuestions.length === 1) {
+              const question = groupQuestions[0];
+              const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
+              const globalQNum = questionOffset + origIdx + 1;
+              return renderMCQ(question, globalQNum, key);
             }
           }
         } else if (el.querySelector('.options-drop-zone') || el.querySelector('.dnd-zone')) {
