@@ -331,6 +331,20 @@ function ListeningPracticeContent() {
           type="text"
           value={value}
           onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+          onDragOver={(e) => {
+            if (!submitted) {
+              e.preventDefault();
+            }
+          }}
+          onDrop={(e) => {
+            if (!submitted) {
+              e.preventDefault();
+              const letter = e.dataTransfer.getData('text/plain');
+              if (letter) {
+                handleAnswerChange(question.id, letter);
+              }
+            }
+          }}
           disabled={submitted}
           className={`inline-block w-40 px-3 py-1.5 border rounded-md text-center font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner text-sm ${
             submitted 
@@ -606,7 +620,14 @@ function ListeningPracticeContent() {
       } else if (el.classList.contains('dnd-cards-container')) {
         props.className = `${props.className || ''} flex flex-wrap gap-2.5`;
       } else if (el.classList.contains('dnd-card')) {
-        props.className = `${props.className || ''} px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-900 border border-indigo-100/80 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-default select-none`;
+        props.className = `${props.className || ''} px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-900 border border-indigo-100/80 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-grab active:cursor-grabbing select-none`;
+        if (!submitted) {
+          props.draggable = true;
+          props.onDragStart = (e: any) => {
+            const val = el.getAttribute('data-value') || '';
+            e.dataTransfer.setData('text/plain', val);
+          };
+        }
       } else if (el.classList.contains('dnd-label')) {
         props.className = `${props.className || ''} text-indigo-500 font-bold`;
       } else if (el.classList.contains('dnd-text')) {

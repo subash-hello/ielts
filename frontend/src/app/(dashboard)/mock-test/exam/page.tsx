@@ -2271,6 +2271,16 @@ const RenderFillBlank = ({ question, globalQNum, listenAnswers, onAnswerChange }
         type="text"
         value={value}
         onChange={(e) => onAnswerChange(question.id, e.target.value)}
+        onDragOver={(e) => {
+          e.preventDefault();
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          const letter = e.dataTransfer.getData('text/plain');
+          if (letter) {
+            onAnswerChange(question.id, letter);
+          }
+        }}
         className="inline-block w-36 px-2 py-1 border border-border-glass bg-primary-dark/50 rounded-md text-center text-xs font-semibold text-cyan-400 focus:border-accent outline-none transition-all"
         placeholder="..."
         style={{ minWidth: '100px' }}
@@ -2451,7 +2461,12 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
     } else if (el.classList.contains('dnd-cards-container')) {
       props.className = `${props.className || ''} flex flex-wrap gap-2.5`;
     } else if (el.classList.contains('dnd-card')) {
-      props.className = `${props.className || ''} px-3 py-1.5 bg-accent/10 hover:bg-accent/20 text-accent-bright border border-accent/20 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-default select-none`;
+      props.className = `${props.className || ''} px-3 py-1.5 bg-accent/10 hover:bg-accent/20 text-accent-bright border border-accent/20 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-grab active:cursor-grabbing select-none`;
+      props.draggable = true;
+      props.onDragStart = (e: any) => {
+        const val = el.getAttribute('data-value') || '';
+        e.dataTransfer.setData('text/plain', val);
+      };
     } else if (el.classList.contains('dnd-label')) {
       props.className = `${props.className || ''} text-accent font-bold`;
     } else if (el.classList.contains('dnd-text')) {
