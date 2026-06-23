@@ -439,7 +439,7 @@ function ListeningPracticeContent() {
       const el = node as HTMLElement;
       const tagName = el.tagName.toLowerCase();
 
-      // Check if it's an MCQ wrapper
+      // Check if it's a question item (MCQ, matching, or fillBlank)
       if (el.classList.contains('ielts-listening-question-item')) {
         const optionsDivs = el.querySelectorAll('.ielts-listening-option');
         if (optionsDivs.length > 0) {
@@ -451,24 +451,17 @@ function ListeningPracticeContent() {
               return renderMCQ(question, qNum, key);
             }
           }
-        }
-      }
-
-      // Check if it's a fillBlank question span/input wrapper
-      if (
-        el.classList.contains('ielts-listening-question-item') || 
-        el.id?.startsWith('ielts-listening-question-number-') || 
-        el.querySelector('.ielts-listening-question-number')
-      ) {
-        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
-        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
-        
-        if (!isNaN(qNum)) {
-          const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
-          if (question) {
-            const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
-            const globalQNum = questionOffset + origIdx + 1;
-            return renderFillBlank(question, globalQNum, key);
+        } else {
+          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
+          const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+          
+          if (!isNaN(qNum)) {
+            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            if (question) {
+              const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
+              const globalQNum = questionOffset + origIdx + 1;
+              return renderFillBlank(question, globalQNum, key);
+            }
           }
         }
       }
@@ -519,6 +512,14 @@ function ListeningPracticeContent() {
         props.className = `${props.className || ''} space-y-3 my-4 pl-1`;
       } else if (tagName === 'li') {
         props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed list-none flex items-start gap-2`;
+      } else if (tagName === 'h2' || tagName === 'h3') {
+        props.className = `${props.className || ''} text-base font-bold text-indigo-900 mt-6 mb-2 border-b pb-1.5 border-indigo-50`;
+      } else if (tagName === 'p') {
+        props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed my-2`;
+      } else if (tagName === 'strong') {
+        props.className = `${props.className || ''} text-gray-900 font-bold`;
+      } else if (tagName === 'em') {
+        props.className = `${props.className || ''} text-gray-500 italic text-xs`;
       }
 
       return React.createElement(tagName, props, children);
