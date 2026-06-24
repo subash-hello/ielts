@@ -824,14 +824,14 @@ const seedDatabaseIfEmpty = async () => {
       });
     }
 
-    // 2. Seed 10 Cambridge Listening Tests
-    for (let i = 1; i <= 10; i++) {
-      const cambridgeTest = cambridgeListeningTests[i];
+    // 2. Seed 30 Cambridge Listening Tests
+    for (let i = 1; i <= 30; i++) {
+      const cambridgeTest = cambridgeListeningTests[i.toString()];
       practiceToInsert.push({
         title: `Cambridge IELTS Listening Test ${i}`,
         type: 'practice_task',
         subType: 'listening',
-        difficulty: cambridgeTest.difficulty,
+        difficulty: cambridgeTest.difficulty || 'medium',
         content: {
           parts: cambridgeTest.parts,
           duration: '30 min' ,
