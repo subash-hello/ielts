@@ -4,21 +4,21 @@
 
 @theme inline {
   /* Colors */
-  --color-primary-dark: #070708;
-  --color-primary: #0F0F11;
-  --color-primary-light: #17171C;
-  --color-accent: #D4B27A;
-  --color-accent-bright: #EAD2AC;
-  --color-neon: #C5A880;
+  --color-primary-dark: #030303;
+  --color-primary: #0A0915;
+  --color-primary-light: #121124;
+  --color-accent: #6366F1;
+  --color-accent-bright: #8B5CF6;
+  --color-neon: #06B6D4;
   --color-neon-green: #10B981;
-  --color-danger: #EF4444;
+  --color-danger: #FF4E88;
   --color-warning: #F59E0B;
   --color-surface: rgba(255, 255, 255, 0.03);
-  --color-surface-hover: rgba(255, 255, 255, 0.07);
-  --color-border-glass: rgba(255, 255, 255, 0.06);
+  --color-surface-hover: rgba(255, 255, 255, 0.08);
+  --color-border-glass: rgba(99, 102, 241, 0.15);
   --color-text-primary: #FAFAF9;
-  --color-text-muted: #A1A1AA;
-  --color-text-dark: #18181B;
+  --color-text-muted: #94A3B8;
+  --color-text-dark: #0F0F11;
 
   /* Fonts */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -100,14 +100,14 @@
 /* ===== Base Styles ===== */
 
 :root {
-  --background: #070708;
+  --background: #0A0915;
   --foreground: #FAFAF9;
   scroll-behavior: smooth;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(212, 178, 122, 0.2) transparent;
+  scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -119,12 +119,12 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(212, 178, 122, 0.2);
+  background: rgba(99, 102, 241, 0.3);
   border-radius: 3px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 178, 122, 0.4);
+  background: rgba(99, 102, 241, 0.5);
 }
 
 body {
@@ -142,56 +142,56 @@ h1, h2, h3, h4, h5, h6 {
 /* ===== Glassmorphism Utilities ===== */
 
 .glass {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .glass-card {
-  background: rgba(23, 23, 28, 0.4);
+  background: rgba(10, 9, 21, 0.5);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: rgba(23, 23, 28, 0.65);
-  border-color: rgba(212, 178, 122, 0.15);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-  transform: translateY(-4px);
+  background: rgba(18, 17, 36, 0.7);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 20px 50px rgba(99, 102, 241, 0.15);
+  transform: translateY(-6px);
 }
 
 /* ===== Gradient Utilities ===== */
 
 .gradient-primary {
-  background: linear-gradient(135deg, #D4B27A, #EAD2AC);
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
 }
 
 .gradient-neon {
-  background: linear-gradient(135deg, #C5A880, #10B981);
+  background: linear-gradient(135deg, #06B6D4, #6366F1);
 }
 
 .gradient-warm {
-  background: linear-gradient(135deg, #EAD2AC, #F472B6);
+  background: linear-gradient(135deg, #8B5CF6, #FF4E88);
 }
 
 .gradient-success {
-  background: linear-gradient(135deg, #10B981, #C5A880);
+  background: linear-gradient(135deg, #10B981, #06B6D4);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #D4B27A, #EAD2AC, #C5A880);
+  background: linear-gradient(135deg, #6366F1, #8B5CF6, #06B6D4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -199,17 +199,17 @@ h1, h2, h3, h4, h5, h6 {
 
 .gradient-mesh-bg {
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(212, 178, 122, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(234, 210, 172, 0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-    #070708;
+    radial-gradient(ellipse at 20% 40%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+    #030303;
 }
 
 /* ===== Button Styles ===== */
 
 .btn-primary {
-  background: linear-gradient(135deg, #D4B27A, #C5A880);
-  color: #070708;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  color: white;
   font-weight: 600;
   padding: 12px 28px;
   border-radius: 12px;
@@ -225,7 +225,7 @@ h1, h2, h3, h4, h5, h6 {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
   transition: left 0.5s ease;
 }
 
@@ -235,12 +235,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(212, 178, 122, 0.25);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: white;
   font-weight: 600;
   padding: 12px 28px;
@@ -250,8 +250,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(212, 178, 122, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(99, 102, 241, 0.4);
   transform: translateY(-2px);
 }
 
@@ -262,10 +262,10 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse at 10% 20%, rgba(212, 178, 122, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 80%, rgba(234, 210, 172, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.02) 0%, transparent 60%),
-    #070708;
+    radial-gradient(ellipse at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 60%),
+    #030303;
 }
 
 /* ===== Score Badge ===== */

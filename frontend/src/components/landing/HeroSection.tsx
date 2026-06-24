@@ -87,7 +87,7 @@ export default function HeroSection() {
             >
               <Link
                 href="/signup"
-                className="group px-8 py-4 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-primary-dark font-semibold text-lg hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                className="group px-8 py-4 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-semibold text-lg hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Start Learning Free
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
