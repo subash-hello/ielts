@@ -828,7 +828,7 @@ const seedDatabaseIfEmpty = async () => {
     for (let i = 1; i <= 30; i++) {
       const cambridgeTest = cambridgeListeningTests[i.toString()];
       practiceToInsert.push({
-        title: `Cambridge IELTS Listening Test ${i}`,
+        title: cambridgeTest.title || `Cambridge IELTS Listening Test ${i}`,
         type: 'practice_task',
         subType: 'listening',
         difficulty: cambridgeTest.difficulty || 'medium',
