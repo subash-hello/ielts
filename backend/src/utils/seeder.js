@@ -824,11 +824,11 @@ const seedDatabaseIfEmpty = async () => {
       });
     }
 
-    // 2. Seed 30 Cambridge Listening Tests
-    for (let i = 1; i <= 30; i++) {
-      const cambridgeTest = cambridgeListeningTests[i.toString()];
+    // 2. Seed Cambridge Listening Tests
+    for (const key of Object.keys(cambridgeListeningTests)) {
+      const cambridgeTest = cambridgeListeningTests[key];
       practiceToInsert.push({
-        title: cambridgeTest.title || `Cambridge IELTS Listening Test ${i}`,
+        title: cambridgeTest.title || `Cambridge IELTS Listening Test ${key}`,
         type: 'practice_task',
         subType: 'listening',
         difficulty: cambridgeTest.difficulty || 'medium',
@@ -840,6 +840,7 @@ const seedDatabaseIfEmpty = async () => {
         isActive: true
       });
     }
+
 
     // 3. Seed 40 Cambridge Writing Practice Tasks
     for (let i = 0; i < cambridgeWritingTests.length; i++) {
