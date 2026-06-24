@@ -127,6 +127,560 @@ function FillBlankInline({
   );
 }
 
+// ─── Scraped HTML Layout Components (Defined outside to prevent losing input focus on state updates) ──────────
+
+interface RenderFillBlankProps {
+  question: any;
+  globalQNum: number;
+  answers: Record<string, string>;
+  submitted: boolean;
+  handleAnswerChange: (qId: string | Record<string, string>, val: string) => void;
+}
+
+const RenderFillBlank = ({
+  question,
+  globalQNum,
+  answers,
+  submitted,
+  handleAnswerChange,
+}: RenderFillBlankProps) => {
+  const value = answers[question.id] || '';
+  const userAns = value.trim().toLowerCase();
+  const correctAnswers = (question.correctAnswer || '').split('/').map((s: string) => s.trim().toLowerCase());
+  const isCorrect = submitted && correctAnswers.includes(userAns);
+
+  return (
+    <span className="inline-flex items-center gap-1.5 mx-1 my-0.5">
+      <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] border border-indigo-100 shadow-sm">
+        {globalQNum}
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+        onDragOver={(e) => {
+          if (!submitted) {
+            e.preventDefault();
+          }
+        }}
+        onDrop={(e) => {
+          if (!submitted) {
+            e.preventDefault();
+            const letter = e.dataTransfer.getData('text/plain');
+            if (letter) {
+              handleAnswerChange(question.id, letter);
+            }
+          }
+        }}
+        disabled={submitted}
+        className={`inline-block w-40 px-3 py-1.5 border rounded-md text-center font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner text-sm ${
+          submitted 
+            ? isCorrect 
+              ? 'border-green-500 bg-green-50' 
+              : 'border-red-400 bg-red-50' 
+            : 'border-indigo-200 bg-white hover:border-indigo-400'
+        }`}
+        placeholder="..."
+        style={{ minWidth: '120px' }}
+      />
+      {submitted && (
+        <span className={`text-xs font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+          {isCorrect ? '✓' : `✗ ${question.correctAnswer}`}
+        </span>
+      )}
+    </span>
+  );
+};
+
+interface RenderMCQProps {
+  question: any;
+  globalQNum: number;
+  answers: Record<string, string>;
+  submitted: boolean;
+  handleAnswerChange: (qId: string | Record<string, string>, val: string) => void;
+}
+
+const RenderMCQ = ({
+  question,
+  globalQNum,
+  answers,
+  submitted,
+  handleAnswerChange,
+}: RenderMCQProps) => {
+  const isSelected = (opt: string) => {
+    const userAns = answers[question.id] || '';
+    return userAns === opt || userAns.trim().toLowerCase() === opt.trim().split('.')[0].trim().toLowerCase();
+  };
+
+  return (
+    <div className="p-5 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-indigo-50 shadow-sm space-y-4 my-5 hover:border-indigo-100 transition-all">
+      <div className="flex items-start gap-3">
+        <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
+          {globalQNum}
+        </span>
+        <p className="text-gray-800 font-semibold text-[15px] leading-relaxed">{question.text}</p>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-2.5 pl-10">
+        {question.options?.map((opt: string, i: number) => {
+          const checked = isSelected(opt);
+          return (
+            <label key={i} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all border ${
+              checked 
+                ? 'bg-indigo-50/60 border-indigo-200 shadow-sm font-semibold' 
+                : 'bg-white border-gray-150 hover:bg-gray-50/80 hover:border-gray-250'
+            }`}>
+              <input
+                type="radio"
+                name={question.id}
+                value={opt}
+                checked={checked}
+                onChange={() => handleAnswerChange(question.id, opt)}
+                disabled={submitted}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+              />
+              <span className="ml-3 text-[14px] text-gray-700">{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+
+      {submitted && (() => {
+        const userAns = (answers[question.id] || '').trim().toLowerCase();
+        const correctAns = (question.correctAnswer || '').trim().toLowerCase();
+        const userLetter = userAns.includes('.') ? userAns.split('.')[0].trim() : userAns;
+        const isCorrect = correctAns.split('/').map((s: string) => s.trim().toLowerCase()).includes(userLetter);
+
+        return (
+          <div className={`ml-10 mt-3 p-3.5 rounded-xl flex items-start gap-2.5 ${isCorrect ? 'bg-green-50/60 border border-green-150' : 'bg-red-50/60 border border-red-150'}`}>
+            {isCorrect ? (
+              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+            ) : (
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            )}
+            <div>
+              <p className={`text-sm font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
+                {isCorrect ? 'Correct!' : 'Incorrect'}
+              </p>
+              {!isCorrect && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Correct answer: <span className="font-bold uppercase bg-white px-2 py-0.5 rounded border border-gray-150 text-indigo-700">{question.correctAnswer}</span>
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  );
+};
+
+interface RenderGroupedMCQProps {
+  groupQuestions: any[];
+  qNums: number[];
+  questions: any[];
+  questionOffset: number;
+  answers: Record<string, string>;
+  submitted: boolean;
+  handleAnswerChange: (qId: string | Record<string, string>, val: string) => void;
+}
+
+const RenderGroupedMCQ = ({
+  groupQuestions,
+  qNums,
+  questions,
+  questionOffset,
+  answers,
+  submitted,
+  handleAnswerChange,
+}: RenderGroupedMCQProps) => {
+  const representative = groupQuestions[0];
+  const groupLength = groupQuestions.length;
+  
+  const firstOrigIdx = questions.findIndex((origQ: any) => origQ.id === groupQuestions[0].id);
+  const startQ = questionOffset + firstOrigIdx + 1;
+  const endQ = startQ + groupLength - 1;
+  const qNumDisplay = startQ === endQ ? `${startQ}` : `${startQ}–${endQ}`;
+
+  const selectedChoices = groupQuestions.map((q: any) => {
+    const val = answers[q.id] || '';
+    return val.includes('.') ? val.split('.')[0].trim() : val.trim();
+  }).filter(Boolean);
+
+  const isSelected = (opt: string) => {
+    const letter = opt.trim().split('.')[0].trim();
+    const optVal = opt.includes('.') ? letter : opt;
+    return selectedChoices.includes(optVal);
+  };
+
+  const handleChoiceChange = (opt: string) => {
+    const letter = opt.trim().split('.')[0].trim();
+    const optVal = opt.includes('.') ? letter : opt;
+
+    const newChoices = [...selectedChoices];
+    if (newChoices.includes(optVal)) {
+      const idx = newChoices.indexOf(optVal);
+      newChoices.splice(idx, 1);
+    } else {
+      if (newChoices.length < groupLength) {
+        newChoices.push(optVal);
+      } else {
+        newChoices.shift();
+        newChoices.push(optVal);
+      }
+    }
+
+    const updates: Record<string, string> = {};
+    groupQuestions.forEach((q: any, idx: number) => {
+      updates[q.id] = newChoices[idx] || '';
+    });
+    handleAnswerChange(updates, '');
+  };
+
+  return (
+    <div className="p-5 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-indigo-50 shadow-sm space-y-4 my-5 hover:border-indigo-100 transition-all">
+      <div className="flex items-start gap-3">
+        <span className="flex-shrink-0 flex items-center justify-center h-8 min-w-[3.5rem] px-2 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
+          {qNumDisplay}
+        </span>
+        <p className="text-gray-800 font-semibold text-[15px] leading-relaxed">{representative.text}</p>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-2.5 pl-10">
+        {representative.options?.map((opt: string, i: number) => {
+          const checked = isSelected(opt);
+          return (
+            <label key={i} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all border ${
+              checked 
+                ? 'bg-indigo-50/60 border-indigo-200 shadow-sm font-semibold' 
+                : 'bg-white border-gray-150 hover:bg-gray-50/80 hover:border-gray-250'
+            }`}>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => handleChoiceChange(opt)}
+                disabled={submitted}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <span className="ml-3 text-[14px] text-gray-700">{opt}</span>
+            </label>
+          );
+        })}
+      </div>
+
+      {submitted && (() => {
+        const allCorrectAnswers = groupQuestions.flatMap((q: any) => (q.correctAnswer || '').split('/').map((s: string) => s.trim().toLowerCase()));
+        
+        return (
+          <div className="ml-10 mt-3 p-3.5 bg-indigo-50/30 border border-indigo-100 rounded-xl space-y-2">
+            <p className="text-sm font-bold text-indigo-900">Correction & Feedback</p>
+            {groupQuestions.map((q: any, idx: number) => {
+              const userAns = (answers[q.id] || '').trim().toLowerCase();
+              const isCorrect = userAns && allCorrectAnswers.includes(userAns);
+              const displayNum = startQ + idx;
+              
+              return (
+                <div key={q.id} className="flex items-center gap-2 text-xs">
+                  <span className="font-bold text-gray-600">Q{displayNum}:</span>
+                  <span className="font-semibold text-gray-800">{answers[q.id] || '(Blank)'}</span>
+                  {isCorrect ? (
+                    <span className="text-green-600 font-bold">✓ Correct</span>
+                  ) : (
+                    <span className="text-red-600 font-bold">✗ Ans: {q.correctAnswer}</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+    </div>
+  );
+};
+
+interface HtmlLayoutRendererProps {
+  htmlContent: string;
+  questions: any[];
+  questionOffset: number;
+  answers: Record<string, string>;
+  submitted: boolean;
+  handleAnswerChange: (qId: string | Record<string, string>, val: string) => void;
+}
+
+const HtmlLayoutRenderer = ({
+  htmlContent,
+  questions,
+  questionOffset,
+  answers,
+  submitted,
+  handleAnswerChange,
+}: HtmlLayoutRendererProps) => {
+  const doc = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    return new DOMParser().parseFromString(htmlContent, 'text/html');
+  }, [htmlContent]);
+
+  if (!doc) return null;
+
+  const renderNode = (node: Node, key: string): React.ReactNode => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node.textContent;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return null;
+    }
+
+    const el = node as HTMLElement;
+    const tagName = el.tagName.toLowerCase();
+
+    // Check if it's a question item (MCQ, matching, or fillBlank)
+    // We do NOT intercept table rows (tr) because they represent radio grids
+    if (el.classList.contains('ielts-listening-question-item') && tagName !== 'tr') {
+      const optionsDivs = el.querySelectorAll('.ielts-listening-option');
+      if (optionsDivs.length > 0) {
+        const qNumEls = Array.from(el.querySelectorAll('.ielts-listening-question-number'));
+        let qNums = qNumEls.map(numEl => parseInt(numEl.textContent?.trim().replace(/[^\d]/g, '') || '', 10)).filter(n => !isNaN(n));
+        if (qNums.length === 0) {
+          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+          const qNum = parseInt(qNumText.trim(), 10);
+          if (!isNaN(qNum)) {
+            qNums = [qNum];
+          }
+        }
+
+        if (qNums.length > 0) {
+          const groupQuestions = qNums.map(num => questions.find((q: any) => q?.id?.endsWith(`q${num}`))).filter(Boolean);
+          if (groupQuestions.length > 1) {
+            return (
+              <RenderGroupedMCQ 
+                key={key} 
+                groupQuestions={groupQuestions} 
+                qNums={qNums} 
+                questions={questions}
+                questionOffset={questionOffset}
+                answers={answers}
+                submitted={submitted}
+                handleAnswerChange={handleAnswerChange}
+              />
+            );
+          } else if (groupQuestions.length === 1) {
+            const question = groupQuestions[0];
+            const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
+            const globalQNum = questionOffset + origIdx + 1;
+            return (
+              <RenderMCQ 
+                key={key} 
+                question={question} 
+                globalQNum={globalQNum} 
+                answers={answers}
+                submitted={submitted}
+                handleAnswerChange={handleAnswerChange}
+              />
+            );
+          }
+        }
+      } else if (el.querySelector('.options-drop-zone') || el.querySelector('.dnd-zone')) {
+        // If it contains a drop zone, let it render recursively to preserve comment text.
+      } else {
+        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
+        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+        
+        if (!isNaN(qNum)) {
+          const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
+          if (question) {
+            const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
+            const globalQNum = questionOffset + origIdx + 1;
+            return (
+              <RenderFillBlank 
+                key={key} 
+                question={question} 
+                globalQNum={globalQNum} 
+                answers={answers}
+                submitted={submitted}
+                handleAnswerChange={handleAnswerChange}
+              />
+            );
+          }
+        }
+      }
+    }
+
+    // Intercept matching/drop zone elements and render a React input
+    if (el.classList.contains('options-drop-zone') || el.classList.contains('dnd-zone')) {
+      const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
+      const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+      if (!isNaN(qNum)) {
+        const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
+        if (question) {
+          const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
+          const globalQNum = questionOffset + origIdx + 1;
+          return (
+            <RenderFillBlank 
+              key={key} 
+              question={question} 
+              globalQNum={globalQNum} 
+              answers={answers}
+              submitted={submitted}
+              handleAnswerChange={handleAnswerChange}
+            />
+          );
+        }
+      }
+    }
+
+    // Handle radio buttons inside matching table grids
+    if (tagName === 'input' && el.getAttribute('type') === 'radio') {
+      const parentRow = el.closest('tr');
+      if (parentRow) {
+        const qNumText = parentRow.querySelector('.ielts-listening-question-number')?.textContent || '';
+        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+        if (!isNaN(qNum)) {
+          const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
+          if (question) {
+            const value = el.getAttribute('value') || '';
+            const checked = answers[question.id] === value;
+            return (
+              <input
+                key={key}
+                type="radio"
+                name={question.id}
+                value={value}
+                checked={checked}
+                disabled={submitted}
+                onChange={() => handleAnswerChange(question.id, value)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer"
+              />
+            );
+          }
+        }
+      }
+    }
+    
+    // Hide static input tags (but preserve radio buttons)
+    if (tagName === 'input' && el.getAttribute('type') !== 'radio') {
+      return null;
+    }
+
+    // Remove WordPress/engnovate dynamic elements
+    if (
+      el.classList.contains('ielts-listening-section-start-time-button') || 
+      tagName === 'audio' || 
+      el.classList.contains('ielts-listening-part-audio')
+    ) {
+      return null;
+    }
+
+    const children = Array.from(el.childNodes).map((child, idx) => renderNode(child, `${key}-${idx}`));
+
+    const props: any = { key };
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name === 'class') {
+        props.className = attr.value;
+      } else if (attr.name === 'style') {
+        const styleObj: any = {};
+        attr.value.split(';').forEach(pair => {
+          const [k, v] = pair.split(':');
+          if (k && v) {
+            const trimmedKey = k.trim();
+            if (trimmedKey.toLowerCase() === 'color') {
+              return; // Skip inline color to prevent theme contrast issues
+            }
+            const camelKey = trimmedKey.replace(/-./g, x => x[1].toUpperCase());
+            styleObj[camelKey] = v.trim();
+          }
+        });
+        props.style = styleObj;
+      } else {
+        props[attr.name] = attr.value;
+      }
+    }
+
+    // Format elements to look premium and match Tailwind aesthetics
+    if (tagName === 'table') {
+      props.className = `${props.className || ''} w-full my-6 border-collapse border border-indigo-100 shadow-sm rounded-2xl overflow-hidden bg-white/60 backdrop-blur-sm`;
+    } else if (tagName === 'th') {
+      props.className = `${props.className || ''} border border-indigo-100/50 bg-indigo-50/70 px-4 py-3.5 text-left font-bold text-indigo-900 text-sm tracking-wide uppercase`;
+    } else if (tagName === 'td') {
+      props.className = `${props.className || ''} border border-indigo-50 px-4 py-3.5 text-gray-700 text-sm leading-relaxed font-medium align-middle`;
+      
+      // Append validation feedback for matching question cell
+      if (el.classList.contains('ielts-listening-matching-question-cell')) {
+        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
+        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
+        if (!isNaN(qNum)) {
+          const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
+          if (question && submitted) {
+            const userAns = (answers[question.id] || '').trim().toLowerCase();
+            const correctAns = (question.correctAnswer || '').trim().toLowerCase();
+            const isCorrect = userAns === correctAns;
+            
+            return (
+              <td key={key} className={props.className}>
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">{children}</span>
+                  {isCorrect ? (
+                    <span className="text-green-600 font-bold text-[10px] bg-green-50 px-1.5 py-0.5 rounded border border-green-150 flex-shrink-0">✓ Correct</span>
+                  ) : (
+                    <span className="text-red-600 font-bold text-[10px] bg-red-50 px-1.5 py-0.5 rounded border border-red-150 flex-shrink-0">✗ Ans: {question.correctAnswer}</span>
+                  )}
+                </div>
+              </td>
+            );
+          }
+        }
+      }
+    } else if (tagName === 'ul') {
+      props.className = `${props.className || ''} space-y-3 my-4 pl-1`;
+    } else if (tagName === 'li') {
+      props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed list-none flex items-start gap-2`;
+    } else if (tagName === 'h2' || tagName === 'h3') {
+      props.className = `${props.className || ''} text-base font-bold text-indigo-900 mt-6 mb-2 border-b pb-1.5 border-indigo-50`;
+    } else if (tagName === 'p') {
+      props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed my-2`;
+    } else if (tagName === 'strong') {
+      props.className = `${props.className || ''} text-gray-900 font-bold`;
+    } else if (tagName === 'em') {
+      props.className = `${props.className || ''} text-gray-500 italic text-xs`;
+    } else if (tagName === 'img') {
+      props.className = `${props.className || ''} max-w-full h-auto rounded-xl border border-gray-200 shadow-md my-4 mx-auto block bg-white p-3`;
+    }
+
+    // Add custom styles for drag and drop matching option panel elements
+    if (el.classList.contains('dnd-panel') || el.classList.contains('options-dnd-panel')) {
+      props.className = `${props.className || ''} bg-indigo-50/30 rounded-2xl p-5 border border-indigo-100/50 my-6 shadow-sm`;
+    } else if (el.classList.contains('dnd-panel-instruction')) {
+      props.className = `${props.className || ''} text-xs font-semibold text-indigo-700 mb-3.5`;
+    } else if (el.classList.contains('dnd-cards-container')) {
+      props.className = `${props.className || ''} flex flex-wrap gap-2.5`;
+    } else if (el.classList.contains('dnd-card')) {
+      props.className = `${props.className || ''} px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-900 border border-indigo-100/80 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-grab active:cursor-grabbing select-none`;
+      if (!submitted) {
+        props.draggable = true;
+        props.onDragStart = (e: any) => {
+          const val = el.getAttribute('data-value') || '';
+          e.dataTransfer.setData('text/plain', val);
+        };
+      }
+    } else if (el.classList.contains('dnd-label')) {
+      props.className = `${props.className || ''} text-indigo-500 font-bold`;
+    } else if (el.classList.contains('dnd-text')) {
+      props.className = `${props.className || ''} text-indigo-950 font-medium`;
+    }
+
+    const VOID_ELEMENTS = new Set(['img', 'br', 'hr', 'input', 'source', 'link', 'meta', 'area', 'base', 'col', 'embed', 'param', 'track', 'wbr']);
+    if (VOID_ELEMENTS.has(tagName)) {
+      return React.createElement(tagName, props);
+    }
+    return React.createElement(tagName, props, children);
+  };
+
+  return (
+    <div className="ielts-scraped-layout prose max-w-none space-y-6 text-gray-800">
+      {Array.from(doc.body.childNodes).map((child, idx) => renderNode(child, `root-${idx}`))}
+    </div>
+  );
+};
+
 function ListeningPracticeContent() {
   const searchParams = useSearchParams();
   const testId = searchParams.get('testId') || searchParams.get('id');
@@ -335,467 +889,18 @@ function ListeningPracticeContent() {
 
       // Check if we can merge with the last section
       const lastSection = sections[sections.length - 1];
-      if (lastSection && lastSection.type === type && lastSection.isGrouped === isGrouped) {
+      if (lastSection && lastSection.type === type && lastSection.isGrouped === isGrouped && lastSection.optionCount === optionCount) {
         lastSection.groups.push(group);
       } else {
-        sections.push({ type, isGrouped, optionCount, groups: [group] });
+        sections.push({
+          type,
+          isGrouped,
+          optionCount,
+          groups: [group]
+        });
       }
     });
-
     return sections;
-  };
-
-  // ─── Scraped HTML Layout Renderer ──────────────────────────────────────────
-  const renderFillBlank = (question: any, globalQNum: number, key: string) => {
-    const value = answers[question.id] || '';
-    const userAns = value.trim().toLowerCase();
-    const correctAnswers = (question.correctAnswer || '').split('/').map((s: string) => s.trim().toLowerCase());
-    const isCorrect = submitted && correctAnswers.includes(userAns);
-
-    return (
-      <span key={key} className="inline-flex items-center gap-1.5 mx-1 my-0.5">
-        <span className="flex-shrink-0 flex items-center justify-center h-6 w-6 rounded-full bg-indigo-50 text-indigo-700 font-bold text-[10px] border border-indigo-100 shadow-sm">
-          {globalQNum}
-        </span>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-          onDragOver={(e) => {
-            if (!submitted) {
-              e.preventDefault();
-            }
-          }}
-          onDrop={(e) => {
-            if (!submitted) {
-              e.preventDefault();
-              const letter = e.dataTransfer.getData('text/plain');
-              if (letter) {
-                handleAnswerChange(question.id, letter);
-              }
-            }
-          }}
-          disabled={submitted}
-          className={`inline-block w-40 px-3 py-1.5 border rounded-md text-center font-semibold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner text-sm ${
-            submitted 
-              ? isCorrect 
-                ? 'border-green-500 bg-green-50' 
-                : 'border-red-400 bg-red-50' 
-              : 'border-indigo-200 bg-white hover:border-indigo-400'
-          }`}
-          placeholder="..."
-          style={{ minWidth: '120px' }}
-        />
-        {submitted && (
-          <span className={`text-xs font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
-            {isCorrect ? '✓' : `✗ ${question.correctAnswer}`}
-          </span>
-        )}
-      </span>
-    );
-  };
-
-  const renderMCQ = (question: any, globalQNum: number, key: string) => {
-    const isSelected = (opt: string) => {
-      const userAns = answers[question.id] || '';
-      return userAns === opt || userAns.trim().toLowerCase() === opt.trim().split('.')[0].trim().toLowerCase();
-    };
-
-    return (
-      <div key={key} className="p-5 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-indigo-50 shadow-sm space-y-4 my-5 hover:border-indigo-100 transition-all">
-        <div className="flex items-start gap-3">
-          <span className="flex-shrink-0 flex items-center justify-center h-7 w-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
-            {globalQNum}
-          </span>
-          <p className="text-gray-800 font-semibold text-[15px] leading-relaxed">{question.text}</p>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-2.5 pl-10">
-          {question.options?.map((opt: string, i: number) => {
-            const checked = isSelected(opt);
-            return (
-              <label key={i} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all border ${
-                checked 
-                  ? 'bg-indigo-50/60 border-indigo-200 shadow-sm font-semibold' 
-                  : 'bg-white border-gray-150 hover:bg-gray-50/80 hover:border-gray-250'
-              }`}>
-                <input
-                  type="radio"
-                  name={question.id}
-                  value={opt}
-                  checked={checked}
-                  onChange={() => handleAnswerChange(question.id, opt)}
-                  disabled={submitted}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                />
-                <span className="ml-3 text-[14px] text-gray-700">{opt}</span>
-              </label>
-            );
-          })}
-        </div>
-
-        {submitted && (() => {
-          const userAns = (answers[question.id] || '').trim().toLowerCase();
-          const correctAns = (question.correctAnswer || '').trim().toLowerCase();
-          const userLetter = userAns.includes('.') ? userAns.split('.')[0].trim() : userAns;
-          const isCorrect = correctAns.split('/').map((s: string) => s.trim().toLowerCase()).includes(userLetter);
-
-          return (
-            <div className={`ml-10 mt-3 p-3.5 rounded-xl flex items-start gap-2.5 ${isCorrect ? 'bg-green-50/60 border border-green-150' : 'bg-red-50/60 border border-red-150'}`}>
-              {isCorrect ? (
-                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-              )}
-              <div>
-                <p className={`text-sm font-bold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
-                  {isCorrect ? 'Correct!' : 'Incorrect'}
-                </p>
-                {!isCorrect && (
-                  <p className="text-xs text-gray-600 mt-1">
-                    Correct answer: <span className="font-bold uppercase bg-white px-2 py-0.5 rounded border border-gray-150 text-indigo-700">{question.correctAnswer}</span>
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        })()}
-      </div>
-    );
-  };
-
-  const renderGroupedMCQ = (groupQuestions: any[], qNums: number[], key: string) => {
-    const representative = groupQuestions[0];
-    const groupLength = groupQuestions.length;
-    
-    const firstOrigIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === groupQuestions[0].id);
-    const startQ = questionOffset + firstOrigIdx + 1;
-    const endQ = startQ + groupLength - 1;
-    const qNumDisplay = startQ === endQ ? `${startQ}` : `${startQ}–${endQ}`;
-
-    const selectedChoices = groupQuestions.map((q: any) => {
-      const val = answers[q.id] || '';
-      return val.includes('.') ? val.split('.')[0].trim() : val.trim();
-    }).filter(Boolean);
-
-    const isSelected = (opt: string) => {
-      const letter = opt.trim().split('.')[0].trim();
-      const optVal = opt.includes('.') ? letter : opt;
-      return selectedChoices.includes(optVal);
-    };
-
-    const handleChoiceChange = (opt: string) => {
-      const letter = opt.trim().split('.')[0].trim();
-      const optVal = opt.includes('.') ? letter : opt;
-
-      const newChoices = [...selectedChoices];
-      if (newChoices.includes(optVal)) {
-        const idx = newChoices.indexOf(optVal);
-        newChoices.splice(idx, 1);
-      } else {
-        if (newChoices.length < groupLength) {
-          newChoices.push(optVal);
-        } else {
-          newChoices.shift();
-          newChoices.push(optVal);
-        }
-      }
-
-      const updates: Record<string, string> = {};
-      groupQuestions.forEach((q: any, idx: number) => {
-        updates[q.id] = newChoices[idx] || '';
-      });
-      handleAnswerChange(updates, '');
-    };
-
-    return (
-      <div key={key} className="p-5 bg-gray-50/50 backdrop-blur-sm rounded-2xl border border-indigo-50 shadow-sm space-y-4 my-5 hover:border-indigo-100 transition-all">
-        <div className="flex items-start gap-3">
-          <span className="flex-shrink-0 flex items-center justify-center h-8 min-w-[3.5rem] px-2 rounded-full bg-indigo-100 text-indigo-700 font-bold text-sm">
-            {qNumDisplay}
-          </span>
-          <p className="text-gray-800 font-semibold text-[15px] leading-relaxed">{representative.text}</p>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-2.5 pl-10">
-          {representative.options?.map((opt: string, i: number) => {
-            const checked = isSelected(opt);
-            return (
-              <label key={i} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all border ${
-                checked 
-                  ? 'bg-indigo-50/60 border-indigo-200 shadow-sm font-semibold' 
-                  : 'bg-white border-gray-150 hover:bg-gray-50/80 hover:border-gray-250'
-              }`}>
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => handleChoiceChange(opt)}
-                  disabled={submitted}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <span className="ml-3 text-[14px] text-gray-700">{opt}</span>
-              </label>
-            );
-          })}
-        </div>
-
-        {submitted && (() => {
-          const allCorrectAnswers = groupQuestions.flatMap((q: any) => (q.correctAnswer || '').split('/').map((s: string) => s.trim().toLowerCase()));
-          
-          return (
-            <div className="ml-10 mt-3 p-3.5 bg-indigo-50/30 border border-indigo-100 rounded-xl space-y-2">
-              <p className="text-sm font-bold text-indigo-900">Correction & Feedback</p>
-              {groupQuestions.map((q: any, idx: number) => {
-                const userAns = (answers[q.id] || '').trim().toLowerCase();
-                const isCorrect = userAns && allCorrectAnswers.includes(userAns);
-                const displayNum = startQ + idx;
-                
-                return (
-                  <div key={q.id} className="flex items-center gap-2 text-xs">
-                    <span className="font-bold text-gray-600">Q{displayNum}:</span>
-                    <span className="font-semibold text-gray-800">{answers[q.id] || '(Blank)'}</span>
-                    {isCorrect ? (
-                      <span className="text-green-600 font-bold">✓ Correct</span>
-                    ) : (
-                      <span className="text-red-600 font-bold">✗ Ans: {q.correctAnswer}</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })()}
-      </div>
-    );
-  };
-
-  const HtmlLayoutRenderer = ({ htmlContent }: { htmlContent: string }) => {
-    const doc = useMemo(() => {
-      if (typeof window === 'undefined') return null;
-      return new DOMParser().parseFromString(htmlContent, 'text/html');
-    }, [htmlContent]);
-
-    if (!doc) return null;
-
-    const renderNode = (node: Node, key: string): React.ReactNode => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent;
-      }
-      if (node.nodeType !== Node.ELEMENT_NODE) {
-        return null;
-      }
-
-      const el = node as HTMLElement;
-      const tagName = el.tagName.toLowerCase();
-
-      // Check if it's a question item (MCQ, matching, or fillBlank)
-      // We do NOT intercept table rows (tr) because they represent radio grids
-      if (el.classList.contains('ielts-listening-question-item') && tagName !== 'tr') {
-        const optionsDivs = el.querySelectorAll('.ielts-listening-option');
-        if (optionsDivs.length > 0) {
-          const qNumEls = Array.from(el.querySelectorAll('.ielts-listening-question-number'));
-          let qNums = qNumEls.map(numEl => parseInt(numEl.textContent?.trim().replace(/[^\d]/g, '') || '', 10)).filter(n => !isNaN(n));
-          if (qNums.length === 0) {
-            const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
-            const qNum = parseInt(qNumText.trim(), 10);
-            if (!isNaN(qNum)) {
-              qNums = [qNum];
-            }
-          }
-
-          if (qNums.length > 0) {
-            const groupQuestions = qNums.map(num => currentPart.questions.find((q: any) => q?.id?.endsWith(`q${num}`))).filter(Boolean);
-            if (groupQuestions.length > 1) {
-              return renderGroupedMCQ(groupQuestions, qNums, key);
-            } else if (groupQuestions.length === 1) {
-              const question = groupQuestions[0];
-              const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
-              const globalQNum = questionOffset + origIdx + 1;
-              return renderMCQ(question, globalQNum, key);
-            }
-          }
-        } else if (el.querySelector('.options-drop-zone') || el.querySelector('.dnd-zone')) {
-          // If it contains a drop zone, let it render recursively to preserve comment text.
-        } else {
-          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
-          const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
-          
-          if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
-            if (question) {
-              const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
-              const globalQNum = questionOffset + origIdx + 1;
-              return renderFillBlank(question, globalQNum, key);
-            }
-          }
-        }
-      }
-
-      // Intercept matching/drop zone elements and render a React input
-      if (el.classList.contains('options-drop-zone') || el.classList.contains('dnd-zone')) {
-        const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
-        const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
-        if (!isNaN(qNum)) {
-          const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
-          if (question) {
-            const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
-            const globalQNum = questionOffset + origIdx + 1;
-            return renderFillBlank(question, globalQNum, key);
-          }
-        }
-      }
-
-      // Handle radio buttons inside matching table grids
-      if (tagName === 'input' && el.getAttribute('type') === 'radio') {
-        const parentRow = el.closest('tr');
-        if (parentRow) {
-          const qNumText = parentRow.querySelector('.ielts-listening-question-number')?.textContent || '';
-          const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
-          if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
-            if (question) {
-              const value = el.getAttribute('value') || '';
-              const checked = answers[question.id] === value;
-              return (
-                <input
-                  key={key}
-                  type="radio"
-                  name={question.id}
-                  value={value}
-                  checked={checked}
-                  disabled={submitted}
-                  onChange={() => handleAnswerChange(question.id, value)}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer"
-                />
-              );
-            }
-          }
-        }
-      }
-      
-      // Hide static input tags (but preserve radio buttons)
-      if (tagName === 'input' && el.getAttribute('type') !== 'radio') {
-        return null;
-      }
-
-      // Remove WordPress/engnovate dynamic elements
-      if (
-        el.classList.contains('ielts-listening-section-start-time-button') || 
-        tagName === 'audio' || 
-        el.classList.contains('ielts-listening-part-audio')
-      ) {
-        return null;
-      }
-
-      const children = Array.from(el.childNodes).map((child, idx) => renderNode(child, `${key}-${idx}`));
-
-      const props: any = { key };
-      for (const attr of Array.from(el.attributes)) {
-        if (attr.name === 'class') {
-          props.className = attr.value;
-        } else if (attr.name === 'style') {
-          const styleObj: any = {};
-          attr.value.split(';').forEach(pair => {
-            const [k, v] = pair.split(':');
-            if (k && v) {
-              const trimmedKey = k.trim();
-              if (trimmedKey.toLowerCase() === 'color') {
-                return; // Skip inline color to prevent theme contrast issues
-              }
-              const camelKey = trimmedKey.replace(/-./g, x => x[1].toUpperCase());
-              styleObj[camelKey] = v.trim();
-            }
-          });
-          props.style = styleObj;
-        } else {
-          props[attr.name] = attr.value;
-        }
-      }
-
-      // Format elements to look premium and match Tailwind aesthetics
-      if (tagName === 'table') {
-        props.className = `${props.className || ''} w-full my-6 border-collapse border border-indigo-100 shadow-sm rounded-2xl overflow-hidden bg-white/60 backdrop-blur-sm`;
-      } else if (tagName === 'th') {
-        props.className = `${props.className || ''} border border-indigo-100/50 bg-indigo-50/70 px-4 py-3.5 text-left font-bold text-indigo-900 text-sm tracking-wide uppercase`;
-      } else if (tagName === 'td') {
-        props.className = `${props.className || ''} border border-indigo-50 px-4 py-3.5 text-gray-700 text-sm leading-relaxed font-medium align-middle`;
-        
-        // Append validation feedback for matching question cell
-        if (el.classList.contains('ielts-listening-matching-question-cell')) {
-          const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
-          const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
-          if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
-            if (question && submitted) {
-              const userAns = (answers[question.id] || '').trim().toLowerCase();
-              const correctAns = (question.correctAnswer || '').trim().toLowerCase();
-              const isCorrect = userAns === correctAns;
-              
-              return (
-                <td key={key} className={props.className}>
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1">{children}</span>
-                    {isCorrect ? (
-                      <span className="text-green-600 font-bold text-[10px] bg-green-50 px-1.5 py-0.5 rounded border border-green-150 flex-shrink-0">✓ Correct</span>
-                    ) : (
-                      <span className="text-red-600 font-bold text-[10px] bg-red-50 px-1.5 py-0.5 rounded border border-red-150 flex-shrink-0">✗ Ans: {question.correctAnswer}</span>
-                    )}
-                  </div>
-                </td>
-              );
-            }
-          }
-        }
-      } else if (tagName === 'ul') {
-        props.className = `${props.className || ''} space-y-3 my-4 pl-1`;
-      } else if (tagName === 'li') {
-        props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed list-none flex items-start gap-2`;
-      } else if (tagName === 'h2' || tagName === 'h3') {
-        props.className = `${props.className || ''} text-base font-bold text-indigo-900 mt-6 mb-2 border-b pb-1.5 border-indigo-50`;
-      } else if (tagName === 'p') {
-        props.className = `${props.className || ''} text-gray-700 text-sm leading-relaxed my-2`;
-      } else if (tagName === 'strong') {
-        props.className = `${props.className || ''} text-gray-900 font-bold`;
-      } else if (tagName === 'em') {
-        props.className = `${props.className || ''} text-gray-500 italic text-xs`;
-      } else if (tagName === 'img') {
-        props.className = `${props.className || ''} max-w-full h-auto rounded-xl border border-gray-200 shadow-md my-4 mx-auto block bg-white p-3`;
-      }
-
-      // Add custom styles for drag and drop matching option panel elements
-      if (el.classList.contains('dnd-panel') || el.classList.contains('options-dnd-panel')) {
-        props.className = `${props.className || ''} bg-indigo-50/30 rounded-2xl p-5 border border-indigo-100/50 my-6 shadow-sm`;
-      } else if (el.classList.contains('dnd-panel-instruction')) {
-        props.className = `${props.className || ''} text-xs font-semibold text-indigo-700 mb-3.5`;
-      } else if (el.classList.contains('dnd-cards-container')) {
-        props.className = `${props.className || ''} flex flex-wrap gap-2.5`;
-      } else if (el.classList.contains('dnd-card')) {
-        props.className = `${props.className || ''} px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100/80 text-indigo-900 border border-indigo-100/80 rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-grab active:cursor-grabbing select-none`;
-        if (!submitted) {
-          props.draggable = true;
-          props.onDragStart = (e: any) => {
-            const val = el.getAttribute('data-value') || '';
-            e.dataTransfer.setData('text/plain', val);
-          };
-        }
-      } else if (el.classList.contains('dnd-label')) {
-        props.className = `${props.className || ''} text-indigo-500 font-bold`;
-      } else if (el.classList.contains('dnd-text')) {
-        props.className = `${props.className || ''} text-indigo-950 font-medium`;
-      }
-
-      const VOID_ELEMENTS = new Set(['img', 'br', 'hr', 'input', 'source', 'link', 'meta', 'area', 'base', 'col', 'embed', 'param', 'track', 'wbr']);
-      if (VOID_ELEMENTS.has(tagName)) {
-        return React.createElement(tagName, props);
-      }
-      return React.createElement(tagName, props, children);
-    };
-
-    return (
-      <div className="ielts-scraped-layout prose max-w-none space-y-6 text-gray-800">
-        {Array.from(doc.body.childNodes).map((child, idx) => renderNode(child, `root-${idx}`))}
-      </div>
-    );
   };
 
   // ─── Render the questions for the current part ──────────────────────────────
@@ -812,7 +917,16 @@ function ListeningPracticeContent() {
           </div>
         );
       }
-      return <HtmlLayoutRenderer htmlContent={currentPart.layoutHtml} />;
+      return (
+        <HtmlLayoutRenderer 
+          htmlContent={currentPart.layoutHtml} 
+          questions={currentPart.questions}
+          questionOffset={questionOffset}
+          answers={answers}
+          submitted={submitted}
+          handleAnswerChange={handleAnswerChange}
+        />
+      );
     }
 
     const questions = currentPart.questions;

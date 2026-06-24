@@ -16,7 +16,7 @@ export default function CTASection() {
           className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center"
         >
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-accent via-accent-bright to-purple-600 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent via-accent-bright to-primary-light opacity-95" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
           <motion.div
             animate={{ rotate: 360 }}

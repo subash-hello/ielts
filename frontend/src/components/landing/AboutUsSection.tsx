@@ -9,14 +9,14 @@ const creators = [
     role: 'Full Stack Engineer & AI Specialist',
     description: 'Passionate about building scalable web applications and integrating cutting-edge AI models to solve real-world educational challenges.',
     icon: Code,
-    color: 'from-accent to-blue-500'
+    color: 'from-accent to-accent-bright'
   },
   {
     name: 'Rohan Aacharya',
     role: 'Software Architect & Product Designer',
     description: 'Dedicated to creating intuitive user experiences and robust backend architectures that empower students globally.',
     icon: Terminal,
-    color: 'from-neon to-cyan-500'
+    color: 'from-neon to-accent'
   }
 ];
 

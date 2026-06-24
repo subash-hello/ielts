@@ -50,11 +50,11 @@ export default function PricingSection() {
 
           {/* Toggle */}
           <div className="inline-flex items-center gap-3 glass rounded-full p-1">
-            <button onClick={() => setAnnual(false)} className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!annual ? 'bg-gradient-to-r from-accent to-accent-bright text-white' : 'text-text-muted'}`}>
+            <button onClick={() => setAnnual(false)} className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${!annual ? 'bg-gradient-to-r from-accent to-accent-bright text-primary-dark' : 'text-text-muted'}`}>
               Monthly
             </button>
-            <button onClick={() => setAnnual(true)} className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${annual ? 'bg-gradient-to-r from-accent to-accent-bright text-white' : 'text-text-muted'}`}>
-              Annual <span className="text-neon-green text-xs ml-1">Save 20%</span>
+            <button onClick={() => setAnnual(true)} className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${annual ? 'bg-gradient-to-r from-accent to-accent-bright text-primary-dark' : 'text-text-muted'}`}>
+              Annual <span className="text-neon-green text-xs ml-1 font-semibold">Save 20%</span>
             </button>
           </div>
         </motion.div>
@@ -72,14 +72,14 @@ export default function PricingSection() {
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-accent to-accent-bright text-white text-xs font-bold">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-accent to-accent-bright text-primary-dark text-xs font-bold">
                   MOST POPULAR
                 </div>
               )}
 
               <div className="flex items-center gap-3 mb-4">
                 <div className={`w-10 h-10 rounded-xl ${plan.popular ? 'bg-gradient-to-br from-accent to-accent-bright' : 'bg-surface'} flex items-center justify-center`}>
-                  <plan.icon className={`w-5 h-5 ${plan.popular ? 'text-white' : 'text-accent'}`} />
+                  <plan.icon className={`w-5 h-5 ${plan.popular ? 'text-primary-dark' : 'text-accent'}`} />
                 </div>
                 <h3 className="text-lg font-bold text-white">{plan.name}</h3>
               </div>
@@ -97,7 +97,7 @@ export default function PricingSection() {
                 href="/signup"
                 className={`block w-full py-3 rounded-xl text-center font-semibold transition-all duration-300 mb-6 ${
                   plan.popular
-                    ? 'bg-gradient-to-r from-accent to-accent-bright text-white hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5'
+                    ? 'bg-gradient-to-r from-accent to-accent-bright text-primary-dark hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5'
                     : 'glass border border-border-glass text-white hover:bg-surface-hover hover:-translate-y-0.5'
                 }`}
               >

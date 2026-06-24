@@ -83,41 +83,52 @@ export default function NotebookPage() {
     const subjectName = prompt('Enter a chapter or subject name (e.g., "Reading Tips", "Vocabulary")');
     if (!subjectName || !subjectName.trim()) return;
 
-    const newEntry: NoteEntry = {
-      id: Date.now().toString(),
-      subject: subjectName.trim(),
-      content: '',
-      lastModified: Date.now()
-    };
-    
-    const newEntries = [newEntry, ...entries];
-    setEntries(newEntries);
-    setActiveEntryId(newEntry.id);
-    localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+    setEntries(prev => {
+      const newEntry: NoteEntry = {
+        id: Date.now().toString(),
+        subject: subjectName.trim(),
+        content: '',
+        lastModified: Date.now()
+      };
+      const newEntries = [newEntry, ...prev];
+      setActiveEntryId(newEntry.id);
+      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+      return newEntries;
+    });
   };
 
   const deleteEntry = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this chapter?')) {
-      const newEntries = entries.filter(entry => entry.id !== id);
-      setEntries(newEntries);
-      if (activeEntryId === id) {
-        setActiveEntryId(newEntries.length > 0 ? newEntries[0].id : null);
-      }
-      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+      setEntries(prev => {
+        const newEntries = prev.filter(entry => entry.id !== id);
+        if (activeEntryId === id) {
+          setActiveEntryId(newEntries.length > 0 ? newEntries[0].id : null);
+        }
+        localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+        return newEntries;
+      });
     }
   };
 
   const updateActiveContent = (content: string) => {
-    setEntries(entries.map(e => 
-      e.id === activeEntryId ? { ...e, content, lastModified: Date.now() } : e
-    ));
+    setEntries(prev => {
+      const newEntries = prev.map(e => 
+        e.id === activeEntryId ? { ...e, content, lastModified: Date.now() } : e
+      );
+      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+      return newEntries;
+    });
   };
 
   const updateActiveSubject = (subject: string) => {
-    setEntries(entries.map(e => 
-      e.id === activeEntryId ? { ...e, subject, lastModified: Date.now() } : e
-    ));
+    setEntries(prev => {
+      const newEntries = prev.map(e => 
+        e.id === activeEntryId ? { ...e, subject, lastModified: Date.now() } : e
+      );
+      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+      return newEntries;
+    });
   };
 
   return (

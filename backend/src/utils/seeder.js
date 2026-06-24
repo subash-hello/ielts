@@ -1,5 +1,6 @@
 const TestContent = require('../models/TestContent');
 const cambridgeListeningTests = require('../data/cambridgeListeningTests');
+const cambridgeWritingTests = require('../data/cambridgeWritingTests');
 
 // Define 10 high-quality, completely unique IELTS templates
 const listeningTemplates = [
@@ -799,26 +800,25 @@ const seedDatabaseIfEmpty = async () => {
     await TestContent.deleteMany({ type: 'practice_task' });
     const practiceToInsert = [];
 
-    // 1. Seed 50 Reading Practice Tasks
-    for (let i = 1; i <= 50; i++) {
-      const templateIndex = (i - 1) % testTemplates.length;
-      const baseTemplate = testTemplates[templateIndex];
-      const difficulty = i <= 15 ? 'easy' : (i <= 35 ? 'medium' : 'hard');
-      const subject = getTemplateSubject(templateIndex);
+    // 1. Seed 32 Cambridge Reading Practice Tasks
+    const { topics: cambridgeReadingTopics, generateTestContent: generateReadingContent } = require('../data/cambridgeReadingTests');
+    for (let i = 0; i < cambridgeReadingTopics.length; i++) {
+      const topicData = cambridgeReadingTopics[i];
+      const generated = generateReadingContent(topicData);
       
       practiceToInsert.push({
-        title: `Reading Practice: ${subject} (Set ${i})`,
+        title: topicData.title,
         type: 'practice_task',
         subType: 'reading',
-        difficulty,
+        difficulty: topicData.difficulty,
         content: {
-          title: `${subject} - Passage ${i}`,
-          passage: baseTemplate.readingPassage,
-          questions: baseTemplate.readingQuestions,
+          title: topicData.title.split(' Academic ')[0] + " - " + topicData.topic,
+          passage: generated.passage,
+          questions: generated.questions,
           timeLimit: 20,
-          difficulty,
-          topic: subject,
-          type: i % 2 === 0 ? 'academic' : 'general'
+          difficulty: topicData.difficulty,
+          topic: topicData.topic,
+          type: topicData.type
         },
         isActive: true
       });
@@ -841,24 +841,15 @@ const seedDatabaseIfEmpty = async () => {
       });
     }
 
-    // 3. Seed 50 Writing Practice Tasks
-    for (let i = 1; i <= 50; i++) {
-      const taskIndex = (i - 1) % distinctWritingPrompts.length;
-      const taskData = distinctWritingPrompts[taskIndex];
-      const difficulty = i <= 15 ? 'easy' : (i <= 35 ? 'medium' : 'hard');
-      
+    // 3. Seed 40 Cambridge Writing Practice Tasks
+    for (let i = 0; i < cambridgeWritingTests.length; i++) {
+      const test = cambridgeWritingTests[i];
       practiceToInsert.push({
-        title: `Writing Task: ${taskData.desc.split('.')[0]} (Set ${i})`,
+        title: test.title,
         type: 'practice_task',
         subType: 'writing',
-        difficulty,
-        content: {
-          taskType: taskData.taskType,
-          prompt: taskData.prompt,
-          duration: taskData.taskType === 1 ? '20 min' : '40 min',
-          color: taskData.color,
-          image: taskData.image || null
-        },
+        difficulty: test.difficulty,
+        content: test.content,
         isActive: true
       });
     }
@@ -885,7 +876,7 @@ const seedDatabaseIfEmpty = async () => {
     }
 
     await TestContent.insertMany(practiceToInsert);
-    console.log('✅ Successfully seeded 200 dynamic Practice Tasks (50 sets per section).');
+    console.log(`✅ Successfully seeded ${practiceToInsert.length} dynamic Practice Tasks.`);
   } catch (error) {
     console.error('❌ Failed to run auto-seeding:', error.message);
   }

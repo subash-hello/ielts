@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import SilenceWarnings from "../components/SilenceWarnings";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const outfit = Outfit({
+  variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
 });
@@ -50,12 +56,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <SilenceWarnings />
-        <Toaster position="top-right" toastOptions={{ style: { background: '#1E1B4B', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } }} />
+        <Toaster position="top-right" toastOptions={{ style: { background: '#0F0F11', color: '#fff', border: '1px solid rgba(255,255,255,0.08)' } }} />
         {children}
       </body>
     </html>

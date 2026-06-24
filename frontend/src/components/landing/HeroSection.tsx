@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { ArrowRight, Sparkles, Users, TrendingUp, MessageSquare, Star } from 'lucide-react';
 
 const floatingCards = [
-  { label: 'Band Score', value: '7.5', color: 'from-neon-green to-neon', icon: Star, delay: 0 },
+  { label: 'Band Score', value: '7.5', color: 'from-neon-green to-accent', icon: Star, delay: 0 },
   { label: 'AI Feedback', value: 'Excellent!', color: 'from-accent to-accent-bright', icon: MessageSquare, delay: 0.2 },
-  { label: 'Improvement', value: '+1.5', color: 'from-accent-bright to-pink-400', icon: TrendingUp, delay: 0.4 },
+  { label: 'Improvement', value: '+1.5', color: 'from-accent-bright to-accent', icon: TrendingUp, delay: 0.4 },
 ];
 
 const stats = [
@@ -87,7 +87,7 @@ export default function HeroSection() {
             >
               <Link
                 href="/signup"
-                className="group px-8 py-4 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-semibold text-lg hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                className="group px-8 py-4 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-primary-dark font-semibold text-lg hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Start Learning Free
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
