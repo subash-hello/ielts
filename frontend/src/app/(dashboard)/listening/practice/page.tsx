@@ -740,6 +740,8 @@ function ListeningPracticeContent() {
         props.className = `${props.className || ''} text-gray-900 font-bold`;
       } else if (tagName === 'em') {
         props.className = `${props.className || ''} text-gray-500 italic text-xs`;
+      } else if (tagName === 'img') {
+        props.className = `${props.className || ''} max-w-full h-auto rounded-xl border border-gray-200 shadow-md my-4 mx-auto block bg-white p-3`;
       }
 
       // Add custom styles for drag and drop matching option panel elements

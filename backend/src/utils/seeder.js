@@ -746,6 +746,8 @@ const seedDatabaseIfEmpty = async () => {
         type: p.type,
         audioUrl: p.audioUrl,
         transcript: p.transcript,
+        imageUrl: p.imageUrl || null,
+        layoutHtml: p.layoutHtml || null,
         questions: p.questions.map((q, idx) => ({
           id: `test${i}_l_p${p.part}_q${idx + 1}`,
           type: q.type === 'multipleChoice' || q.type === 'mcq' ? 'mcq' : q.type === 'trueFalseNotGiven' ? 'trueFalseNotGiven' : q.type === 'mapLabeling' ? 'mapLabeling' : q.type === 'matching' ? 'matching' : 'fillBlank',

@@ -2560,6 +2560,8 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
       props.className = `${props.className || ''} text-white font-semibold`;
     } else if (tagName === 'em') {
       props.className = `${props.className || ''} text-text-muted italic text-[10px]`;
+    } else if (tagName === 'img') {
+      props.className = `${props.className || ''} max-w-full h-auto rounded-xl border border-border-glass/30 shadow-md my-4 mx-auto block bg-white/95 p-3`;
     }
 
     // Add custom styles for drag and drop matching option panel elements
