@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 // ─── Cambridge-style instruction text generator ───────────────────────────────
-function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number): { heading: string; instruction: string } {
+function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number, hasMap?: boolean): { heading: string; instruction: string } {
   if (type === 'fillBlank') {
     return {
       heading: 'Complete the notes below.',
@@ -18,10 +18,18 @@ function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: 
     };
   }
   if (type === 'matching') {
-    return {
-      heading: 'Label the map/plan below.',
-      instruction: 'Write the correct letter, A-G, next to the questions.'
-    };
+    if (hasMap) {
+      return {
+        heading: 'Label the map/plan below.',
+        instruction: 'Write the correct letter, A-G, next to the questions.'
+      };
+    } else {
+      const lastLetter = optionCount ? String.fromCharCode(64 + optionCount) : 'C';
+      return {
+        heading: 'Match the options to the questions.',
+        instruction: `Write the correct letter, A-${lastLetter}, next to the questions.`
+      };
+    }
   }
   if (type === 'multipleChoice' || type === 'mcq') {
     if (isGrouped) {
@@ -806,7 +814,7 @@ function ListeningPracticeContent() {
           const globalLast = questionOffset + lastIdx + 1;
 
           const { heading, instruction } = getCambridgeInstruction(
-            section.type, section.isGrouped, section.optionCount
+            section.type, section.isGrouped, section.optionCount, hasMap
           );
 
           return (

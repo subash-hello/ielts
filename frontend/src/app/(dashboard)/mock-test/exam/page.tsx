@@ -1275,10 +1275,20 @@ export default function MockExamPage() {
                         .slice(0, listenActivePart - 1)
                         .reduce((sum: number, p: any) => sum + (p.questions?.length || 0), 0);
 
+                      const hasMap = !!currentPart?.imageUrl || 
+                                     !!currentPart?.mapImage || 
+                                     questions.some((q: any) => q.type === 'mapLabeling' || !!q.mapImage);
+
                       // Helper for Cambridge instructions
-                      const getInstruction = (type: string, isGrouped: boolean, optionCount: number) => {
+                      const getInstruction = (type: string, isGrouped: boolean, optionCount: number, hasMapFlag?: boolean) => {
                         if (type === 'fillBlank') return { heading: 'Complete the notes below.', instruction: 'Write ONE WORD AND/OR A NUMBER for each answer.' };
-                        if (type === 'matching') return { heading: 'Label the map/plan below.', instruction: 'Choose the correct letter.' };
+                        if (type === 'matching') {
+                          if (hasMapFlag) {
+                            return { heading: 'Label the map/plan below.', instruction: 'Choose the correct letter.' };
+                          } else {
+                            return { heading: 'Match the options next to the questions.', instruction: 'Choose the correct letter.' };
+                          }
+                        }
                         if (type === 'multipleChoice' || type === 'mcq') {
                           if (isGrouped) {
                             const lastLetter = String.fromCharCode(64 + optionCount);
@@ -1332,7 +1342,7 @@ export default function MockExamPage() {
                             const lastIdx = questions.findIndex((q: any) => q.id === lastQ.id);
                             const globalFirst = questionOffset + firstIdx + 1;
                             const globalLast = questionOffset + lastIdx + 1;
-                            const { heading, instruction } = getInstruction(section.type, section.isGrouped, section.optionCount);
+                            const { heading, instruction } = getInstruction(section.type, section.isGrouped, section.optionCount, hasMap);
 
                             return (
                               <div key={`section-${sIdx}`} className="space-y-4">
