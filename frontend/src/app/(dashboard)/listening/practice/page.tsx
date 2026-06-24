@@ -784,6 +784,10 @@ function ListeningPracticeContent() {
         props.className = `${props.className || ''} text-indigo-950 font-medium`;
       }
 
+      const VOID_ELEMENTS = new Set(['img', 'br', 'hr', 'input', 'source', 'link', 'meta', 'area', 'base', 'col', 'embed', 'param', 'track', 'wbr']);
+      if (VOID_ELEMENTS.has(tagName)) {
+        return React.createElement(tagName, props);
+      }
       return React.createElement(tagName, props, children);
     };
 
