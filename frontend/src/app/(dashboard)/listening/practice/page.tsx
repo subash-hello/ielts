@@ -586,7 +586,7 @@ function ListeningPracticeContent() {
           }
 
           if (qNums.length > 0) {
-            const groupQuestions = qNums.map(num => currentPart.questions.find((q: any) => q.id.endsWith(`q${num}`))).filter(Boolean);
+            const groupQuestions = qNums.map(num => currentPart.questions.find((q: any) => q?.id?.endsWith(`q${num}`))).filter(Boolean);
             if (groupQuestions.length > 1) {
               return renderGroupedMCQ(groupQuestions, qNums, key);
             } else if (groupQuestions.length === 1) {
@@ -603,7 +603,7 @@ function ListeningPracticeContent() {
           const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
           
           if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
             if (question) {
               const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
               const globalQNum = questionOffset + origIdx + 1;
@@ -618,7 +618,7 @@ function ListeningPracticeContent() {
         const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
         const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
         if (!isNaN(qNum)) {
-          const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
           if (question) {
             const origIdx = currentPart.questions.findIndex((origQ: any) => origQ.id === question.id);
             const globalQNum = questionOffset + origIdx + 1;
@@ -634,7 +634,7 @@ function ListeningPracticeContent() {
           const qNumText = parentRow.querySelector('.ielts-listening-question-number')?.textContent || '';
           const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
           if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
             if (question) {
               const value = el.getAttribute('value') || '';
               const checked = answers[question.id] === value;
@@ -707,7 +707,7 @@ function ListeningPracticeContent() {
           const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || '';
           const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
           if (!isNaN(qNum)) {
-            const question = currentPart.questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+            const question = currentPart.questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
             if (question && submitted) {
               const userAns = (answers[question.id] || '').trim().toLowerCase();
               const correctAns = (question.correctAnswer || '').trim().toLowerCase();

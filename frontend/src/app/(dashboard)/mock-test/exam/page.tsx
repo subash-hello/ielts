@@ -1209,7 +1209,7 @@ export default function MockExamPage() {
                             pointerEvents: listeningPhase === 'checking' ? 'none' : 'auto'
                           }}
                         >
-                          <source src={currentPart.audioUrl} type={currentPart.audioUrl.endsWith('.webm') ? 'audio/webm' : 'audio/mpeg'} />
+                          <source src={currentPart.audioUrl} type={currentPart.audioUrl?.endsWith('.webm') ? 'audio/webm' : 'audio/mpeg'} />
                           Your browser does not support the audio element.
                         </audio>
                         <p className="text-[10px] text-text-muted mt-2 text-center">
@@ -2422,7 +2422,7 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
         }
 
         if (qNums.length > 0) {
-          const groupQuestions = qNums.map(num => questions.find((q: any) => q.id.endsWith(`q${num}`))).filter(Boolean);
+          const groupQuestions = qNums.map(num => questions.find((q: any) => q?.id?.endsWith(`q${num}`))).filter(Boolean);
           if (groupQuestions.length > 1) {
             const firstOrigIdx = questions.findIndex((origQ: any) => origQ.id === groupQuestions[0].id);
             const startQ = questionOffset + firstOrigIdx + 1;
@@ -2451,7 +2451,7 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
         const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
         
         if (!isNaN(qNum)) {
-          const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
           if (question) {
             const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
             const globalQNum = questionOffset + origIdx + 1;
@@ -2466,7 +2466,7 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
       const qNumText = el.querySelector('.ielts-listening-question-number')?.textContent || el.textContent || '';
       const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
       if (!isNaN(qNum)) {
-        const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+        const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
         if (question) {
           const origIdx = questions.findIndex((origQ: any) => origQ.id === question.id);
           const globalQNum = questionOffset + origIdx + 1;
@@ -2482,7 +2482,7 @@ const HtmlLayoutRenderer = ({ htmlContent, questions, questionOffset, listenAnsw
         const qNumText = parentRow.querySelector('.ielts-listening-question-number')?.textContent || '';
         const qNum = parseInt(qNumText.trim().replace(/[^\d]/g, ''), 10);
         if (!isNaN(qNum)) {
-          const question = questions.find((q: any) => q.id.endsWith(`q${qNum}`));
+          const question = questions.find((q: any) => q?.id?.endsWith(`q${qNum}`));
           if (question) {
             const value = el.getAttribute('value') || '';
             const checked = listenAnswers[question.id] === value;
