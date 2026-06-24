@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { api } from '@/lib/api';
 import { 
   Headphones, Play, Pause, ChevronLeft, ChevronRight, 
@@ -262,10 +263,27 @@ function ListeningPracticeContent() {
     </div>
   );
 
-  if (error || !testData) return (
-    <div className="flex flex-col items-center justify-center min-h-[500px] text-red-500">
-      <AlertTriangle className="h-12 w-12 mb-4" />
-      <h2 className="text-xl font-bold">{error || 'Test not found'}</h2>
+  if (error || !testData || !testData.parts || testData.parts.length === 0) return (
+    <div className="flex flex-col items-center justify-center min-h-[500px] text-center px-4">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="glass-card max-w-md w-full p-8 rounded-2xl border border-red-500/20 bg-red-500/5 text-center flex flex-col items-center shadow-lg"
+      >
+        <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/20 text-red-500">
+          <AlertCircle className="h-8 w-8" />
+        </div>
+        <h2 className="text-xl font-bold text-white mb-2">{error || 'Test Not Found'}</h2>
+        <p className="text-sm text-text-muted mb-8 max-w-xs">
+          The practice test you are trying to access could not be loaded. It may have been updated or removed.
+        </p>
+        <Link 
+          href="/listening"
+          className="px-6 py-3 bg-accent hover:bg-accent-bright text-white font-semibold rounded-xl shadow-md hover:shadow-accent/20 transition-all cursor-pointer"
+        >
+          Back to Listening Library
+        </Link>
+      </motion.div>
     </div>
   );
 
