@@ -106,6 +106,70 @@ Return JSON:
     return extractJSON(text);
   }
 
+  async generateFullSpeakingSet(specificTopic = '') {
+    const model = getModel();
+    let topicToUse = specificTopic;
+    if (!topicToUse) {
+      const topics = [
+        'Travel & Tourism', 'Music & Instruments', 'Food & Cooking Traditions',
+        'Science & Space Inventions', 'Art, Craft & Creativity', 'Nature, Parks & Weather',
+        'Sports, Fitness & Health', 'Careers, Ambitions & Business', 'Reading, Books & Libraries',
+        'Modern Communication & Technology', 'History, Culture & Architecture', 'Childhood & Family Memories',
+        'Gifts, Festivals & Celebrations', 'Fashion, Clothes & Shopping', 'Public Transportation & Traffic',
+        'Dreams & Night Time', 'Laughter & Sense of Humour', 'Concentration & Meditation',
+        'Pets, Wildlife & Animals', 'Friendship & Social Life', 'Advertising & Social Media', 'Languages & Dialects'
+      ];
+      topicToUse = topics[Math.floor(Math.random() * topics.length)];
+    }
+
+    const prompt = `You are an expert IELTS Speaking content developer. Generate a full, cohesive IELTS Speaking Practice set for all 3 parts on the topic: "${topicToUse}".
+Make the topic name engaging and relevant.
+
+Ensure the questions are diverse, fresh, and not repetitive.
+The output MUST be a valid JSON object matching the following structure exactly:
+{
+  "theme": "${topicToUse}",
+  "part1": {
+    "title": "Introduction & Interview",
+    "duration": "4–5 minutes",
+    "questions": [
+      "<5 simple, direct questions about the candidate's connection to this topic>"
+    ]
+  },
+  "part2": {
+    "title": "Cue Card / Long Turn",
+    "duration": "3–4 minutes (1 min prep + 2 min speech)",
+    "cueCard": {
+      "topic": "Describe a specific aspect/experience related to ${topicToUse}.",
+      "points": [
+        "<bullet point 1: what/who/when>",
+        "<bullet point 2: where/how>",
+        "<bullet point 3: explain what you did/saw>",
+        "<bullet point 4: explain why you felt that way / why it was important>"
+      ]
+    }
+  },
+  "part3": {
+    "title": "Discussion",
+    "duration": "4–5 minutes",
+    "questions": [
+      "<4 abstract, deep, or analytical discussion questions related to the cue card topic, requiring critical thinking and comparison>"
+    ]
+  }
+}
+
+Important Instructions:
+- Provide exactly 5 questions for Part 1.
+- Provide exactly 4 bullet points for Part 2.
+- Provide exactly 4 questions for Part 3.
+- The Part 2 and Part 3 questions MUST logically flow from the Part 2 topic (Part 3 should discuss abstract societal or philosophical questions related to the Part 2 topic).
+- Return ONLY valid raw JSON, with no backticks, markdown wrappers, or surrounding text.`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    return extractJSON(text);
+  }
+
   async generateWritingPrompt(taskType, specificTopic = '') {
     const model = getModel();
     const topicFocus = specificTopic ? `The prompt MUST be specifically about the topic: "${specificTopic}".` : '';

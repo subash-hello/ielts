@@ -8,6 +8,16 @@ const { formatResponse, calculateBand } = require('../utils/helpers');
 
 const router = express.Router();
 
+router.get('/generate-topic', auth, async (req, res) => {
+  try {
+    const specificTopic = req.query.topic || '';
+    const topicSet = await geminiService.generateFullSpeakingSet(specificTopic);
+    res.json(formatResponse(topicSet));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get('/questions/:part', auth, async (req, res) => {
   try {
     const part = parseInt(req.params.part);

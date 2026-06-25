@@ -197,8 +197,13 @@ function SpeakingPracticeContent() {
   const initialTopicIndex = rawPart
     ? Math.max(0, parseInt(rawPart, 10) - 1) % speakingTopicSets.length
     : 0;
-  const [topicIndex, setTopicIndex] = useState(initialTopicIndex);
-  const topicSet = speakingTopicSets[topicIndex];
+  const [topicIndex, setTopicIndex] = useState<string | number>(initialTopicIndex);
+  const [topicSet, setTopicSet] = useState<any>(speakingTopicSets[initialTopicIndex]);
+  const [isGeneratingTopic, setIsGeneratingTopic] = useState(false);
+  const [customTopicInput, setCustomTopicInput] = useState('');
+  const [showCustomTopicModal, setShowCustomTopicModal] = useState(false);
+  const [isSessionStarted, setIsSessionStarted] = useState(false);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('');
 
   // Active part: 1, 2, or 3
   const [activePart, setActivePart] = useState<1 | 2 | 3>(
@@ -251,7 +256,25 @@ function SpeakingPracticeContent() {
   useEffect(() => {
     const loadVoices = () => {
       if (typeof window !== 'undefined' && window.speechSynthesis) {
-        setVoices(window.speechSynthesis.getVoices());
+        const allVoices = window.speechSynthesis.getVoices();
+        setVoices(allVoices);
+
+        // Auto-select a high quality voice if none chosen yet
+        const saved = localStorage.getItem('ielts-speaking-voice');
+        if (saved) {
+          setSelectedVoiceName(saved);
+        } else {
+          const englishVoices = allVoices.filter(v => v.lang.startsWith('en-'));
+          const premiumVoice = englishVoices.find(v => 
+            v.name.toLowerCase().includes('google') || 
+            v.name.toLowerCase().includes('natural') || 
+            v.name.toLowerCase().includes('neural')
+          ) || englishVoices.find(v => v.name.toLowerCase().includes('microsoft')) || englishVoices[0];
+          
+          if (premiumVoice) {
+            setSelectedVoiceName(premiumVoice.name);
+          }
+        }
       }
     };
     loadVoices();
@@ -292,6 +315,7 @@ function SpeakingPracticeContent() {
 
   // Auto-speak question when part/question changes
   useEffect(() => {
+    if (!isSessionStarted) return; // Do NOT speak until user clicked "Start Test"
     if (isConversationalRef.current) {
       return; // Skip reading the static question because we are playing the dynamic response!
     }
@@ -305,7 +329,7 @@ function SpeakingPracticeContent() {
       return () => clearTimeout(t);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePart, p1QuestionIndex, p3QuestionIndex, p2Phase, topicIndex]);
+  }, [activePart, p1QuestionIndex, p3QuestionIndex, p2Phase, topicIndex, isSessionStarted, topicSet]);
 
   // Part 2 Prep Timer
   useEffect(() => {
@@ -373,7 +397,17 @@ function SpeakingPracticeContent() {
     synth.cancel();
     const utterance = new SpeechSynthesisUtterance(text.replace(/["""]/g, ''));
     utterance.rate = 0.95;
-    const voice = voices.find(v => v.lang.startsWith('en-GB') || v.lang.startsWith('en-US'));
+    
+    let voice = voices.find(v => v.name === selectedVoiceName);
+    if (!voice) {
+      const englishVoices = voices.filter(v => v.lang.startsWith('en-'));
+      voice = englishVoices.find(v => 
+        v.name.toLowerCase().includes('google') || 
+        v.name.toLowerCase().includes('natural') || 
+        v.name.toLowerCase().includes('neural')
+      ) || englishVoices.find(v => v.name.toLowerCase().includes('microsoft')) || englishVoices[0];
+    }
+
     if (voice) utterance.voice = voice;
     utterance.onstart = () => setIsExaminerSpeaking(true);
     utterance.onend = () => setIsExaminerSpeaking(false);
@@ -568,6 +602,111 @@ function SpeakingPracticeContent() {
     stopSpeech();
     setExaminerReply('');
     isConversationalRef.current = false;
+    setIsSessionStarted(false);
+  };
+
+  const generateAITopic = async (topicName: string) => {
+    setIsGeneratingTopic(true);
+    const toastId = toast.loading(topicName ? `Generating custom topic "${topicName}"...` : 'Generating a random IELTS topic set...');
+    try {
+      const response = await api.get(`/speaking/generate-topic?topic=${encodeURIComponent(topicName)}`);
+      if (response && response.theme) {
+        const mappedSet = {
+          id: Date.now(),
+          theme: response.theme,
+          part1: {
+            title: response.part1?.title || 'Introduction & Interview',
+            duration: response.part1?.duration || '4–5 minutes',
+            questions: response.part1?.questions || []
+          },
+          part2: {
+            title: response.part2?.title || 'Cue Card / Long Turn',
+            duration: response.part2?.duration || '3–4 minutes (1 min prep + 2 min speech)',
+            cueCard: {
+              topic: response.part2?.cueCard?.topic || '',
+              bullets: response.part2?.cueCard?.points || response.part2?.cueCard?.bullets || []
+            }
+          },
+          part3: {
+            title: response.part3?.title || 'Discussion',
+            duration: response.part3?.duration || '4–5 minutes',
+            questions: response.part3?.questions || []
+          }
+        };
+        setTopicSet(mappedSet);
+        if (topicName) {
+          setTopicIndex('ai-custom');
+        } else {
+          setTopicIndex('ai-random');
+        }
+        setShowResult(false);
+        setResult(null);
+        setP1QuestionIndex(0);
+        setP1Answers([]);
+        setP1CurrentText('');
+        setP2Phase('cue');
+        setP2PrepTimeLeft(60);
+        setP2SpeakingTimeLeft(120);
+        setP2Notes('');
+        setP2Speech('');
+        setP3QuestionIndex(0);
+        setP3Answers([]);
+        setP3CurrentText('');
+        setLiveTranscript('');
+        setTimer(0);
+        setActivePart(1);
+        stopRecording();
+        stopSpeech();
+        setExaminerReply('');
+        isConversationalRef.current = false;
+        setIsSessionStarted(false);
+        toast.success('Generated successfully!', { id: toastId });
+      } else {
+        throw new Error('Invalid response structure');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to generate dynamic speaking topic set. Using fallback.', { id: toastId });
+      const fallbackIdx = Math.floor(Math.random() * speakingTopicSets.length);
+      setTopicIndex(fallbackIdx);
+      setTopicSet(speakingTopicSets[fallbackIdx]);
+      setIsSessionStarted(false);
+    } finally {
+      setIsGeneratingTopic(false);
+      setShowCustomTopicModal(false);
+    }
+  };
+
+  const handleTopicChange = (val: string) => {
+    if (val === 'ai-random') {
+      generateAITopic('');
+    } else if (val === 'ai-custom') {
+      setShowCustomTopicModal(true);
+    } else {
+      const idx = parseInt(val, 10);
+      setTopicIndex(idx);
+      setTopicSet(speakingTopicSets[idx]);
+      setShowResult(false);
+      setResult(null);
+      setP1QuestionIndex(0);
+      setP1Answers([]);
+      setP1CurrentText('');
+      setP2Phase('cue');
+      setP2PrepTimeLeft(60);
+      setP2SpeakingTimeLeft(120);
+      setP2Notes('');
+      setP2Speech('');
+      setP3QuestionIndex(0);
+      setP3Answers([]);
+      setP3CurrentText('');
+      setLiveTranscript('');
+      setTimer(0);
+      setActivePart(1);
+      stopRecording();
+      stopSpeech();
+      setExaminerReply('');
+      isConversationalRef.current = false;
+      setIsSessionStarted(false);
+    }
   };
 
   const formatTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
@@ -680,10 +819,274 @@ function SpeakingPracticeContent() {
   }
 
   // ────────────────────────────────────────────────────────────────────────────
+  // WELCOME / START TEST SCREEN
+  // ────────────────────────────────────────────────────────────────────────────
+  if (!isSessionStarted) {
+    const englishVoices = voices.filter(v => v.lang.startsWith('en-'));
+    const sortedVoices = [...englishVoices].sort((a, b) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      const aScore = aName.includes('google') || aName.includes('natural') || aName.includes('neural') ? 3 : aName.includes('microsoft') ? 2 : 1;
+      const bScore = bName.includes('google') || bName.includes('natural') || bName.includes('neural') ? 3 : bName.includes('microsoft') ? 2 : 1;
+      return bScore - aScore;
+    });
+
+    const handlePreviewVoice = (voiceName: string) => {
+      if (typeof window === 'undefined' || !window.speechSynthesis) return;
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance("Welcome to the IELTS speaking test. My name is Alex, and I will be your examiner today.");
+      const voice = voices.find(v => v.name === voiceName);
+      if (voice) utterance.voice = voice;
+      utterance.rate = 0.95;
+      synth.speak(utterance);
+    };
+
+    return (
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto space-y-6 py-6">
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-accent to-accent-bright flex items-center justify-center shadow-lg shadow-accent/20">
+            <Mic className="w-8 h-8 text-white animate-pulse" />
+          </div>
+          <h1 className="text-2xl font-bold text-white">IELTS Speaking Practice</h1>
+          <p className="text-text-muted text-sm max-w-md mx-auto">Prepare with a high-fidelity AI examiner using your microphone and natural text-to-speech interaction.</p>
+        </div>
+
+        <div className="glass-card rounded-2xl p-6 border border-border-glass space-y-4">
+          <div className="flex justify-between items-start flex-wrap gap-2">
+            <div>
+              <span className="text-[10px] text-accent font-bold uppercase tracking-wider">Active Practice Session</span>
+              <h2 className="text-lg font-bold text-white mt-0.5">{topicSet.theme}</h2>
+            </div>
+            <div className="flex gap-2 items-center">
+              <select
+                value={topicIndex}
+                onChange={e => handleTopicChange(e.target.value)}
+                disabled={isGeneratingTopic}
+                className="text-xs bg-surface border border-border-glass text-white px-3 py-2 rounded-xl outline-none focus:border-accent disabled:opacity-50"
+              >
+                {speakingTopicSets.map((t, i) => (
+                  <option key={i} value={i}>{t.theme}</option>
+                ))}
+                <option value="ai-random">✨ AI Generated (Random Topic)</option>
+                <option value="ai-custom">🔮 AI Generated (Custom Topic...)</option>
+              </select>
+              {(topicIndex === 'ai-random' || topicIndex === 'ai-custom') && (
+                <button
+                  onClick={() => {
+                    if (topicIndex === 'ai-random') generateAITopic('');
+                    else setShowCustomTopicModal(true);
+                  }}
+                  disabled={isGeneratingTopic}
+                  className="p-2 rounded-xl border border-border-glass hover:bg-surface text-text-muted hover:text-white transition-colors"
+                  title="Generate a new topic set"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingTopic ? 'animate-spin' : ''}`} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <div className="bg-surface/40 p-3 rounded-xl border border-border-glass">
+              <p className="text-[10px] text-text-muted uppercase font-bold">Part 1: Interview</p>
+              <p className="text-xs text-white font-semibold mt-1">{topicSet.part1.questions.length} Questions</p>
+              <p className="text-[10px] text-text-muted mt-0.5">Simple, direct answers about daily life.</p>
+            </div>
+            <div className="bg-surface/40 p-3 rounded-xl border border-border-glass">
+              <p className="text-[10px] text-text-muted uppercase font-bold">Part 2: Cue Card</p>
+              <p className="text-xs text-white font-semibold mt-1">1 Topic card</p>
+              <p className="text-[10px] text-text-muted mt-0.5">1-minute preparation, 2-minute speech.</p>
+            </div>
+            <div className="bg-surface/40 p-3 rounded-xl border border-border-glass">
+              <p className="text-[10px] text-text-muted uppercase font-bold">Part 3: Discussion</p>
+              <p className="text-xs text-white font-semibold mt-1">{topicSet.part3.questions.length} Questions</p>
+              <p className="text-[10px] text-text-muted mt-0.5">Abstract discussion & critical thinking.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass-card rounded-2xl p-6 border border-border-glass space-y-4">
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Bot className="w-4 h-4 text-accent" /> Select Examiner Voice
+            </h3>
+            <p className="text-xs text-text-muted mt-0.5">Choose a realistic text-to-speech engine available on your system.</p>
+          </div>
+
+          <div className="flex gap-2 flex-wrap items-center">
+            <select
+              value={selectedVoiceName}
+              onChange={e => {
+                setSelectedVoiceName(e.target.value);
+                if (typeof window !== 'undefined') localStorage.setItem('ielts-speaking-voice', e.target.value);
+              }}
+              className="flex-1 bg-surface border border-border-glass text-white px-3 py-2.5 rounded-xl outline-none focus:border-accent text-xs"
+            >
+              {sortedVoices.map(v => (
+                <option key={v.name} value={v.name}>
+                  {v.name} ({v.lang}) {v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('neural') ? '🌟 Natural' : ''}
+                </option>
+              ))}
+              {sortedVoices.length === 0 && (
+                <option value="">Default System Voice</option>
+              )}
+            </select>
+            {selectedVoiceName && (
+              <button
+                type="button"
+                onClick={() => handlePreviewVoice(selectedVoiceName)}
+                className="px-4 py-2.5 rounded-xl bg-surface border border-border-glass hover:bg-surface/80 text-white text-xs font-bold flex items-center gap-1.5 transition-all"
+              >
+                <Play className="w-3.5 h-3.5 text-accent fill-accent" /> Test Voice
+              </button>
+            )}
+          </div>
+          <p className="text-[10px] text-text-muted">
+            💡 <strong className="text-white">Tip:</strong> For the most premium experience, look for voices containing <span className="text-white">"Google"</span> or <span className="text-white">"Natural"</span> in their name.
+          </p>
+        </div>
+
+        <div className="text-center pt-2">
+          <button
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+              }
+              setIsSessionStarted(true);
+            }}
+            className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-accent to-accent-bright hover:from-accent-bright hover:to-accent text-white font-extrabold text-base flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-accent/25 transition-all"
+          >
+            <Sparkles className="w-5 h-5 animate-pulse" /> Start Speaking Test
+          </button>
+        </div>
+
+        {/* Custom Topic Modal rendered here */}
+        <AnimatePresence>
+          {showCustomTopicModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="glass-card w-full max-w-md p-6 border border-border-glass rounded-2xl bg-surface/95 shadow-2xl space-y-4"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-accent" /> Custom Speaking Topic
+                    </h3>
+                    <p className="text-xs text-text-muted mt-1">Enter any theme or prompt to generate custom IELTS speaking questions.</p>
+                  </div>
+                  <button 
+                    onClick={() => setShowCustomTopicModal(false)}
+                    className="p-1 rounded-lg hover:bg-surface text-text-muted hover:text-white transition-colors"
+                  >
+                    <XCircle className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] text-text-muted uppercase font-bold">Topic Theme / Idea</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Space exploration, Social media, Coffee culture"
+                    value={customTopicInput}
+                    onChange={e => setCustomTopicInput(e.target.value)}
+                    className="w-full bg-surface-dark border border-border-glass rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent"
+                  />
+                </div>
+
+                <div className="flex gap-3 justify-end pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomTopicModal(false)}
+                    className="px-4 py-2 rounded-xl text-xs text-white hover:bg-surface font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => generateAITopic(customTopicInput)}
+                    disabled={!customTopicInput.trim() || isGeneratingTopic}
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white text-xs font-bold disabled:opacity-40 hover:shadow-lg hover:shadow-accent/20 transition-all flex items-center gap-1.5"
+                  >
+                    {isGeneratingTopic ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    Generate
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
   // MAIN PRACTICE SCREEN
   // ────────────────────────────────────────────────────────────────────────────
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+      {/* Custom Topic Modal also in practice screen */}
+      <AnimatePresence>
+        {showCustomTopicModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="glass-card w-full max-w-md p-6 border border-border-glass rounded-2xl bg-surface/95 shadow-2xl space-y-4"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-accent" /> Custom Speaking Topic
+                  </h3>
+                  <p className="text-xs text-text-muted mt-1">Enter any theme or prompt to generate custom IELTS speaking questions.</p>
+                </div>
+                <button 
+                  onClick={() => setShowCustomTopicModal(false)}
+                  className="p-1 rounded-lg hover:bg-surface text-text-muted hover:text-white transition-colors"
+                >
+                  <XCircle className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] text-text-muted uppercase font-bold">Topic Theme / Idea</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Space exploration, Social media, Coffee culture"
+                  value={customTopicInput}
+                  onChange={e => setCustomTopicInput(e.target.value)}
+                  className="w-full bg-surface-dark border border-border-glass rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-accent"
+                />
+              </div>
+
+              <div className="flex gap-3 justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCustomTopicModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs text-white hover:bg-surface font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => generateAITopic(customTopicInput)}
+                  disabled={!customTopicInput.trim() || isGeneratingTopic}
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white text-xs font-bold disabled:opacity-40 hover:shadow-lg hover:shadow-accent/20 transition-all flex items-center gap-1.5"
+                >
+                  {isGeneratingTopic ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  Generate
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Top Bar */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <Link href="/speaking" className="flex items-center gap-2 text-text-muted hover:text-white text-sm transition-colors">
@@ -694,15 +1097,33 @@ function SpeakingPracticeContent() {
             <Clock className="w-3.5 h-3.5 text-accent" /> {formatTime(timer)} elapsed
           </span>
           {/* Topic Switcher */}
-          <select
-            value={topicIndex}
-            onChange={e => { setTopicIndex(+e.target.value); resetSession(); }}
-            className="text-xs bg-surface border border-border-glass text-white px-3 py-1.5 rounded-xl outline-none focus:border-accent"
-          >
-            {speakingTopicSets.map((t, i) => (
-              <option key={i} value={i}>{t.theme}</option>
-            ))}
-          </select>
+          <div className="flex gap-1.5 items-center">
+            <select
+              value={topicIndex}
+              onChange={e => handleTopicChange(e.target.value)}
+              disabled={isGeneratingTopic}
+              className="text-xs bg-surface border border-border-glass text-white px-3 py-1.5 rounded-xl outline-none focus:border-accent disabled:opacity-50"
+            >
+              {speakingTopicSets.map((t, i) => (
+                <option key={i} value={i}>{t.theme}</option>
+              ))}
+              <option value="ai-random">✨ AI Generated (Random Topic)</option>
+              <option value="ai-custom">🔮 AI Generated (Custom Topic...)</option>
+            </select>
+            {(topicIndex === 'ai-random' || topicIndex === 'ai-custom') && (
+              <button
+                onClick={() => {
+                  if (topicIndex === 'ai-random') generateAITopic('');
+                  else setShowCustomTopicModal(true);
+                }}
+                disabled={isGeneratingTopic}
+                className="p-1.5 rounded-xl border border-border-glass hover:bg-surface text-text-muted hover:text-white transition-colors"
+                title="Generate a new topic set"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingTopic ? 'animate-spin' : ''}`} />
+              </button>
+            )}
+          </div>
           <button
             onClick={handleEvaluate}
             disabled={loading || (p1Answers.length === 0 && !p2Speech && p3Answers.length === 0)}
@@ -889,7 +1310,7 @@ function SpeakingPracticeContent() {
                 <p className="text-sm font-bold text-white mb-4">{topicSet.part2.cueCard.topic}</p>
                 <p className="text-xs text-text-muted font-semibold mb-2">You should say:</p>
                 <ul className="space-y-1.5">
-                  {topicSet.part2.cueCard.bullets.map((b, i) => (
+                  {topicSet.part2.cueCard.bullets.map((b: string, i: number) => (
                     <li key={i} className="flex items-start gap-2 text-xs text-white/80">
                       <span className="text-accent mt-0.5">•</span> {b}
                     </li>
