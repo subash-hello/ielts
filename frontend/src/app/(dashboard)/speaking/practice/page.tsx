@@ -134,6 +134,29 @@ const speakingTopicSets = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// TYPEWRITER ANIMATION COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
+function Typewriter({ text, speed = 30 }: { text: string; speed?: number }) {
+  const [displayText, setDisplayText] = useState('');
+
+  useEffect(() => {
+    setDisplayText('');
+    if (!text) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayText(text.substring(0, i + 1));
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return <span>{displayText}</span>;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // IELTS Band Score Descriptors used for local scoring
 // ─────────────────────────────────────────────────────────────────────────────
 function estimateBandScore(text: string): {
@@ -1246,7 +1269,7 @@ function SpeakingPracticeContent() {
                     ) : (
                       <>
                         <p className="text-sm font-semibold text-white leading-relaxed">
-                          &ldquo;{topicSet.part1.questions[p1QuestionIndex]}&rdquo;
+                          &ldquo;<Typewriter text={topicSet.part1.questions[p1QuestionIndex]} />&rdquo;
                         </p>
                         <button
                           onClick={() => speakText(topicSet.part1.questions[p1QuestionIndex])}
@@ -1500,7 +1523,7 @@ function SpeakingPracticeContent() {
                     ) : (
                       <>
                         <p className="text-sm font-semibold text-white leading-relaxed">
-                          &ldquo;{topicSet.part3.questions[p3QuestionIndex]}&rdquo;
+                          &ldquo;<Typewriter text={topicSet.part3.questions[p3QuestionIndex]} />&rdquo;
                         </p>
                         <button
                           onClick={() => speakText(topicSet.part3.questions[p3QuestionIndex])}
