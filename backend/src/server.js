@@ -67,7 +67,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static PDFs
 const path = require('path');
-app.use('/pdfs', express.static(path.join(__dirname, '../../pdf')));
+const fs = require('fs');
+const pdfPath = fs.existsSync(path.join(__dirname, '../pdf'))
+  ? path.join(__dirname, '../pdf')
+  : path.join(__dirname, '../../pdf');
+app.use('/pdfs', express.static(pdfPath));
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
@@ -88,6 +92,11 @@ app.use('/api/vocabulary', vocabularyRoutes);
 app.use('/api/diagnostic', aiLimiter, diagnosticRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/chat', chatRoutes);
+
+// Root route for Hugging Face health check stability
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'ielts-ai-backend' });
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -148,7 +157,7 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 IELTS AI Backend running on port ${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV}`);
 });

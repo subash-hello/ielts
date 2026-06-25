@@ -29,7 +29,9 @@ const seedAdmin = async () => {
 
 const seedPdfs = async () => {
   try {
-    const pdfDir = path.join(__dirname, '../../../pdf');
+    const pdfDir = fs.existsSync(path.join(__dirname, '../../pdf'))
+      ? path.join(__dirname, '../../pdf')
+      : path.join(__dirname, '../../../pdf');
     if (!fs.existsSync(pdfDir)) {
       console.log('📦 No PDF directory found, skipping PDF seed.');
       return;
@@ -76,6 +78,9 @@ const connectDB = async () => {
     console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️ Falling back to a local in-memory database so the app can still run...');
     try {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('MongoMemoryServer disabled in production to prevent Docker build hangs');
+      }
       const { MongoMemoryServer } = require('mongodb-memory-server');
       const mongoServer = await MongoMemoryServer.create();
       const mongoUri = mongoServer.getUri();
@@ -83,12 +88,10 @@ const connectDB = async () => {
       console.log(`📦 In-Memory MongoDB Connected! (Mock mode active)`);
       await seedAdmin();
       await seedPdfs();
-      // const { seedDatabaseIfEmpty } = require('../utils/seeder');
-      // await seedDatabaseIfEmpty();
     } catch (memError) {
       console.error('❌ Failed to start in-memory database:', memError.message);
       if (process.env.NODE_ENV === 'production') {
-        process.exit(1);
+        console.warn('⚠️ Server running in degraded state (no database connected)');
       }
     }
   }
