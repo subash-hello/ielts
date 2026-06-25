@@ -32,7 +32,8 @@ import {
   Volume2,
   Lock,
   Folder,
-  MessageCircle
+  MessageCircle,
+  Menu
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import FloatingSiriCoach from '@/components/FloatingSiriCoach';
@@ -113,6 +114,22 @@ function SidebarNav({
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setMobileOpen(false);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [user, setUser] = useState<{ name: string; email: string; role: string; xp: number; level: number; status?: string } | null>(null);
   const [streak, setStreak] = useState(14);
   const pathname = usePathname();
@@ -336,22 +353,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex gradient-mesh-bg">
+      {/* Backdrop for mobile drawer */}
+      {isMobile && mobileOpen && (
+        <div 
+          onClick={() => setMobileOpen(false)} 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+        />
+      )}
+
       {/* Sidebar */}
       <motion.aside
-        animate={{ width: collapsed ? 80 : 280 }}
+        animate={{ width: isMobile ? 280 : (collapsed ? 80 : 280) }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className="fixed left-0 top-0 bottom-0 z-40 glass border-r border-border-glass flex flex-col overflow-hidden"
+        className={`fixed left-0 top-0 bottom-0 z-50 glass border-r border-border-glass flex flex-col overflow-hidden transition-transform duration-300 ${
+          isMobile ? (mobileOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'
+        } lg:z-40`}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-border-glass flex-shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent-bright flex items-center justify-center flex-shrink-0">
-            <Brain className="w-4 h-4 text-white" />
+        <div className="flex items-center justify-between px-5 h-16 border-b border-border-glass flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-accent-bright flex items-center justify-center flex-shrink-0">
+              <Brain className="w-4 h-4 text-white" />
+            </div>
+            {(!collapsed || isMobile) && <span className="text-lg font-bold text-white whitespace-nowrap">IELTS <span className="text-accent">AI</span></span>}
           </div>
-          {!collapsed && <span className="text-lg font-bold text-white whitespace-nowrap">IELTS <span className="text-accent">AI</span></span>}
+          {isMobile && (
+            <button 
+              onClick={() => setMobileOpen(false)}
+              className="p-1 rounded-xl bg-surface hover:bg-surface-hover border border-border-glass text-text-muted hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* User Card */}
-        {!collapsed && user && (
+        {(!collapsed || isMobile) && user && (
           <div className="px-4 py-4 border-b border-border-glass">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-neon flex items-center justify-center text-white font-bold text-sm">
@@ -397,16 +434,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Collapse Toggle floating edge button */}
       <button 
         onClick={() => setCollapsed(!collapsed)} 
-        className="fixed top-20 z-50 w-6 h-6 rounded-full bg-[#1e293b] border border-border-glass flex items-center justify-center text-text-muted hover:text-white hover:border-accent hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
+        className="hidden lg:flex fixed top-20 z-50 w-6 h-6 rounded-full bg-[#1e293b] border border-border-glass items-center justify-center text-text-muted hover:text-white hover:border-accent hover:scale-105 active:scale-95 transition-all shadow-lg cursor-pointer"
         style={{ left: collapsed ? '68px' : '268px', transition: 'left 0.3s ease-in-out' }}
       >
         {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
       </button>
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${collapsed ? 'ml-20' : 'ml-[280px]'}`}>
+      <div className={`flex-1 transition-all duration-300 ${isMobile ? 'ml-0' : (collapsed ? 'ml-20' : 'ml-[280px]')}`}>
         {/* Top Header */}
-        <header className="sticky top-0 z-30 glass border-b border-border-glass h-16 flex items-center px-6 gap-4">
+        <header className="sticky top-0 z-30 glass border-b border-border-glass h-16 flex items-center px-4 lg:px-6 gap-4">
+          {isMobile && (
+            <button 
+              onClick={() => setMobileOpen(true)}
+              className="p-1.5 rounded-xl bg-surface hover:bg-surface-hover border border-border-glass text-text-muted hover:text-white transition-colors cursor-pointer mr-2"
+              aria-label="Open navigation menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
           <div className="flex-1">
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -485,7 +531,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {/* XP Sparkles */}
               <div 
                 onClick={() => toast.success(`You have accumulated ${(user.xp || 0).toLocaleString()} Experience Points!`)}
-                className="flex items-center gap-1.5 text-sm cursor-pointer hover:scale-105 transition-transform"
+                className="hidden sm:flex items-center gap-1.5 text-sm cursor-pointer hover:scale-105 transition-transform"
               >
                 <Sparkles className="w-4 h-4 text-neon" />
                 <span className="font-medium text-text-muted">{(user.xp || 0).toLocaleString()} XP</span>

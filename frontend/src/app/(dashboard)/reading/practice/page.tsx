@@ -131,7 +131,7 @@ function ReadingPracticeContent() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 h-[calc(100vh-12rem)]">
+      <div className="grid lg:grid-cols-2 gap-6 h-auto lg:h-[calc(100vh-12rem)]">
         {/* Passage */}
         <div className="glass-card rounded-2xl p-6 overflow-y-auto border border-border-glass">
           <h2 className="text-xl font-bold text-white mb-4">{testData?.title || 'Reading Passage'}</h2>
