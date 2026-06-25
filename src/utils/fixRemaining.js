@@ -1,13 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 
-const processFile = (filePath) => {
-  if (!fs.existsSync(filePath)) return;
-  let fileContent = fs.readFileSync(filePath, 'utf8');
-  const testsMatch = fileContent.match(/(=|module\.exports\s*=)\s*({.*});?/s);
-  if (!testsMatch) return;
-  const tests = JSON.parse(testsMatch[2]);
+const filePath = path.join(__dirname, '../data/cambridgeListeningTests.js');
+let fileContent = fs.readFileSync(filePath, 'utf8');
 
+const tests = require('../data/cambridgeListeningTests');
+
+const run = () => {
   let modifications = 0;
 
   for (const [testKey, test] of Object.entries(tests)) {
@@ -27,7 +26,10 @@ const processFile = (filePath) => {
             newBlock = newBlock.replace(/"text":\s*"([^"]+?)_+"/, `"text": "$1"`);
             
             // Inject generic options before correctAnswer
-            const options = ["A", "B", "C", "D", "E", "F", "G", "H"];
+            const options = [
+              "A. Option A", "B. Option B", "C. Option C", "D. Option D",
+              "E. Option E", "F. Option F", "G. Option G", "H. Option H"
+            ];
             const optionsStr = `"options": [\n              ` + options.map(o => `"${o}"`).join(',\n              ') + `\n            ],\n            "correctAnswer"`;
             newBlock = newBlock.replace(/"correctAnswer"/, optionsStr);
 
@@ -41,19 +43,10 @@ const processFile = (filePath) => {
 
   if (modifications > 0) {
     fs.writeFileSync(filePath, fileContent, 'utf8');
-    console.log(`Successfully made ${modifications} fallback modifications in ${path.basename(filePath)}.`);
+    console.log(`Successfully made ${modifications} fallback modifications.`);
   } else {
-    console.log(`No modifications made in ${path.basename(filePath)}.`);
+    console.log('No modifications made.');
   }
 };
-
-const run = () => {
-  const filePath1 = path.join(__dirname, '../data/cambridgeListeningTests.js');
-  const filePath2 = path.join(__dirname, '../data/cambridgeTenTests.js');
-  processFile(filePath1);
-  processFile(filePath2);
-};
-
-run();
 
 run();

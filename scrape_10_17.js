@@ -4,36 +4,63 @@ const https = require('https');
 const querystring = require('querystring');
 const cheerio = require('cheerio');
 
-const urls = {
-  "1": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-1/",
-  "2": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-2/",
-  "3": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-3/",
-  "4": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-4/",
-  "5": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-1/",
-  "6": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-2/",
-  "7": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-3/",
-  "8": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-4/",
-  "9": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-18-academic-listening-test-1/",
-  "10": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-18-academic-listening-test-2/"
-};
+// File to store intermediate results
+const CACHE_FILE = path.join(__dirname, 'cambridge10to17Raw.json');
 
-// Helper function to fetch HTML content of a URL
-function fetchHtml(url) {
+// Helper to fetch HTML content of a URL with retry logic for non-200 and rate limiting
+function fetchHtml(url, retries = 5, delay = 20000) {
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
-      if (res.statusCode !== 200) {
-        reject(new Error(`Failed to load page: ${res.statusCode}`));
-        return;
-      }
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => resolve(body));
-    }).on('error', err => reject(err));
+    const attempt = (count) => {
+      const parsedUrl = new URL(url);
+      const options = {
+        hostname: parsedUrl.hostname,
+        path: parsedUrl.pathname + parsedUrl.search,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Connection': 'keep-alive',
+          'Upgrade-Insecure-Requests': '1'
+        }
+      };
+      https.get(options, (res) => {
+        if (res.statusCode === 429 || res.statusCode === 403) {
+          if (count < retries) {
+            console.log(`⚠️ Status ${res.statusCode} on GET: ${url}. Waiting ${delay / 1000}s to retry (Attempt ${count + 1}/${retries})...`);
+            setTimeout(() => attempt(count + 1), delay);
+          } else {
+            reject(new Error(`Failed to load page: ${res.statusCode} after ${retries} retries`));
+          }
+          return;
+        }
+        if (res.statusCode !== 200) {
+          if (count < retries) {
+            console.log(`⚠️ Non-200 status ${res.statusCode} on GET: ${url}. Waiting ${delay / 1000}s to retry (Attempt ${count + 1}/${retries})...`);
+            setTimeout(() => attempt(count + 1), delay);
+          } else {
+            reject(new Error(`Failed to load page: ${res.statusCode}`));
+          }
+          return;
+        }
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => resolve(body));
+      }).on('error', err => {
+        if (count < retries) {
+          console.log(`⚠️ Network error on ${url}: ${err.message}. Retrying in ${delay / 1000}s...`);
+          setTimeout(() => attempt(count + 1), delay);
+        } else {
+          reject(err);
+        }
+      });
+    };
+    attempt(0);
   });
 }
 
-// Helper function to call the AJAX endpoint and get answers
-function fetchAnswerKey(postId, nonce) {
+
+// Helper to call the AJAX endpoint and get answers with retry logic
+function fetchAnswerKey(postId, nonce, retries = 5, delay = 20000) {
   return new Promise((resolve, reject) => {
     const postData = querystring.stringify({
       action: 'get_ielts_listening_test_answer_key',
@@ -49,45 +76,76 @@ function fetchAnswerKey(postId, nonce) {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Content-Length': Buffer.byteLength(postData),
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'X-Requested-With': 'XMLHttpRequest'
       }
     };
 
-    const req = https.request(options, (res) => {
-      let body = '';
-      res.on('data', chunk => body += chunk);
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(body);
-          if (parsed.success && parsed.data && parsed.data.answer_key) {
-            resolve(parsed.data.answer_key);
+    const attempt = (count) => {
+      const req = https.request(options, (res) => {
+        if (res.statusCode === 429 || res.statusCode === 403) {
+          if (count < retries) {
+            console.log(`⚠️ Status ${res.statusCode} on POST ajax. Waiting ${delay / 1000}s to retry (Attempt ${count + 1}/${retries})...`);
+            setTimeout(() => attempt(count + 1), delay);
           } else {
-            reject(new Error(`Failed to get answer key: ${body}`));
+            reject(new Error(`Failed to get answer key: ${res.statusCode} (Rate limited after ${retries} retries)`));
           }
-        } catch (e) {
-          reject(e);
+          return;
+        }
+        
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => {
+          try {
+            if (res.statusCode !== 200) {
+              throw new Error(`Non-200 Status code ${res.statusCode}`);
+            }
+            const parsed = JSON.parse(body);
+            if (parsed.success && parsed.data && parsed.data.answer_key) {
+              resolve(parsed.data.answer_key);
+            } else {
+              throw new Error(`success=false or missing answer_key`);
+            }
+          } catch (e) {
+            if (count < retries) {
+              console.log(`⚠️ AJAX error (${e.message}). Retrying in ${delay / 1000}s (Attempt ${count + 1}/${retries})...`);
+              setTimeout(() => attempt(count + 1), delay);
+            } else {
+              reject(e);
+            }
+          }
+        });
+      });
+
+      req.on('error', err => {
+        if (count < retries) {
+          console.log(`⚠️ POST error: ${err.message}. Retrying in ${delay / 1000}s...`);
+          setTimeout(() => attempt(count + 1), delay);
+        } else {
+          reject(err);
         }
       });
-    });
 
-    req.on('error', err => reject(err));
-    req.write(postData);
-    req.end();
+      req.write(postData);
+      req.end();
+    };
+
+    attempt(0);
   });
 }
 
-// Clean text function
 function cleanText(txt) {
   if (!txt) return '';
   return txt.replace(/\s+/g, ' ').replace(/&nbsp;/g, ' ').replace(/&rsquo;/g, "'").replace(/&ldquo;/g, '"').replace(/&rdquo;/g, '"').replace(/&pound;/g, '£').trim();
 }
 
-async function scrapeTest(testId, url) {
+async function scrapeTest(testId, url, testTitle) {
   console.log(`Scraping test ${testId} from ${url}...`);
   const html = await fetchHtml(url);
   const $ = cheerio.load(html);
 
-  // Extract post_id and nonce
   const postId = $('input#post_id').attr('value') || $('input[name="post_id"]').attr('value') || $('input[name="comment_post_ID"]').attr('value');
   const nonce = $('input[name="ielts_listening_test_nonce"]').attr('value');
 
@@ -95,17 +153,8 @@ async function scrapeTest(testId, url) {
     throw new Error(`Could not find post_id (${postId}) or nonce (${nonce}) for test ${testId}`);
   }
 
-  console.log(`Test ${testId}: postId = ${postId}, nonce = ${nonce}`);
   const answerKey = await fetchAnswerKey(postId, nonce);
-  console.log(`Test ${testId}: Fetched ${answerKey.length} answers successfully`);
 
-  // Extract title
-  let testTitle = cleanText($('.custom-breadcrumb span:last-child').text()) || cleanText($('title').text()).split('(')[0];
-  if (!testTitle.includes('Cambridge')) {
-    testTitle = `Cambridge IELTS Practice Test ${testId}`;
-  }
-
-  // Find MP3 links
   const mp3s = [];
   const mp3Regex = /https?:\/\/engnovate\.com\/wp-content\/uploads\/[^\s"'`]+\.mp3/gi;
   let mp3Match;
@@ -113,7 +162,6 @@ async function scrapeTest(testId, url) {
     mp3s.push(mp3Match[0]);
   }
   const uniqueMp3s = Array.from(new Set(mp3s));
-  // Sort them so that part 1, part 2, part 3, part 4 are in order
   uniqueMp3s.sort((a, b) => {
     const getPart = (s) => {
       const match = s.match(/part[-_]?(\d+)/i) || s.match(/audio[-_]?(\d+)/i);
@@ -122,15 +170,9 @@ async function scrapeTest(testId, url) {
     return getPart(a) - getPart(b);
   });
 
-  console.log(`Test ${testId} MP3s:`, uniqueMp3s);
-
-  // Extract parts
   const parts = [];
   for (let partNum = 1; partNum <= 4; partNum++) {
-    // 1. Audio URL
-    const audioUrl = uniqueMp3s[partNum - 1] || uniqueMp3s[0]; // fallback
-
-    // 2. Transcript
+    const audioUrl = uniqueMp3s[partNum - 1] || uniqueMp3s[0];
     const transcriptDiv = $(`#ielts-listening-transcript-${partNum}`);
     let transcriptText = '';
     if (transcriptDiv.length) {
@@ -140,7 +182,6 @@ async function scrapeTest(testId, url) {
     }
     transcriptText = transcriptText.trim();
 
-    // 3. Questions
     const questions = [];
     const startQ = (partNum - 1) * 10 + 1;
     const endQ = partNum * 10;
@@ -148,11 +189,8 @@ async function scrapeTest(testId, url) {
     for (let qNum = startQ; qNum <= endQ; qNum++) {
       const ansObj = answerKey[qNum - 1];
       const correctAnswer = ansObj ? ansObj.answer : '';
-
-      // Find question element
       const qNumElem = $(`#ielts-listening-question-number-${qNum}`);
       if (!qNumElem.length) {
-        // Fallback placeholder
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "fillBlank",
@@ -162,12 +200,9 @@ async function scrapeTest(testId, url) {
         continue;
       }
 
-      // 1. Check if matching cell
       const tdQuestion = qNumElem.closest('.ielts-listening-matching-question-cell');
       if (tdQuestion.length) {
         const text = cleanText(tdQuestion.find('span').text()) || cleanText(tdQuestion.text().replace(qNum.toString(), ''));
-        
-        // Find matching options
         const table = tdQuestion.closest('table');
         const options = [];
         let prevElem = table.prev();
@@ -195,7 +230,6 @@ async function scrapeTest(testId, url) {
             }
           });
         }
-
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "matching",
@@ -208,7 +242,6 @@ async function scrapeTest(testId, url) {
 
       const parentItem = qNumElem.closest('.ielts-listening-question-item');
       if (parentItem.length) {
-        // 2. Check if MCQ
         const optionsDivs = parentItem.find('.ielts-listening-option');
         if (optionsDivs.length) {
           const questionText = cleanText(parentItem.find('> span > span').text()) || cleanText(qNumElem.parent().text().replace(qNum.toString(), ''));
@@ -218,7 +251,6 @@ async function scrapeTest(testId, url) {
             const text = cleanText($(opt).find('span').text());
             options.push(`${letter}. ${text}`);
           });
-
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "multipleChoice",
@@ -229,11 +261,9 @@ async function scrapeTest(testId, url) {
           continue;
         }
 
-        // 3. Check if matching parent
         if (parentItem.find('.ielts-listening-matching-question-cell').length) {
           const cell = parentItem.find('.ielts-listening-matching-question-cell');
           const text = cleanText(cell.find('span').text()) || cleanText(cell.text().replace(qNum.toString(), ''));
-          
           const table = parentItem.closest('table');
           const options = [];
           if (table.length) {
@@ -263,7 +293,6 @@ async function scrapeTest(testId, url) {
               });
             }
           }
-
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "matching",
@@ -274,13 +303,9 @@ async function scrapeTest(testId, url) {
           continue;
         }
 
-        // 4. Fill Blank / DND logic
-        // 4. Fill Blank / DND logic
         const isSpan = parentItem.prop('tagName').toLowerCase() === 'span';
         const itemParent = isSpan ? parentItem.parent() : parentItem;
         const clone = itemParent.clone();
-        
-        // Replace other questions first
         if (isSpan) {
           clone.find('.ielts-listening-question-item').each((i, el) => {
             const num = $(el).find('.ielts-listening-question-number').text();
@@ -289,7 +314,6 @@ async function scrapeTest(testId, url) {
             }
           });
         }
-
         const targetSpan = clone.find(`#ielts-listening-question-number-${qNum}`).parent();
         if (targetSpan.length) {
           targetSpan.replaceWith('_____');
@@ -297,7 +321,6 @@ async function scrapeTest(testId, url) {
           clone.find('input[type="text"], input[type="hidden"]').replaceWith('_____');
           clone.find('.ielts-listening-question-number').remove();
         }
-
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "fillBlank",
@@ -305,19 +328,15 @@ async function scrapeTest(testId, url) {
           correctAnswer
         });
       } else {
-        // General fill blank fallback
         const parentParagraph = qNumElem.closest('p, li, td, div');
         if (parentParagraph.length) {
           const clone = parentParagraph.clone();
-          
-          // Replace other questions first
           clone.find('.ielts-listening-question-item').each((i, el) => {
             const num = $(el).find('.ielts-listening-question-number').text();
             if (num && num !== qNum.toString()) {
               $(el).replaceWith(`(${num})`);
             }
           });
-
           const targetSpan = clone.find(`#ielts-listening-question-number-${qNum}`).parent();
           if (targetSpan.length) {
             targetSpan.replaceWith('_____');
@@ -325,7 +344,6 @@ async function scrapeTest(testId, url) {
             clone.find('input[type="text"], input[type="hidden"]').replaceWith('_____');
             clone.find('.ielts-listening-question-number').remove();
           }
-
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "fillBlank",
@@ -366,40 +384,60 @@ async function scrapeTest(testId, url) {
   }
 
   return {
-    id: testId,
+    id: testId.toString(),
     title: testTitle,
     duration: "30 min",
-    difficulty: testId <= 3 ? 'medium' : (testId <= 7 ? 'medium' : 'hard'),
+    difficulty: testId <= 40 ? 'easy' : (testId <= 50 ? 'medium' : 'hard'),
     parts
   };
 }
 
 async function run() {
   let scrapedData = {};
-  if (fs.existsSync('scrapedTests.json')) {
+  if (fs.existsSync(CACHE_FILE)) {
     try {
-      scrapedData = JSON.parse(fs.readFileSync('scrapedTests.json', 'utf8'));
-      console.log(`Loaded ${Object.keys(scrapedData).length} existing tests from scrapedTests.json`);
+      scrapedData = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+      console.log(`Loaded ${Object.keys(scrapedData).length} tests from cache.`);
     } catch (e) {
-      console.warn('Failed to parse existing scrapedTests.json, starting fresh');
-    }
-  }
-  
-  for (const [testId, url] of Object.entries(urls)) {
-    try {
-      console.log(`Waiting 2 seconds before scraping test ${testId}...`);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const data = await scrapeTest(testId, url);
-      scrapedData[testId] = data;
-      console.log(`✅ Scraped and parsed test ${testId} successfully!\n`);
-    } catch (e) {
-      console.error(`❌ Failed to scrape test ${testId}:`, e.message);
+      console.warn('Failed to parse cache, starting fresh');
     }
   }
 
-  // Save to scrapedTests.json
-  fs.writeFileSync('scrapedTests.json', JSON.stringify(scrapedData, null, 2), 'utf8');
-  console.log('Saved all scraped data to scrapedTests.json');
+  const books = [10, 11, 12, 13, 14, 15, 16, 17];
+  const tests = [1, 2, 3, 4];
+
+  for (const book of books) {
+    for (const test of tests) {
+      // Calculate continuous key starting from 31
+      const key = (31 + (book - 10) * 4 + (test - 1)).toString();
+      
+      if (scrapedData[key]) {
+        console.log(`Skipping key ${key} (Cambridge ${book} Test ${test}) - already in cache`);
+        continue;
+      }
+
+      const url = `https://engnovate.com/ielts-listening-tests/cambridge-ielts-${book}-academic-listening-test-${test}/`;
+      const title = `Cambridge IELTS ${book} Academic Listening Test ${test}`;
+
+      try {
+        console.log(`Waiting 5 seconds before scraping key ${key}...`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        
+        const data = await scrapeTest(key, url, title);
+        scrapedData[key] = data;
+        
+        // Save to cache file immediately
+        fs.writeFileSync(CACHE_FILE, JSON.stringify(scrapedData, null, 2), 'utf8');
+        console.log(`✅ Successfully scraped key ${key} (Cambridge ${book} Test ${test})!`);
+      } catch (err) {
+        console.error(`❌ Failed to scrape key ${key} (Cambridge ${book} Test ${test}):`, err.message);
+        // Wait longer on failure before next attempt
+        await new Promise(resolve => setTimeout(resolve, 15000));
+      }
+    }
+  }
+
+  console.log('Scraping run completed.');
 }
 
 run();

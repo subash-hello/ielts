@@ -15,25 +15,25 @@
           {
             "id": "c1q1",
             "type": "fillBlank",
-            "text": "Greyson Street, near the station Good for people who are especially keen on _____",
+            "text": "Good for people who are especially keen on _____",
             "correctAnswer": "Fish"
           },
           {
             "id": "c1q2",
             "type": "fillBlank",
-            "text": "Good for people who are especially keen on 1 The _____ is a good place for a drink",
+            "text": "The _____ is a good place for a drink",
             "correctAnswer": "Roof"
           },
           {
             "id": "c1q3",
             "type": "fillBlank",
-            "text": "In Bow Street next to the cinema: _____ food, good for sharing",
+            "text": "_____ food, good for sharing",
             "correctAnswer": "Spanish"
           },
           {
             "id": "c1q4",
             "type": "fillBlank",
-            "text": "3 food, good for sharing A limited selection of _____ food on the menu",
+            "text": "A limited selection of _____ food on the menu",
             "correctAnswer": "Vegetarian"
           },
           {
@@ -45,31 +45,31 @@
           {
             "id": "c1q6",
             "type": "fillBlank",
-            "text": "The 5 At the top of a _____",
+            "text": "At the top of a _____",
             "correctAnswer": "Hotel"
           },
           {
             "id": "c1q7",
             "type": "fillBlank",
-            "text": "At the top of a 6 All the _____ are very good",
+            "text": "All the _____ are very good",
             "correctAnswer": "Reviews"
           },
           {
             "id": "c1q8",
             "type": "fillBlank",
-            "text": "At the top of a 6 Only uses _____ ingredients",
+            "text": "Only uses _____ ingredients",
             "correctAnswer": "Local"
           },
           {
             "id": "c1q9",
             "type": "fillBlank",
-            "text": "A famous chef All the 7 are very good Only uses 8 ingredients Set lunch costs £ _____ per person Portions probably of (10) size",
+            "text": "Set lunch costs £ _____ per person Portions probably of (10) size",
             "correctAnswer": "30"
           },
           {
             "id": "c1q10",
             "type": "fillBlank",
-            "text": "A famous chef All the 7 are very good Only uses 8 ingredients Portions probably of _____ size",
+            "text": "Portions probably of _____ size",
             "correctAnswer": "Average"
           }
         ]
@@ -748,19 +748,19 @@
           {
             "id": "c3q1",
             "type": "fillBlank",
-            "text": "Peak Rentals Prices range from $105 to $_____ per room per month.",
+            "text": "Prices range from $105 to $_____ per room per month.",
             "correctAnswer": "239"
           },
           {
             "id": "c3q2",
             "type": "fillBlank",
-            "text": "Prices range from $105 to $1 per room per month. The furniture is very _____ Delivers in 1-2 days Special offer: free (3) with every living room set",
+            "text": "The furniture is very _____ Delivers in 1-2 days Special offer: free (3) with every living room set",
             "correctAnswer": "modern"
           },
           {
             "id": "c3q3",
             "type": "fillBlank",
-            "text": "Prices range from $105 to $1 per room per month. free _____ with every living room set",
+            "text": "free _____ with every living room set",
             "correctAnswer": "lamp"
           },
           {
@@ -772,19 +772,19 @@
           {
             "id": "c3q5",
             "type": "fillBlank",
-            "text": "4 and Oliver 12% monthly free for _____",
+            "text": "12% monthly free for _____",
             "correctAnswer": "damage"
           },
           {
             "id": "c3q6",
             "type": "fillBlank",
-            "text": "Larch Furniture Offers cheapest prices for renting furniture and _____ items",
+            "text": "Offers cheapest prices for renting furniture and _____ items",
             "correctAnswer": "electronic"
           },
           {
             "id": "c3q7",
             "type": "fillBlank",
-            "text": "Offers cheapest prices for renting furniture and 6 items Must have own _____ Minimum contract length: six months",
+            "text": "Must have own _____ Minimum contract length: six months",
             "correctAnswer": "insurance"
           },
           {
@@ -796,13 +796,13 @@
           {
             "id": "c3q9",
             "type": "fillBlank",
-            "text": "8 Rentals See the _____ for the most up-to-date prices",
+            "text": "See the _____ for the most up-to-date prices",
             "correctAnswer": "app"
           },
           {
             "id": "c3q10",
             "type": "fillBlank",
-            "text": "See the 9 for the most up-to-date prices: _____ are allowed within 7 days of delivery",
+            "text": "_____ are allowed within 7 days of delivery",
             "correctAnswer": "exchanges"
           }
         ]
@@ -1921,25 +1921,25 @@
           {
             "id": "c6q7",
             "type": "fillBlank",
-            "text": "tuning guitars using an app or by _____",
+            "text": "using an app or by _____",
             "correctAnswer": "ear"
           },
           {
             "id": "c6q8",
             "type": "fillBlank",
-            "text": "strumming chords using our thumbs keeping time while the teacher is _____",
+            "text": "keeping time while the teacher is _____",
             "correctAnswer": "Clapping"
           },
           {
             "id": "c6q9",
             "type": "fillBlank",
-            "text": "playing songs often listening to a _____ of a song",
+            "text": "often listening to a _____ of a song",
             "correctAnswer": "recording"
           },
           {
             "id": "c6q10",
             "type": "fillBlank",
-            "text": "playing single notes and simple tunes playing together, then _____",
+            "text": "playing together, then _____",
             "correctAnswer": "alone"
           }
         ]
@@ -2293,25 +2293,25 @@
           {
             "id": "c7q7",
             "type": "fillBlank",
-            "text": "Shopping: a dozen prawns a handful of _____ (type of seaweed)",
+            "text": "a handful of _____ (type of seaweed)",
             "correctAnswer": "samphire"
           },
           {
             "id": "c7q8",
             "type": "fillBlank",
-            "text": "Shopping: Organic shop beans and a _____ for dessert",
+            "text": "beans and a _____ for dessert",
             "correctAnswer": "melon"
           },
           {
             "id": "c7q9",
             "type": "fillBlank",
-            "text": "Shopping: beans and a 8 for dessert spices and _____",
+            "text": "spices and _____",
             "correctAnswer": "coconut"
           },
           {
             "id": "c7q10",
             "type": "fillBlank",
-            "text": "Shopping: a brown loaf a _____ tart",
+            "text": "a _____ tart",
             "correctAnswer": "strawberry"
           }
         ]
@@ -2594,61 +2594,61 @@
           {
             "id": "c8q1",
             "type": "fillBlank",
-            "text": "Name of supervisor: _____",
+            "text": "_____",
             "correctAnswer": "KAEDEN"
           },
           {
             "id": "c8q2",
             "type": "fillBlank",
-            "text": "Where to leave coat and bag: use _____ in staffroom",
+            "text": "use _____ in staffroom",
             "correctAnswer": "locker / lockers"
           },
           {
             "id": "c8q3",
             "type": "fillBlank",
-            "text": "See Tiffany in HR: to give _____ number to collect (4)",
+            "text": "to give _____ number to collect (4)",
             "correctAnswer": "passport"
           },
           {
             "id": "c8q4",
             "type": "fillBlank",
-            "text": "See Tiffany in HR: to give (3) number to collect _____",
+            "text": "to give (3) number to collect _____",
             "correctAnswer": "uniform"
           },
           {
             "id": "c8q5",
             "type": "fillBlank",
-            "text": "Location of HR office: on _____ floor",
+            "text": "on _____ floor",
             "correctAnswer": "third / 3rd"
           },
           {
             "id": "c8q6",
             "type": "fillBlank",
-            "text": "Supervisor's mobile number:: _____",
+            "text": "_____",
             "correctAnswer": "0412665903"
           },
           {
             "id": "c8q7",
             "type": "fillBlank",
-            "text": "Responsibilities: Change price labels Use _____ labels",
+            "text": "Use _____ labels",
             "correctAnswer": "yellow"
           },
           {
             "id": "c8q8",
             "type": "fillBlank",
-            "text": "Responsibilities: Sushi takeaway counter Re-stock with _____ boxes if needed",
+            "text": "Re-stock with _____ boxes if needed",
             "correctAnswer": "plastic"
           },
           {
             "id": "c8q9",
             "type": "fillBlank",
-            "text": "Responsibilities: Clean the serving area, including the weighing scales Collect _____ for the fish from the cold-room",
+            "text": "Collect _____ for the fish from the cold-room",
             "correctAnswer": "ice"
           },
           {
             "id": "c8q10",
             "type": "fillBlank",
-            "text": "Responsibilities: Collect 9 for the fish from the cold-room Must wear special _____",
+            "text": "Must wear special _____",
             "correctAnswer": "gloves"
           }
         ]
@@ -3348,25 +3348,25 @@
           {
             "id": "c10q7",
             "type": "fillBlank",
-            "text": "Breakfast supervisor Making sure _____ is clean",
+            "text": "Making sure _____ is clean",
             "correctAnswer": "equipment"
           },
           {
             "id": "c10q8",
             "type": "fillBlank",
-            "text": "Checking portions, etc. are correct Making sure 7 is clean Starting salary £_____ per hour Start work at 5.30 a.m.",
+            "text": "Starting salary £_____ per hour Start work at 5.30 a.m.",
             "correctAnswer": "9.75"
           },
           {
             "id": "c10q9",
             "type": "fillBlank",
-            "text": "Junior chef Maintaining stock and organising _____",
+            "text": "Maintaining stock and organising _____",
             "correctAnswer": "deliveries"
           },
           {
             "id": "c10q10",
             "type": "fillBlank",
-            "text": "Supporting senior chefs Maintaining stock and organising 9 No work on a _____ once a month",
+            "text": "No work on a _____ once a month",
             "correctAnswer": "Sunday"
           }
         ]

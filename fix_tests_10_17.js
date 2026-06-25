@@ -1,23 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 const https = require('https');
 const querystring = require('querystring');
 const cheerio = require('cheerio');
+const TestContent = require('./src/models/TestContent');
 
-const urls = {
-  "1": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-1/",
-  "2": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-2/",
-  "3": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-3/",
-  "4": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-20-academic-listening-test-4/",
-  "5": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-1/",
-  "6": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-2/",
-  "7": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-3/",
-  "8": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-19-academic-listening-test-4/",
-  "9": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-18-academic-listening-test-1/",
-  "10": "https://engnovate.com/ielts-listening-tests/cambridge-ielts-18-academic-listening-test-2/"
-};
+dotenv.config();
 
-// Helper function to fetch HTML content of a URL
 function fetchHtml(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (res) => {
@@ -32,7 +21,6 @@ function fetchHtml(url) {
   });
 }
 
-// Helper function to call the AJAX endpoint and get answers
 function fetchAnswerKey(postId, nonce) {
   return new Promise((resolve, reject) => {
     const postData = querystring.stringify({
@@ -76,18 +64,16 @@ function fetchAnswerKey(postId, nonce) {
   });
 }
 
-// Clean text function
 function cleanText(txt) {
   if (!txt) return '';
   return txt.replace(/\s+/g, ' ').replace(/&nbsp;/g, ' ').replace(/&rsquo;/g, "'").replace(/&ldquo;/g, '"').replace(/&rdquo;/g, '"').replace(/&pound;/g, '£').trim();
 }
 
-async function scrapeTest(testId, url) {
+async function scrapeTest(testId, url, testTitle) {
   console.log(`Scraping test ${testId} from ${url}...`);
   const html = await fetchHtml(url);
   const $ = cheerio.load(html);
 
-  // Extract post_id and nonce
   const postId = $('input#post_id').attr('value') || $('input[name="post_id"]').attr('value') || $('input[name="comment_post_ID"]').attr('value');
   const nonce = $('input[name="ielts_listening_test_nonce"]').attr('value');
 
@@ -95,17 +81,8 @@ async function scrapeTest(testId, url) {
     throw new Error(`Could not find post_id (${postId}) or nonce (${nonce}) for test ${testId}`);
   }
 
-  console.log(`Test ${testId}: postId = ${postId}, nonce = ${nonce}`);
   const answerKey = await fetchAnswerKey(postId, nonce);
-  console.log(`Test ${testId}: Fetched ${answerKey.length} answers successfully`);
 
-  // Extract title
-  let testTitle = cleanText($('.custom-breadcrumb span:last-child').text()) || cleanText($('title').text()).split('(')[0];
-  if (!testTitle.includes('Cambridge')) {
-    testTitle = `Cambridge IELTS Practice Test ${testId}`;
-  }
-
-  // Find MP3 links
   const mp3s = [];
   const mp3Regex = /https?:\/\/engnovate\.com\/wp-content\/uploads\/[^\s"'`]+\.mp3/gi;
   let mp3Match;
@@ -113,7 +90,6 @@ async function scrapeTest(testId, url) {
     mp3s.push(mp3Match[0]);
   }
   const uniqueMp3s = Array.from(new Set(mp3s));
-  // Sort them so that part 1, part 2, part 3, part 4 are in order
   uniqueMp3s.sort((a, b) => {
     const getPart = (s) => {
       const match = s.match(/part[-_]?(\d+)/i) || s.match(/audio[-_]?(\d+)/i);
@@ -122,15 +98,9 @@ async function scrapeTest(testId, url) {
     return getPart(a) - getPart(b);
   });
 
-  console.log(`Test ${testId} MP3s:`, uniqueMp3s);
-
-  // Extract parts
   const parts = [];
   for (let partNum = 1; partNum <= 4; partNum++) {
-    // 1. Audio URL
-    const audioUrl = uniqueMp3s[partNum - 1] || uniqueMp3s[0]; // fallback
-
-    // 2. Transcript
+    const audioUrl = uniqueMp3s[partNum - 1] || uniqueMp3s[0];
     const transcriptDiv = $(`#ielts-listening-transcript-${partNum}`);
     let transcriptText = '';
     if (transcriptDiv.length) {
@@ -140,7 +110,6 @@ async function scrapeTest(testId, url) {
     }
     transcriptText = transcriptText.trim();
 
-    // 3. Questions
     const questions = [];
     const startQ = (partNum - 1) * 10 + 1;
     const endQ = partNum * 10;
@@ -148,11 +117,8 @@ async function scrapeTest(testId, url) {
     for (let qNum = startQ; qNum <= endQ; qNum++) {
       const ansObj = answerKey[qNum - 1];
       const correctAnswer = ansObj ? ansObj.answer : '';
-
-      // Find question element
       const qNumElem = $(`#ielts-listening-question-number-${qNum}`);
       if (!qNumElem.length) {
-        // Fallback placeholder
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "fillBlank",
@@ -162,12 +128,9 @@ async function scrapeTest(testId, url) {
         continue;
       }
 
-      // 1. Check if matching cell
       const tdQuestion = qNumElem.closest('.ielts-listening-matching-question-cell');
       if (tdQuestion.length) {
         const text = cleanText(tdQuestion.find('span').text()) || cleanText(tdQuestion.text().replace(qNum.toString(), ''));
-        
-        // Find matching options
         const table = tdQuestion.closest('table');
         const options = [];
         let prevElem = table.prev();
@@ -195,7 +158,6 @@ async function scrapeTest(testId, url) {
             }
           });
         }
-
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "matching",
@@ -208,7 +170,6 @@ async function scrapeTest(testId, url) {
 
       const parentItem = qNumElem.closest('.ielts-listening-question-item');
       if (parentItem.length) {
-        // 2. Check if MCQ
         const optionsDivs = parentItem.find('.ielts-listening-option');
         if (optionsDivs.length) {
           const questionText = cleanText(parentItem.find('> span > span').text()) || cleanText(qNumElem.parent().text().replace(qNum.toString(), ''));
@@ -218,7 +179,6 @@ async function scrapeTest(testId, url) {
             const text = cleanText($(opt).find('span').text());
             options.push(`${letter}. ${text}`);
           });
-
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "multipleChoice",
@@ -229,11 +189,9 @@ async function scrapeTest(testId, url) {
           continue;
         }
 
-        // 3. Check if matching parent
         if (parentItem.find('.ielts-listening-matching-question-cell').length) {
           const cell = parentItem.find('.ielts-listening-matching-question-cell');
           const text = cleanText(cell.find('span').text()) || cleanText(cell.text().replace(qNum.toString(), ''));
-          
           const table = parentItem.closest('table');
           const options = [];
           if (table.length) {
@@ -263,7 +221,6 @@ async function scrapeTest(testId, url) {
               });
             }
           }
-
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "matching",
@@ -274,13 +231,9 @@ async function scrapeTest(testId, url) {
           continue;
         }
 
-        // 4. Fill Blank / DND logic
-        // 4. Fill Blank / DND logic
         const isSpan = parentItem.prop('tagName').toLowerCase() === 'span';
         const itemParent = isSpan ? parentItem.parent() : parentItem;
         const clone = itemParent.clone();
-        
-        // Replace other questions first
         if (isSpan) {
           clone.find('.ielts-listening-question-item').each((i, el) => {
             const num = $(el).find('.ielts-listening-question-number').text();
@@ -289,7 +242,6 @@ async function scrapeTest(testId, url) {
             }
           });
         }
-
         const targetSpan = clone.find(`#ielts-listening-question-number-${qNum}`).parent();
         if (targetSpan.length) {
           targetSpan.replaceWith('_____');
@@ -297,7 +249,6 @@ async function scrapeTest(testId, url) {
           clone.find('input[type="text"], input[type="hidden"]').replaceWith('_____');
           clone.find('.ielts-listening-question-number').remove();
         }
-
         questions.push({
           id: `c${testId}q${qNum}`,
           type: "fillBlank",
@@ -305,19 +256,15 @@ async function scrapeTest(testId, url) {
           correctAnswer
         });
       } else {
-        // General fill blank fallback
         const parentParagraph = qNumElem.closest('p, li, td, div');
         if (parentParagraph.length) {
           const clone = parentParagraph.clone();
-          
-          // Replace other questions first
           clone.find('.ielts-listening-question-item').each((i, el) => {
             const num = $(el).find('.ielts-listening-question-number').text();
             if (num && num !== qNum.toString()) {
               $(el).replaceWith(`(${num})`);
             }
           });
-
           const targetSpan = clone.find(`#ielts-listening-question-number-${qNum}`).parent();
           if (targetSpan.length) {
             targetSpan.replaceWith('_____');
@@ -325,7 +272,6 @@ async function scrapeTest(testId, url) {
             clone.find('input[type="text"], input[type="hidden"]').replaceWith('_____');
             clone.find('.ielts-listening-question-number').remove();
           }
-
           questions.push({
             id: `c${testId}q${qNum}`,
             type: "fillBlank",
@@ -366,40 +312,55 @@ async function scrapeTest(testId, url) {
   }
 
   return {
-    id: testId,
-    title: testTitle,
-    duration: "30 min",
-    difficulty: testId <= 3 ? 'medium' : (testId <= 7 ? 'medium' : 'hard'),
     parts
   };
 }
 
 async function run() {
-  let scrapedData = {};
-  if (fs.existsSync('scrapedTests.json')) {
-    try {
-      scrapedData = JSON.parse(fs.readFileSync('scrapedTests.json', 'utf8'));
-      console.log(`Loaded ${Object.keys(scrapedData).length} existing tests from scrapedTests.json`);
-    } catch (e) {
-      console.warn('Failed to parse existing scrapedTests.json, starting fresh');
-    }
-  }
-  
-  for (const [testId, url] of Object.entries(urls)) {
-    try {
-      console.log(`Waiting 2 seconds before scraping test ${testId}...`);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const data = await scrapeTest(testId, url);
-      scrapedData[testId] = data;
-      console.log(`✅ Scraped and parsed test ${testId} successfully!\n`);
-    } catch (e) {
-      console.error(`❌ Failed to scrape test ${testId}:`, e.message);
-    }
-  }
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('Connected to MongoDB');
 
-  // Save to scrapedTests.json
-  fs.writeFileSync('scrapedTests.json', JSON.stringify(scrapedData, null, 2), 'utf8');
-  console.log('Saved all scraped data to scrapedTests.json');
+    const tests = await TestContent.find({
+      type: 'practice_task',
+      subType: 'listening',
+      title: /Cambridge IELTS (1[0-7])/
+    }).sort({ title: 1 });
+
+    console.log(`Found ${tests.length} tests to fix.`);
+
+    for (const test of tests) {
+      const match = test.title.match(/Cambridge IELTS (1[0-7]) Academic Listening Test ([1-4])/);
+      if (match) {
+        const setNum = match[1];
+        const testNum = match[2];
+        const url = `https://engnovate.com/ielts-listening-tests/cambridge-ielts-${setNum}-academic-listening-test-${testNum}/`;
+        
+        console.log(`\nProcessing: ${test.title}`);
+        console.log(`URL: ${url}`);
+        
+        try {
+          const scraped = await scrapeTest(`c${setNum}t${testNum}`, url, test.title);
+          
+          test.content.parts = scraped.parts;
+          test.markModified('content');
+          await test.save();
+          console.log(`✅ Saved ${test.title} to DB`);
+        } catch(err) {
+          console.error(`❌ Failed on ${test.title}:`, err.message);
+        }
+        
+        // Rate limiting
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
+
+    console.log('Finished updating tests.');
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 }
 
 run();

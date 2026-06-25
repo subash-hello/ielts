@@ -173,6 +173,148 @@ router.delete('/users/:id', adminAuth, async (req, res) => {
 router.post('/ai/chat', adminAuth, async (req, res) => {
   try {
     const { prompt, history = [] } = req.body;
+
+    const cambridgeMatch = prompt.match(/(?:upload|add|create|seed|insert)?\s*cambridge\s+(listening|reading|writing)\s+(\d+)\s+(?:test|task)?\s*(\d+)/i);
+    if (cambridgeMatch) {
+      const subType = cambridgeMatch[1].toLowerCase();
+      const book = parseInt(cambridgeMatch[2]);
+      const testNum = parseInt(cambridgeMatch[3]);
+      
+      const cambridgeListeningTests = require('../data/cambridgeListeningTests');
+      const { topics: cambridgeReadingTopics, generateTestContent: generateReadingContent } = require('../data/cambridgeReadingTests');
+      const cambridgeWritingTests = require('../data/cambridgeWritingTests');
+      
+      if (subType === 'listening') {
+        const foundKey = Object.keys(cambridgeListeningTests).find(k => {
+          const t = cambridgeListeningTests[k];
+          return t.title && t.title.toLowerCase().includes("ielts " + book) && t.title.toLowerCase().includes("listening test " + testNum);
+        });
+        
+        if (!foundKey) {
+          return res.json(formatResponse({
+            text: `Could not find Cambridge IELTS ${book} Listening Test ${testNum} in our local data.`,
+            toolExecuted: false
+          }));
+        }
+        
+        const test = cambridgeListeningTests[foundKey];
+        const existing = await TestContent.findOne({ title: test.title, type: 'practice_task' });
+        if (existing) {
+          return res.json(formatResponse({
+            text: `**${test.title}** already exists in the database!`,
+            toolExecuted: false
+          }));
+        }
+        
+        const newContent = new TestContent({
+          title: test.title,
+          type: 'practice_task',
+          subType: 'listening',
+          difficulty: test.difficulty || 'medium',
+          content: {
+            parts: test.parts,
+            duration: '30 min',
+            type: 'Full Listening Test'
+          },
+          createdBy: req.user.id
+        });
+        await newContent.save();
+        
+        return res.json(formatResponse({
+          text: `Successfully uploaded **${test.title}** to the database without any errors!`,
+          toolExecuted: true
+        }));
+      }
+      
+      if (subType === 'reading') {
+        const matchingTopics = cambridgeReadingTopics.filter(t => 
+          t.title && t.title.toLowerCase().includes("ielts " + book) && t.title.toLowerCase().includes("reading test " + testNum)
+        );
+        
+        if (matchingTopics.length === 0) {
+          return res.json(formatResponse({
+            text: `Could not find Cambridge IELTS ${book} Reading Test ${testNum} in our local data.`,
+            toolExecuted: false
+          }));
+        }
+
+        const matchingTitles = matchingTopics.map(t => t.title);
+        const existingCount = await TestContent.countDocuments({ title: { $in: matchingTitles }, type: 'practice_task' });
+        if (existingCount === matchingTopics.length) {
+          return res.json(formatResponse({
+            text: `Passages for **Cambridge IELTS ${book} Reading Test ${testNum}** already exist in the database!`,
+            toolExecuted: false
+          }));
+        }
+        
+        let uploadedTitles = [];
+        for (const topicData of matchingTopics) {
+          const generated = generateReadingContent(topicData);
+          await TestContent.deleteMany({ title: topicData.title, type: 'practice_task' });
+          
+          const newContent = new TestContent({
+            title: topicData.title,
+            type: 'practice_task',
+            subType: 'reading',
+            difficulty: topicData.difficulty,
+            content: {
+              title: topicData.title.split(' Academic ')[0] + " - " + topicData.topic,
+              passage: generated.passage,
+              questions: generated.questions,
+              timeLimit: 20,
+              difficulty: topicData.difficulty,
+              topic: topicData.topic,
+              type: topicData.type
+            },
+            createdBy: req.user.id
+          });
+          await newContent.save();
+          uploadedTitles.push(topicData.title);
+        }
+        
+        return res.json(formatResponse({
+          text: `Successfully uploaded **${matchingTopics.length} passages** for **Cambridge IELTS ${book} Reading Test ${testNum}** to the database without any errors:\n` + uploadedTitles.map(t => `- ${t}`).join('\n'),
+          toolExecuted: true
+        }));
+      }
+      
+      if (subType === 'writing') {
+        const test = cambridgeWritingTests.find(t => 
+          t.title && t.title.toLowerCase().includes("ielts " + book) && t.title.toLowerCase().includes("writing test " + testNum)
+        );
+        
+        if (!test) {
+          return res.json(formatResponse({
+            text: `Could not find Cambridge IELTS ${book} Writing Test ${testNum} in our local data.`,
+            toolExecuted: false
+          }));
+        }
+
+        const existing = await TestContent.findOne({ title: test.title, type: 'practice_task' });
+        if (existing) {
+          return res.json(formatResponse({
+            text: `**${test.title}** already exists in the database!`,
+            toolExecuted: false
+          }));
+        }
+        
+        const newContent = new TestContent({
+          title: test.title,
+          type: 'practice_task',
+          subType: 'writing',
+          difficulty: test.difficulty || 'medium',
+          content: test.content,
+          createdBy: req.user.id
+        });
+        await newContent.save();
+        
+        return res.json(formatResponse({
+          text: `Successfully uploaded **${test.title}** to the database without any errors!`,
+          toolExecuted: true
+        }));
+      }
+    }
+
     const { genAI } = require('../config/gemini');
     
     // Tools definition

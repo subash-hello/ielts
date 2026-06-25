@@ -11,7 +11,7 @@ const seedAdditionalCambridgeTests = async () => {
 
     let addedCount = 0;
 
-    for (let i = 11; i <= 30; i++) {
+    for (let i = 1; i <= 30; i++) {
       const cambridgeTest = cambridgeListeningTests[i.toString()];
       if (!cambridgeTest) continue;
 

@@ -65,10 +65,13 @@ const aiLimiter = process.env.NODE_ENV === 'development'
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static PDFs and images
+// Serve static PDFs
 const path = require('path');
-app.use('/pdfs', express.static(path.join(__dirname, '../pdf')));
-app.use('/images', express.static(path.join(__dirname, '../public/images')));
+const fs = require('fs');
+const pdfPath = fs.existsSync(path.join(__dirname, '../pdf'))
+  ? path.join(__dirname, '../pdf')
+  : path.join(__dirname, '../../pdf');
+app.use('/pdfs', express.static(pdfPath));
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
@@ -90,7 +93,11 @@ app.use('/api/diagnostic', aiLimiter, diagnosticRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/chat', chatRoutes);
 
-app.get('/', (req, res) => res.json({status: 'ok'}));
+// Root route for Hugging Face health check stability
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'ielts-ai-backend' });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
