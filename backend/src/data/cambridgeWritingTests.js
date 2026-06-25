@@ -1,9 +1,162 @@
 /**
- * 40 Authentic Cambridge IELTS Academic Writing Tests (Books 11-20)
+ * 44 Authentic Cambridge IELTS Academic Writing Tests (Books 10-20)
  * Structured with Task 1 and Task 2 under a unified parts array.
  */
 
 const cambridgeWritingTests = [
+  // --- CAMBRIDGE IELTS 10 ---
+  {
+    title: "Cambridge IELTS 10 Academic Writing Test 1",
+    type: "practice_task",
+    subType: "writing",
+    difficulty: "medium",
+    isActive: true,
+    content: {
+      parts: [
+        {
+          title: "Writing Task 1",
+          instruction: "You should spend about 20 minutes on this task.",
+          imageUrl: "/images/task1_mixed_charts.png",
+          text: "The charts below show the average household energy use and the greenhouse gas emissions resulting from this use in Australian households.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
+          questions: [
+            {
+              id: "c10_t1_w1",
+              type: "longText",
+              text: "Write your answer for Task 1 here.",
+              correctAnswer: ""
+            }
+          ]
+        },
+        {
+          title: "Writing Task 2",
+          instruction: "You should spend about 40 minutes on this task.",
+          text: "It is important for children to learn the difference between right and wrong at an early age. Punishment is necessary to help them learn this distinction.\n\nTo what extent do you agree or disagree with this opinion?\n\nWhat sort of punishment should parents and teachers be allowed to use to teach good behaviour to children?\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+          questions: [
+            {
+              id: "c10_t1_w2",
+              type: "longText",
+              text: "Write your answer for Task 2 here.",
+              correctAnswer: ""
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    title: "Cambridge IELTS 10 Academic Writing Test 2",
+    type: "practice_task",
+    subType: "writing",
+    difficulty: "hard",
+    isActive: true,
+    content: {
+      parts: [
+        {
+          title: "Writing Task 1",
+          instruction: "You should spend about 20 minutes on this task.",
+          imageUrl: "/images/task1_table.png",
+          text: "The tables below give information about sales of Fairtrade-labelled coffee and bananas in 1999 and 2004 in five European countries.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
+          questions: [
+            {
+              id: "c10_t2_w1",
+              type: "longText",
+              text: "Write your answer for Task 1 here.",
+              correctAnswer: ""
+            }
+          ]
+        },
+        {
+          title: "Writing Task 2",
+          instruction: "You should spend about 40 minutes on this task.",
+          text: "Some people think that universities should provide graduates with the knowledge and skills needed in the workplace. Others think that the true function of a university should be to give access to knowledge for its own sake, regardless of whether the course is useful to an employer.\n\nDiscuss both views and give your opinion.\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+          questions: [
+            {
+              id: "c10_t2_w2",
+              type: "longText",
+              text: "Write your answer for Task 2 here.",
+              correctAnswer: ""
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    title: "Cambridge IELTS 10 Academic Writing Test 3",
+    type: "practice_task",
+    subType: "writing",
+    difficulty: "medium",
+    isActive: true,
+    content: {
+      parts: [
+        {
+          title: "Writing Task 1",
+          instruction: "You should spend about 20 minutes on this task.",
+          imageUrl: "/images/task1_bar_chart_students.png",
+          text: "The charts below show the destinations of UK graduate and postgraduate students who did not go into full-time work after leaving university in 2008.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
+          questions: [
+            {
+              id: "c10_t3_w1",
+              type: "longText",
+              text: "Write your answer for Task 1 here.",
+              correctAnswer: ""
+            }
+          ]
+        },
+        {
+          title: "Writing Task 2",
+          instruction: "You should spend about 40 minutes on this task.",
+          text: "Countries are becoming more and more similar because people are able to buy the same products anywhere in the world.\n\nDo you think this is a positive or negative development?\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+          questions: [
+            {
+              id: "c10_t3_w2",
+              type: "longText",
+              text: "Write your answer for Task 2 here.",
+              correctAnswer: ""
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    title: "Cambridge IELTS 10 Academic Writing Test 4",
+    type: "practice_task",
+    subType: "writing",
+    difficulty: "easy",
+    isActive: true,
+    content: {
+      parts: [
+        {
+          title: "Writing Task 1",
+          instruction: "You should spend about 20 minutes on this task.",
+          imageUrl: "/images/task1_process_diagram.png",
+          text: "The diagram below shows the life cycle of a salmon, from egg to adult fish.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
+          questions: [
+            {
+              id: "c10_t4_w1",
+              type: "longText",
+              text: "Write your answer for Task 1 here.",
+              correctAnswer: ""
+            }
+          ]
+        },
+        {
+          title: "Writing Task 2",
+          instruction: "You should spend about 40 minutes on this task.",
+          text: "Many museums charge for admission while others are free.\n\nDo you think the advantages of charging people for admission to museums outweigh the disadvantages?\n\nGive reasons for your answer and include any relevant examples from your own knowledge or experience.\n\nWrite at least 250 words.",
+          questions: [
+            {
+              id: "c10_t4_w2",
+              type: "longText",
+              text: "Write your answer for Task 2 here.",
+              correctAnswer: ""
+            }
+          ]
+        }
+      ]
+    }
+  },
   // --- CAMBRIDGE IELTS 11 ---
   {
     title: "Cambridge IELTS 11 Academic Writing Test 1",
@@ -284,8 +437,8 @@ const cambridgeWritingTests = [
         {
           title: "Writing Task 1",
           instruction: "You should spend about 20 minutes on this task.",
-          imageUrl: "/images/task1_pie_chart.png",
-          text: "The charts below show the household energy consumption and resulting greenhouse gas emissions in a typical Australian home.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
+          imageUrl: "/images/task1_map.png",
+          text: "The maps below show Grange Park at the time of its opening in 1920 and the same park today.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
           questions: [
             {
               id: "c12_t4_w1",
@@ -708,8 +861,8 @@ const cambridgeWritingTests = [
         {
           title: "Writing Task 1",
           instruction: "You should spend about 20 minutes on this task.",
-          imageUrl: "/images/task1_map.png",
-          text: "The maps show changes in a park called Grange Park between 1920 and today.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
+          imageUrl: "/images/noodles_process.png",
+          text: "The diagram below shows the manufacturing process of instant noodles.\n\nSummarise the information by selecting and reporting the main features, and make comparisons where relevant.\n\nWrite at least 150 words.",
           questions: [
             {
               id: "c15_t3_w1",

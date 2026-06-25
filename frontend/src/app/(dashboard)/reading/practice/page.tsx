@@ -203,13 +203,18 @@ function ReadingPracticeContent() {
                 )}
                 
                 {q.type === 'fill' && (
-                  <input 
-                    value={answers[q.id] || ''} 
-                    onChange={(e) => !submitted && setAnswer(q.id, e.target.value)} 
-                    placeholder="Type your answer..." 
-                    className="w-full px-4 py-2.5 rounded-xl bg-primary-dark/50 border border-border-glass text-sm text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all" 
-                    disabled={submitted}
-                  />
+                  <div className="space-y-1.5">
+                    <input 
+                      value={answers[q.id] || ''} 
+                      onChange={(e) => !submitted && setAnswer(q.id, e.target.value)} 
+                      placeholder="Type your answer..." 
+                      className="w-full px-4 py-2.5 rounded-xl bg-primary-dark/50 border border-border-glass text-sm text-cyan-400 font-semibold font-sans focus:border-accent outline-none transition-all" 
+                      disabled={submitted}
+                    />
+                    <p className="text-[10px] text-text-muted italic">
+                      * Choose **NO MORE THAN TWO WORDS** from the passage for this answer.
+                    </p>
+                  </div>
                 )}
                 
                 {submitted && (
