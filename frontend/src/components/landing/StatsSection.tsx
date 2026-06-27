@@ -51,7 +51,7 @@ export default function StatsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 lg:p-12 shadow-2xl"
+          className="glass-card rounded-2xl p-8 lg:p-12 bg-gradient-to-r from-accent/10 via-accent-bright/5 to-neon/10"
         >
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, i) => (
@@ -63,13 +63,13 @@ export default function StatsSection() {
                 transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="text-center"
               >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <stat.icon className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-br from-accent/20 to-accent-bright/20 flex items-center justify-center">
+                  <stat.icon className="w-6 h-6 text-accent" />
                 </div>
-                <p className="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-1">
+                <p className="text-3xl lg:text-4xl font-bold text-white font-mono mb-1">
                   <AnimatedCounter target={stat.value} format={stat.format} suffix={stat.suffix} />
                 </p>
-                <p className="text-[11px] uppercase tracking-wider text-text-muted">{stat.label}</p>
+                <p className="text-sm text-text-muted">{stat.label}</p>
               </motion.div>
             ))}
           </div>

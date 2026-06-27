@@ -22,8 +22,8 @@ export default function FAQSection() {
     <section id="faq" className="relative py-24 lg:py-32">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">Frequently Asked Questions</h2>
-          <p className="text-text-muted text-lg font-light">Everything you need to know about IELTS AI.</p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Frequently Asked <span className="gradient-text">Questions</span></h2>
+          <p className="text-text-muted text-lg">Everything you need to know about IELTS AI.</p>
         </motion.div>
 
         <div className="space-y-3">
@@ -34,14 +34,14 @@ export default function FAQSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="bg-[#0A0A0A] border border-white/10 rounded-xl overflow-hidden hover:bg-[#111] transition-colors"
+              className="glass-card rounded-xl overflow-hidden"
             >
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between p-5 text-left"
               >
-                <span className="text-sm lg:text-base font-medium text-white pr-4 tracking-tight">{faq.q}</span>
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${open === i ? 'bg-white text-black' : 'bg-white/5 text-text-muted'}`}>
+                <span className="text-sm lg:text-base font-medium text-white pr-4">{faq.q}</span>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${open === i ? 'bg-accent/20 text-accent' : 'bg-surface text-text-muted'}`}>
                   {open === i ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 </div>
               </button>
@@ -54,7 +54,7 @@ export default function FAQSection() {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-5 text-sm text-text-muted leading-relaxed font-light">{faq.a}</p>
+                    <p className="px-5 pb-5 text-sm text-text-muted leading-relaxed">{faq.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>

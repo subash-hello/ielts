@@ -9,8 +9,8 @@ const modules = [
     id: 'speaking',
     title: 'Speaking',
     icon: Mic,
-    color: 'from-white to-gray-400',
-    bg: 'bg-white/5',
+    color: 'from-violet-500 to-accent-bright',
+    bg: 'bg-violet-500/10',
     description: 'Practice with an AI examiner that simulates real IELTS Speaking tests. Get instant feedback on fluency, pronunciation, grammar, and vocabulary.',
     features: ['AI Examiner Simulation', 'Real-time Voice Analysis', 'Pronunciation Scoring', 'Part 1, 2 & 3 Practice', 'Model Answers', 'Cue Card Timer'],
   },
@@ -18,8 +18,8 @@ const modules = [
     id: 'writing',
     title: 'Writing',
     icon: PenTool,
-    color: 'from-gray-100 to-gray-500',
-    bg: 'bg-white/5',
+    color: 'from-accent to-neon',
+    bg: 'bg-accent/10',
     description: 'Submit essays for AI evaluation against official IELTS criteria. Get detailed corrections, vocabulary upgrades, and band 9 model answers.',
     features: ['Task 1 & Task 2 Practice', 'AI Essay Scoring', 'Grammar Correction', 'Vocabulary Enhancement', 'Band 9 Samples', 'Writing Templates'],
   },
@@ -27,8 +27,8 @@ const modules = [
     id: 'reading',
     title: 'Reading',
     icon: BookOpen,
-    color: 'from-gray-200 to-gray-600',
-    bg: 'bg-white/5',
+    color: 'from-neon to-neon-green',
+    bg: 'bg-neon/10',
     description: 'Practice with academic and general reading passages. All question types included with AI-powered explanations for every answer.',
     features: ['Academic & General Passages', 'All Question Types', 'AI Answer Explanations', 'Vocabulary Highlighter', 'Speed Tracker', 'Difficulty Levels'],
   },
@@ -36,8 +36,8 @@ const modules = [
     id: 'listening',
     title: 'Listening',
     icon: Headphones,
-    color: 'from-gray-300 to-gray-700',
-    bg: 'bg-white/5',
+    color: 'from-neon-green to-emerald-400',
+    bg: 'bg-neon-green/10',
     description: 'Audio-based practice tests with interactive transcripts. Adjust playback speed, take notes, and get instant scoring.',
     features: ['Audio Mock Tests', 'Speed Control', 'Interactive Transcript', 'Note-Taking Panel', 'All 4 Sections', 'Instant Scoring'],
   },
@@ -58,10 +58,10 @@ export default function ModulesShowcase() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
-            Practice All IELTS Modules
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+            Practice All <span className="gradient-text">IELTS Modules</span>
           </h2>
-          <p className="text-text-muted text-lg max-w-2xl mx-auto font-light">
+          <p className="text-text-muted text-lg max-w-2xl mx-auto">
             Comprehensive preparation for every section of the IELTS exam.
           </p>
         </motion.div>
@@ -77,10 +77,10 @@ export default function ModulesShowcase() {
             <button
               key={mod.id}
               onClick={() => setActiveTab(i)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 border ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
                 activeTab === i
-                  ? 'bg-white text-black border-transparent shadow-lg'
-                  : 'bg-[#111] border-white/10 text-text-muted hover:text-white hover:bg-[#1A1A1A]'
+                  ? 'bg-gradient-to-r ' + mod.color + ' text-white shadow-lg shadow-accent/20'
+                  : 'glass text-text-muted hover:text-white hover:bg-surface-hover'
               }`}
             >
               <mod.icon className="w-4 h-4" />
@@ -101,38 +101,38 @@ export default function ModulesShowcase() {
           >
             {/* Info */}
             <div>
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${active.bg} border border-white/10 mb-6`}>
-                <active.icon className="w-5 h-5 text-white" />
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${active.bg} mb-4`}>
+                <active.icon className="w-5 h-5 text-accent" />
                 <span className="text-sm font-semibold text-white">IELTS {active.title}</span>
               </div>
-              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4 tracking-tight">{active.title} Practice</h3>
-              <p className="text-text-muted leading-relaxed mb-8 font-light">{active.description}</p>
-              <ul className="space-y-4 mb-8">
+              <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">{active.title} Practice</h3>
+              <p className="text-text-muted leading-relaxed mb-6">{active.description}</p>
+              <ul className="space-y-3 mb-8">
                 {active.features.map((feat) => (
                   <li key={feat} className="flex items-center gap-3 text-sm text-text-muted">
                     <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${active.color} flex items-center justify-center flex-shrink-0`}>
-                      <Check className="w-3 h-3 text-black" />
+                      <Check className="w-3 h-3 text-white" />
                     </div>
-                    <span className="font-light">{feat}</span>
+                    {feat}
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* Preview Card */}
-            <div className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 lg:p-8 shadow-2xl">
-              <div className="flex items-center gap-2 mb-6">
+            <div className="glass-card rounded-2xl p-6 lg:p-8">
+              <div className="flex items-center gap-2 mb-4">
                 <div className={`w-3 h-3 rounded-full bg-gradient-to-br ${active.color}`} />
-                <span className="text-xs uppercase tracking-widest text-text-muted font-medium">{active.title} Preview</span>
+                <span className="text-sm text-text-muted">{active.title} Preview</span>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[1, 2, 3, 4].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${active.color} opacity-${100 - i * 15} flex items-center justify-center`}>
-                      <span className="text-xs text-black font-bold">{i + 1}</span>
+                  <div key={i} className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${active.color} opacity-${20 + i * 20} flex items-center justify-center`}>
+                      <span className="text-xs text-white font-bold">{i + 1}</span>
                     </div>
                     <div className="flex-1">
-                      <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-3 bg-surface rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${60 + i * 10}%` }}
@@ -145,9 +145,9 @@ export default function ModulesShowcase() {
                   </div>
                 ))}
               </div>
-              <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
-                <span className="text-sm text-text-muted font-light uppercase tracking-wider">Overall Band</span>
-                <span className="text-2xl font-bold font-mono text-white tracking-tight">7.0</span>
+              <div className="mt-6 pt-4 border-t border-border-glass flex items-center justify-between">
+                <span className="text-sm text-text-muted">Overall Band</span>
+                <span className="text-2xl font-bold font-mono gradient-text">7.0</span>
               </div>
             </div>
           </motion.div>
