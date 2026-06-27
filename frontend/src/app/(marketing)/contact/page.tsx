@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, MapPin, Clock, Send, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
+import { Mail, MapPin, Clock, Send, CheckCircle2, ChevronRight, HelpCircle, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ContactPage() {
@@ -66,40 +66,38 @@ export default function ContactPage() {
               
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center text-accent flex-shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Support Email</h3>
-                  <a href="mailto:support@ieltsai.com" className="text-sm font-semibold text-white hover:text-accent transition-colors mt-1 block">
-                    support@ieltsai.com
-                  </a>
-                  <p className="text-xs text-text-muted mt-1">General & Billing Queries</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center text-accent flex-shrink-0">
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Headquarters</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Address</h3>
                   <p className="text-sm font-semibold text-white mt-1">
-                    Level 8, Tech City Plaza
+                    Subash Bhandari
                   </p>
-                  <p className="text-xs text-text-muted">London, EC2A 4NE · UK</p>
+                  <p className="text-xs text-text-muted">nepalgunj, Banke</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center text-accent flex-shrink-0">
-                  <Clock className="w-5 h-5" />
+                  <Mail className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Support Hours</h3>
-                  <p className="text-sm font-semibold text-white mt-1">
-                    24/7 Priority Desk
-                  </p>
-                  <p className="text-xs text-text-muted">Average response: 1.5 hours</p>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Email Address</h3>
+                  <a href="mailto:subashbhandari2008@gmail.com" className="text-sm font-semibold text-white hover:text-accent transition-colors mt-1 block">
+                    subashbhandari2008@gmail.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center text-accent flex-shrink-0">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Contact No.</h3>
+                  <a href="tel:9763876490" className="text-sm font-semibold text-white hover:text-accent transition-colors mt-1 block">
+                    9763876490
+                  </a>
                 </div>
               </div>
             </div>

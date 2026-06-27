@@ -107,7 +107,7 @@ export default function Footer() {
 
               {/* Mail */}
               <a
-                href="mailto:support@ieltsai.com"
+                href="mailto:subashbhandari2008@gmail.com"
                 className="w-9 h-9 rounded-lg bg-surface hover:bg-surface-hover border border-border-glass flex items-center justify-center text-text-muted hover:text-accent transition-all duration-200"
                 aria-label="Email support"
               >
