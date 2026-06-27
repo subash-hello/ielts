@@ -13,20 +13,20 @@ export default function CTASection() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center"
+          className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center border border-white/10"
         >
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-accent via-accent-bright to-primary-light opacity-95" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-white/[0.02]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.05),transparent_50%)]" />
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-            className="absolute -top-20 -right-20 w-60 h-60 rounded-full border border-white/10"
+            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+            className="absolute -top-20 -right-20 w-80 h-80 rounded-full border border-white/5 border-dashed"
           />
           <motion.div
             animate={{ rotate: -360 }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-            className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full border border-white/10"
+            transition={{ duration: 35, repeat: Infinity, ease: 'linear' }}
+            className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full border border-white/5 border-dashed"
           />
 
           {/* Content */}
@@ -36,22 +36,22 @@ export default function CTASection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-sm mb-6"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/90 text-xs uppercase tracking-wider mb-8 font-medium"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5" />
               Start your journey today
             </motion.div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 tracking-tight">
               Ready to Ace Your IELTS?
             </h2>
-            <p className="text-lg text-white/80 max-w-xl mx-auto mb-8">
+            <p className="text-lg text-text-muted max-w-xl mx-auto mb-10 font-light leading-relaxed">
               Join 500,000+ students who have improved their IELTS scores with AI-powered preparation. Start for free, no credit card required.
             </p>
 
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-white text-primary font-bold text-lg hover:bg-white/90 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 group"
+              className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-white text-black font-semibold text-lg hover:bg-gray-200 transition-colors duration-300 group"
             >
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

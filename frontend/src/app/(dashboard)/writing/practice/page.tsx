@@ -12,6 +12,8 @@ import toast from 'react-hot-toast';
 function WritingPracticeContent() {
   const searchParams = useSearchParams();
   const testId = searchParams.get('id');
+  const isRandom = searchParams.get('random') === 'true';
+  const randomTaskType = parseInt(searchParams.get('taskType') || '2', 10);
 
   const [loading, setLoading] = useState(true);
   const [testData, setTestData] = useState<any>(null);
@@ -23,13 +25,29 @@ function WritingPracticeContent() {
   const [timeLeft, setTimeLeft] = useState(60 * 60);
 
   useEffect(() => {
-    if (!testId) {
+    if (!testId && !isRandom) {
       setLoading(false);
       return;
     }
     const fetchTest = async () => {
       try {
-        const res = await api.get(`/writing/test/${testId}`);
+        let res;
+        if (isRandom) {
+          const promptRes = await api.get(`/writing/prompts?taskType=${randomTaskType}`);
+          res = {
+            id: `random_${Date.now()}`,
+            title: `AI Generated Task ${randomTaskType} (${promptRes.topic})`,
+            difficulty: promptRes.difficulty || 'medium',
+            parts: [{
+              title: `Writing Task ${randomTaskType}`,
+              instruction: `You should spend about ${promptRes.timeLimit || (randomTaskType === 1 ? 20 : 40)} minutes on this task.`,
+              text: promptRes.prompt
+            }]
+          };
+        } else {
+          res = await api.get(`/writing/test/${testId}`);
+        }
+        
         setTestData(res);
         const numParts = res.parts?.length || 1;
         setContents(Array(numParts).fill(''));
@@ -48,7 +66,7 @@ function WritingPracticeContent() {
       }
     };
     fetchTest();
-  }, [testId]);
+  }, [testId, isRandom, randomTaskType]);
 
   useEffect(() => {
     if (loading || timeLeft <= 0) return;

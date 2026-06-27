@@ -82,6 +82,20 @@ export default function WritingPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
+        <motion.div whileHover={{ scale: 1.02 }} className="glass-card rounded-2xl p-6 group border-2 border-accent/30 bg-accent/5">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <RefreshCw className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-lg font-bold text-white mb-1">AI Generated Task 2</h3>
+          <p className="text-sm text-text-muted mb-4">Get a fresh, unique essay prompt tailored by AI.</p>
+          <div className="flex gap-4 text-xs text-text-muted mb-4">
+            <span className="flex items-center gap-1"><Clock className="w-3 h-3" />40 min</span>
+            <span>250+ words</span>
+          </div>
+          <Link href="/writing/practice?random=true&taskType=2" className="block w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-semibold text-center hover:shadow-lg hover:shadow-purple-500/30 transition-all flex items-center justify-center gap-2">
+            Generate & Start <ArrowRight className="w-4 h-4" />
+          </Link>
+        </motion.div>
         {tasks.map((t) => (
           <motion.div key={t.id} whileHover={{ scale: 1.02 }} className="glass-card rounded-2xl p-6 group">
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}><FileText className="w-6 h-6 text-white" /></div>
