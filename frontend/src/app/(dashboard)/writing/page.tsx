@@ -37,7 +37,7 @@ export default function WritingPage() {
 
     const fetchTasks = async () => {
       try {
-        const res = await api.get('/mock-test/practice/available?subType=writing');
+        const res = await api.get(`/mock-test/practice/available?subType=writing&t=${Date.now()}`);
         if (res && res.length > 0) {
           // Map DB structure to UI structure
           const mappedTasks = res.map((t: any, index: number) => {

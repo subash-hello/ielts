@@ -46,7 +46,7 @@ function WritingPracticeContent() {
             }]
           };
         } else {
-          res = await api.get(`/writing/test/${testId}`);
+          res = await api.get(`/writing/test/${testId}?t=${Date.now()}`);
         }
         
         setTestData(res);
