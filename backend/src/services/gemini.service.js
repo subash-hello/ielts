@@ -56,6 +56,8 @@ Evaluate using the official IELTS Writing Band Descriptors:
 3. Lexical Resource (0-9): Vocabulary range, accuracy, sophistication
 4. Grammatical Range and Accuracy (0-9): Sentence variety, error frequency
 
+${taskType === 1 ? 'CRITICAL INSTRUCTION FOR TASK 1: You do not have the visual chart/diagram. Assume all data points, trends, and comparisons described by the student are factually correct. Do NOT penalize Task Achievement for missing or unverified data. Grade purely on how well they summarized and reported the data they provided.' : ''}
+
 Return a JSON response with this exact structure:
 {
   "scores": {
@@ -171,19 +173,65 @@ Important Instructions:
   }
 
   async generateWritingPrompt(taskType, specificTopic = '') {
+    if (taskType === 1) {
+      const task1Bank = [
+        {
+          prompt: "The bar chart below shows the percentage of energy consumption from different sources in three countries in 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Bar Chart - Energy",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/energy_bar_chart.png"
+        },
+        {
+          prompt: "The pie charts below show the average household expenditure in a European country in 1950 and 2010. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Pie Chart - Expenditure",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/expenditure_pie_chart.png"
+        },
+        {
+          prompt: "The line graph below shows the population trends in three different cities from 1990 to 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Line Graph - Population",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/population_line_graph.png"
+        },
+        {
+          prompt: "The diagram below shows the process for recycling plastic bottles. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Process Diagram - Recycling",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/recycling_process.png"
+        },
+        {
+          prompt: "The maps below show the town of Meadowside in 1990 and its planned development for 2030. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Map - Town Development",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/town_map.png"
+        }
+      ];
+      return task1Bank[Math.floor(Math.random() * task1Bank.length)];
+    }
+
     const model = getModel();
     const topicFocus = specificTopic ? `The prompt MUST be specifically about the topic: "${specificTopic}".` : '';
     const prompt = `Generate an IELTS Writing Task ${taskType} prompt.
 ${topicFocus}
-${taskType === 1 ? 'Task 1: Describe a chart, graph, table, or process diagram related to the topic.' : 'Task 2: Create an essay question about this topic requiring discussion of views and/or opinion.'}
+Task 2: Create an essay question about this topic requiring discussion of views and/or opinion.
 
 Return JSON:
 {
   "prompt": "<the full task prompt>",
   "topic": "<topic category>",
   "difficulty": "medium",
-  "wordLimit": ${taskType === 1 ? 150 : 250},
-  "timeLimit": ${taskType === 1 ? 20 : 40}
+  "wordLimit": 250,
+  "timeLimit": 40
 }`;
 
     const result = await model.generateContent(prompt);

@@ -41,7 +41,8 @@ function WritingPracticeContent() {
             parts: [{
               title: `Writing Task ${randomTaskType}`,
               instruction: `You should spend about ${promptRes.timeLimit || (randomTaskType === 1 ? 20 : 40)} minutes on this task.`,
-              text: promptRes.prompt
+              text: promptRes.prompt,
+              imageUrl: promptRes.imageUrl || null
             }]
           };
         } else {
