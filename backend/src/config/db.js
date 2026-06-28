@@ -70,39 +70,28 @@ const updateMismatchedWritingPrompts = async () => {
     const TestContent = require('../models/TestContent');
     const cambridgeWritingTests = require('../data/cambridgeWritingTests');
     
-    // We only need to check one typical test (e.g. Test 4) to see if we've already migrated.
-    const test4 = cambridgeWritingTests.find(t => t.title && t.title.includes("Test 4"));
-    if (test4) {
-      const dbTest4 = await TestContent.findOne({ title: test4.title, type: 'practice_task' });
-      if (dbTest4 && dbTest4.content && dbTest4.content.parts && dbTest4.content.parts[0]) {
-        // If Test 4 Task 1 is still about "life cycle of a salmon", we need to run migration.
-        if (dbTest4.content.parts[0].text && dbTest4.content.parts[0].text.includes("life cycle of a salmon")) {
-          console.log('🔄 Mismatched writing prompts detected. Running database migration to sync with files...');
-          let updatedCount = 0;
-          for (const test of cambridgeWritingTests) {
-            const dbTest = await TestContent.findOne({ title: test.title, type: 'practice_task' });
-            if (dbTest) {
-              let changed = false;
-              if (dbTest.content && dbTest.content.parts && test.content && test.content.parts) {
-                for (let i = 0; i < dbTest.content.parts.length; i++) {
-                  const dbPart = dbTest.content.parts[i];
-                  const filePart = test.content.parts[i];
-                  if (dbPart && filePart && dbPart.text !== filePart.text) {
-                    dbPart.text = filePart.text;
-                    changed = true;
-                  }
-                }
-              }
-              if (changed) {
-                dbTest.markModified('content.parts');
-                await dbTest.save();
-                updatedCount++;
-              }
-            }
+    let updatedCount = 0;
+    for (const test of cambridgeWritingTests) {
+      const dbTest = await TestContent.findOne({ title: test.title, type: 'practice_task' });
+      if (dbTest && dbTest.content && dbTest.content.parts && test.content && test.content.parts) {
+        let changed = false;
+        for (let i = 0; i < dbTest.content.parts.length; i++) {
+          const dbPart = dbTest.content.parts[i];
+          const filePart = test.content.parts[i];
+          if (dbPart && filePart && dbPart.text !== filePart.text) {
+            dbPart.text = filePart.text;
+            changed = true;
           }
-          console.log(`✅ Database migration completed. Updated ${updatedCount} writing tasks.`);
+        }
+        if (changed) {
+          dbTest.markModified('content.parts');
+          await dbTest.save();
+          updatedCount++;
         }
       }
+    }
+    if (updatedCount > 0) {
+      console.log(`✅ Writing prompts migration: Updated ${updatedCount} tasks to match source files.`);
     }
   } catch (err) {
     console.error('❌ Failed to update writing prompts in database:', err.message);
