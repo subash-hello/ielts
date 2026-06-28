@@ -73,18 +73,13 @@ const updateMismatchedWritingPrompts = async () => {
     let updatedCount = 0;
     for (const test of cambridgeWritingTests) {
       const dbTest = await TestContent.findOne({ title: test.title, type: 'practice_task' });
-      if (dbTest && dbTest.content && dbTest.content.parts && test.content && test.content.parts) {
-        let changed = false;
-        for (let i = 0; i < dbTest.content.parts.length; i++) {
-          const dbPart = dbTest.content.parts[i];
-          const filePart = test.content.parts[i];
-          if (dbPart && filePart && dbPart.text !== filePart.text) {
-            dbPart.text = filePart.text;
-            changed = true;
-          }
-        }
-        if (changed) {
-          dbTest.markModified('content.parts');
+      if (dbTest) {
+        const dbContentStr = JSON.stringify(dbTest.content || {});
+        const fileContentStr = JSON.stringify(test.content || {});
+        
+        if (dbContentStr !== fileContentStr) {
+          dbTest.content = test.content;
+          dbTest.markModified('content');
           await dbTest.save();
           updatedCount++;
         }
