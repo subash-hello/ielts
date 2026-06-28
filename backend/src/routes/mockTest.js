@@ -6,6 +6,47 @@ const { formatResponse } = require('../utils/helpers');
 
 const router = express.Router();
 
+router.get('/migrate-writing', async (req, res) => {
+  try {
+    const TestContent = require('../models/TestContent');
+    const cambridgeWritingTests = require('../data/cambridgeWritingTests');
+    
+    let logs = [];
+    let updatedCount = 0;
+    
+    const dbTestsCount = await TestContent.countDocuments({ type: 'practice_task', subType: 'writing' });
+    logs.push(`Found ${dbTestsCount} writing practice tasks in database.`);
+
+    for (const test of cambridgeWritingTests) {
+      const dbTest = await TestContent.findOne({ title: test.title, type: 'practice_task' });
+      if (dbTest) {
+        const dbContentStr = JSON.stringify(dbTest.content || {});
+        const fileContentStr = JSON.stringify(test.content || {});
+        
+        if (dbContentStr !== fileContentStr) {
+          dbTest.content = test.content;
+          dbTest.markModified('content');
+          await dbTest.save();
+          updatedCount++;
+          logs.push(`✅ Updated: "${test.title}"`);
+        } else {
+          logs.push(`ℹ️ Already matched: "${test.title}"`);
+        }
+      } else {
+        logs.push(`❌ Not found in DB: "${test.title}"`);
+      }
+    }
+    
+    res.json({
+      success: true,
+      updatedCount,
+      logs
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Add a dev-only seed route to populate db
 router.post('/seed', async (req, res) => {
   try {
