@@ -26,6 +26,15 @@ export default function WritingPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const triggerMigration = async () => {
+      try {
+        await api.get('/mock-test/migrate-writing');
+      } catch (err) {
+        console.error('Migration auto-trigger failed:', err);
+      }
+    };
+    triggerMigration();
+
     const fetchTasks = async () => {
       try {
         const res = await api.get('/mock-test/practice/available?subType=writing');
