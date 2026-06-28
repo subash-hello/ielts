@@ -65,6 +65,34 @@ const seedPdfs = async () => {
   }
 };
 
+const updateMismatchedWritingPrompts = async () => {
+  try {
+    const TestContent = require('../models/TestContent');
+    const cambridgeWritingTests = require('../data/cambridgeWritingTests');
+    
+    let updatedCount = 0;
+    for (const test of cambridgeWritingTests) {
+      const dbTest = await TestContent.findOne({ title: test.title, type: 'practice_task' });
+      if (dbTest) {
+        const dbContentStr = JSON.stringify(dbTest.content || {});
+        const fileContentStr = JSON.stringify(test.content || {});
+        
+        if (dbContentStr !== fileContentStr) {
+          dbTest.content = test.content;
+          dbTest.markModified('content');
+          await dbTest.save();
+          updatedCount++;
+        }
+      }
+    }
+    if (updatedCount > 0) {
+      console.log(`✅ Writing prompts migration: Updated ${updatedCount} tasks to match source files.`);
+    }
+  } catch (err) {
+    console.error('❌ Failed to update writing prompts in database:', err.message);
+  }
+};
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ielts-ai', {
@@ -74,6 +102,7 @@ const connectDB = async () => {
     console.log(`📦 MongoDB Connected: ${conn.connection.host}`);
     await seedAdmin();
     await seedPdfs();
+    await updateMismatchedWritingPrompts();
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️ Falling back to a local in-memory database so the app can still run...');
@@ -88,6 +117,7 @@ const connectDB = async () => {
       console.log(`📦 In-Memory MongoDB Connected! (Mock mode active)`);
       await seedAdmin();
       await seedPdfs();
+      await updateMismatchedWritingPrompts();
     } catch (memError) {
       console.error('❌ Failed to start in-memory database:', memError.message);
       if (process.env.NODE_ENV === 'production') {
