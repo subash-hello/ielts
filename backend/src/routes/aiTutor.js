@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post('/chat', auth, async (req, res) => {
   try {
-    const { messages } = req.body;
+    const { messages, image } = req.body;
 
     let progressData = [];
     let mockTests = [];
@@ -78,7 +78,7 @@ STUDENT PROFILE:
       });
     }
 
-    const response = await geminiService.chatWithTutor(messages, dashboardSummary);
+    const response = await geminiService.chatWithTutor(messages, dashboardSummary, image);
     res.json(formatResponse({ reply: response }));
   } catch (error) {
     res.status(500).json({ error: error.message });

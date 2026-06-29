@@ -15,7 +15,10 @@ import {
   MicOff, 
   Volume2, 
   VolumeX,
-  Trash2
+  Trash2,
+  Image as ImageIcon,
+  Paperclip,
+  X
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -23,6 +26,7 @@ import toast from 'react-hot-toast';
 interface Message {
   role: 'bot' | 'user';
   text: string;
+  image?: string;
 }
 
 // Beautiful lightweight markdown renderer to clean up raw LLM markdown symbols (*, #, etc.)
@@ -127,6 +131,28 @@ export default function AITutorPage() {
   const [typing, setTyping] = useState(false);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [selectedImage, setSelectedImage] = useState<{ data: string; mimeType: string } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select a valid image file (PNG, JPG, etc.).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedImage({
+        data: reader.result as string,
+        mimeType: file.type
+      });
+      toast.success('Image attached successfully!');
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Voice States
   const [isListening, setIsListening] = useState(false);
@@ -289,9 +315,11 @@ export default function AITutorPage() {
     }
 
     // Append user message
-    const userMessage: Message = { role: 'user', text: textToSend };
+    const userMessage: Message = { role: 'user', text: textToSend, image: selectedImage?.data };
     setMessages((m) => [...m, userMessage]);
+    const imageToSend = selectedImage;
     if (!customText) setInput('');
+    setSelectedImage(null);
     setTyping(true);
 
     try {
@@ -301,7 +329,10 @@ export default function AITutorPage() {
         content: m.text
       }));
 
-      const response = await api.post('/ai-tutor/chat', { messages: formattedHistory });
+      const response = await api.post('/ai-tutor/chat', { 
+        messages: formattedHistory,
+        image: imageToSend
+      });
       
       setMessages((m) => [...m, { role: 'bot', text: response.reply }]);
     } catch (e: any) {
@@ -433,7 +464,18 @@ export default function AITutorPage() {
                 ? 'glass-card text-white border-border-glass pr-10' 
                 : 'bg-accent/20 text-white border-accent/20 whitespace-pre-line'
             }`}>
-              {m.role === 'bot' ? <MarkdownRenderer text={m.text} /> : m.text}
+              {m.role === 'bot' ? (
+                <MarkdownRenderer text={m.text} />
+              ) : (
+                <div className="space-y-2">
+                  {m.image && (
+                    <div className="mb-2 max-w-xs overflow-hidden rounded-xl border border-border-glass">
+                      <img src={m.image} alt="Attached student work" className="w-full h-auto max-h-48 object-contain" />
+                    </div>
+                  )}
+                  <p>{m.text}</p>
+                </div>
+              )}
               
               {/* Speak Aloud Button for Bot responses */}
               {m.role === 'bot' && (
@@ -495,8 +537,41 @@ export default function AITutorPage() {
         ))}
       </div>
 
+      {/* Image Upload Preview */}
+      {selectedImage && (
+        <div className="flex items-center gap-2 p-2 bg-surface/50 border border-border-glass rounded-xl w-fit mb-2">
+          <img src={selectedImage.data} alt="Attached preview" className="w-10 h-10 object-cover rounded-lg border border-border-glass" />
+          <div className="flex flex-col">
+            <span className="text-[10px] text-white/95 font-semibold">Image attached</span>
+            <button 
+              type="button" 
+              onClick={() => setSelectedImage(null)}
+              className="text-[9px] text-danger hover:underline font-bold text-left"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Input Field with nested Speech-to-Text Microphone button */}
       <div className="flex gap-3">
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          onChange={handleImageUpload} 
+          accept="image/*" 
+          className="hidden" 
+        />
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={typing}
+          className="px-3.5 rounded-xl border border-border-glass bg-surface hover:bg-surface-hover text-text-muted hover:text-white flex items-center justify-center transition-all"
+          title="Upload image from device"
+        >
+          <ImageIcon className="w-5 h-5 text-accent" />
+        </button>
         <div className="relative flex-1 flex">
           <input 
             value={input} 
@@ -528,7 +603,7 @@ export default function AITutorPage() {
         </div>
         <button 
           onClick={() => handleSend()} 
-          disabled={typing || (!input.trim() && !isListening)}
+          disabled={typing || (!input.trim() && !isListening && !selectedImage)}
           className="px-5 py-3.5 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white hover:shadow-lg hover:shadow-accent/30 transition-all disabled:opacity-40"
         >
           <Send className="w-5 h-5" />
