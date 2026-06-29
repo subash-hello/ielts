@@ -114,7 +114,66 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 });
 
 router.post('/forgot-password', async (req, res) => {
-  res.json(formatResponse(null, 'Password reset link sent to email'));
+  try {
+    const { email } = req.body;
+    
+    // Fallback if db not connected
+    if (mongoose.connection.readyState !== 1) {
+      const demoCode = '123456';
+      return res.json(formatResponse({ demoCode }, 'Password reset code generated (Sandbox Mode). Use code: 123456'));
+    }
+
+    const User = require('../models/User');
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(404).json({ error: 'No user registered with that email address.' });
+    }
+
+    // Generate 6-digit reset code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordToken = resetCode;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    res.json(formatResponse({ demoCode: resetCode }, `Password reset code sent. (Demo Code: ${resetCode})`));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    // Fallback if db not connected
+    if (mongoose.connection.readyState !== 1) {
+      if (code !== '123456') {
+        return res.status(400).json({ error: 'Invalid or expired password reset code.' });
+      }
+      return res.json(formatResponse(null, 'Password has been reset successfully (Sandbox Mode)'));
+    }
+
+    const User = require('../models/User');
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+      resetPasswordToken: code,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired password reset code.' });
+    }
+
+    // Update password
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json(formatResponse(null, 'Password has been reset successfully.'));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.get('/verify/:token', async (req, res) => {
