@@ -115,6 +115,7 @@ const connectDB = async () => {
     await seedPdfs();
     await updateMismatchedWritingPrompts();
   } catch (error) {
+    global.dbError = error.message || 'Unknown error';
     console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️ Falling back to a local in-memory database so the app can still run...');
     try {
