@@ -21,6 +21,7 @@ const vocabularyRoutes = require('./routes/vocabulary');
 const diagnosticRoutes = require('./routes/diagnostic');
 const pdfRoutes = require('./routes/pdf');
 const chatRoutes = require('./routes/chat');
+const notesRoutes = require('./routes/notes');
 
 const app = express();
 const httpServer = createServer(app);
@@ -92,6 +93,7 @@ app.use('/api/vocabulary', vocabularyRoutes);
 app.use('/api/diagnostic', aiLimiter, diagnosticRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/notes', notesRoutes);
 
 // Root route for Hugging Face health check stability
 app.get('/', (req, res) => {
