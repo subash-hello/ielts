@@ -239,10 +239,10 @@ Return JSON:
     return extractJSON(text);
   }
 
-  async chatWithTutor(messages, context = '') {
+  async chatWithTutor(messages, context = '', image = null) {
     const model = getModel();
     const chatHistory = messages.map(m => `${m.role === 'student' ? 'Student' : 'Tutor'}: ${m.content}`).join('\n');
-    const prompt = `You are an expert IELTS tutor named Alex. You are a warm, highly supportive, and empathetic human tutor who helps students prepare for their IELTS exam.
+    let prompt = `You are an expert IELTS tutor named Alex. You are a warm, highly supportive, and empathetic human tutor who helps students prepare for their IELTS exam.
 
 Student profile context: ${context || 'General IELTS preparation'}
 
@@ -254,13 +254,27 @@ Active instructions:
   * Use bullet points (- or *) with clean, concise descriptions.
   * Use sub-headings (## or ###) ONLY when separating major different topics or sections (e.g., ## Vocabulary practice, ### Quiz results).
 - Keep responses engaging, clear, and highly focused. If they ask for practice, give them custom questions. If they make a grammatical error, guide them gently to correct it.
+`;
 
-Conversation so far:
-${chatHistory}
+    if (image) {
+      prompt += `\n- IMPORTANT: The student has uploaded an image of their practice/question. Please carefully analyze it and provide answers/feedback relating to it.`;
+    }
 
-Respond naturally as their personalized human tutor (do NOT include any 'Alex:', 'Tutor:', or 'Bot:' prefixes).`;
+    prompt += `\n\nConversation so far:\n${chatHistory}\n\nRespond naturally as their personalized human tutor (do NOT include any 'Alex:', 'Tutor:', or 'Bot:' prefixes).`;
     try {
-      const result = await model.generateContent(prompt);
+      let result;
+      if (image && image.data && image.mimeType) {
+        const base64Data = image.data.includes('base64,') ? image.data.split('base64,')[1] : image.data;
+        const imagePart = {
+          inlineData: {
+            data: base64Data,
+            mimeType: image.mimeType
+          }
+        };
+        result = await model.generateContent([prompt, imagePart]);
+      } else {
+        result = await model.generateContent(prompt);
+      }
       return result.response.text();
     } catch (error) {
       if (error.message && error.message.includes('429 Too Many Requests')) {
