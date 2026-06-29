@@ -8,6 +8,16 @@ const { formatResponse, calculateBand } = require('../utils/helpers');
 
 const router = express.Router();
 
+router.get('/generate-topic', auth, async (req, res) => {
+  try {
+    const specificTopic = req.query.topic || '';
+    const topicSet = await geminiService.generateFullSpeakingSet(specificTopic);
+    res.json(formatResponse(topicSet));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get('/questions/:part', auth, async (req, res) => {
   try {
     const part = parseInt(req.params.part);
@@ -49,14 +59,18 @@ router.post('/evaluate', auth, async (req, res) => {
     });
     await session.save();
 
-    await Progress.findOneAndUpdate(
-      { userId: req.user._id, module: 'speaking' },
-      {
-        $push: { scores: evaluation.scores.overall, history: { score: evaluation.scores.overall, feedback: evaluation.feedback } },
-        $inc: { totalSessions: 1, totalTimeMinutes: Math.ceil((req.body.duration || 60) / 60) }
-      },
-      { upsert: true, new: true }
-    );
+    const { recordActivity } = require('../utils/progressHelper');
+    await recordActivity({
+      userId: req.user._id,
+      module: 'speaking',
+      score: evaluation.scores.overall,
+      feedback: evaluation.feedback,
+      timeSpent: Math.ceil((req.body.duration || 60) / 60),
+      data: {
+        speakingSessionId: session._id,
+        part: part
+      }
+    });
 
     res.json(formatResponse({ ...evaluation, sessionId: session._id }));
   } catch (error) {

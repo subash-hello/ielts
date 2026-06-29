@@ -30,6 +30,11 @@ const auth = async (req, res, next) => {
     }
     req.user = user;
     req.token = token;
+    
+    // Update lastActive timestamp in background
+    user.lastActive = new Date();
+    user.save().catch(err => console.error('Error saving lastActive:', err.message));
+    
     next();
   } catch (error) {
     res.status(401).json({ error: 'Invalid or expired token' });

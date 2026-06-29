@@ -72,6 +72,49 @@ router.post('/submit', auth, async (req, res) => {
     });
     const score = correct;
     const bandScore = Math.min(9, Math.round((correct / questions.length) * 9 * 2) / 2);
+    
+    // Save ReadingTest document
+    const ReadingTest = require('../models/ReadingTest');
+    const readingTest = new ReadingTest({
+      userId: req.user._id,
+      passageType: req.body.passageType || 'academic',
+      passage: {
+        title: req.body.passageTitle || 'Reading Practice',
+        content: '',
+        difficulty: req.body.difficulty || 'medium'
+      },
+      answers: Array.isArray(answers) ? answers : [],
+      correctAnswers: questions.map(q => q.correctAnswer),
+      score: score,
+      totalQuestions: questions.length,
+      timeSpent: timeSpent || 0
+    });
+    await readingTest.save();
+
+    // Update user completedTests
+    if (passageId) {
+      if (!req.user.completedTests) req.user.completedTests = [];
+      if (!req.user.completedTests.includes(passageId)) {
+        req.user.completedTests.push(passageId);
+        await req.user.save();
+      }
+    }
+
+    // Record activity and update progress
+    const { recordActivity } = require('../utils/progressHelper');
+    await recordActivity({
+      userId: req.user._id,
+      module: 'reading',
+      score: bandScore,
+      feedback: `Completed reading passage with score ${score}/${questions.length}`,
+      timeSpent: Math.ceil((timeSpent || 0) / 60) || 20,
+      data: {
+        readingTestId: readingTest._id,
+        passageId: passageId,
+        passageTitle: req.body.passageTitle || 'Reading Practice'
+      }
+    });
+
     res.json(formatResponse({ score, total: questions.length, bandScore, results, timeSpent }));
   } catch (error) {
     res.status(500).json({ error: error.message });

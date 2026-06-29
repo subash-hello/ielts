@@ -99,14 +99,45 @@ router.post('/submit', auth, async (req, res) => {
       if (isCorrect) correct++;
       return { questionId: q.id, question: q.text, userAnswer, correctAnswer: q.correctAnswer, isCorrect };
     });
-    res.json(formatResponse({ score: correct, total: questions.length, results }));
+    const bandScore = Math.min(9, Math.round((correct / questions.length) * 9 * 2) / 2);
+    
+    // Update user completedTests
+    if (testId) {
+      if (!req.user.completedTests) req.user.completedTests = [];
+      if (!req.user.completedTests.includes(testId)) {
+        req.user.completedTests.push(testId);
+        await req.user.save();
+      }
+    }
+
+    // Record activity and update progress
+    const { recordActivity } = require('../utils/progressHelper');
+    await recordActivity({
+      userId: req.user._id,
+      module: 'listening',
+      score: bandScore,
+      feedback: `Completed listening test with score ${correct}/${questions.length}`,
+      timeSpent: 30,
+      data: {
+        testId: testId,
+        testTitle: req.body.testTitle || 'Listening Practice'
+      }
+    });
+
+    res.json(formatResponse({ score: correct, total: questions.length, bandScore, results }));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 router.get('/history', auth, async (req, res) => {
-  res.json(formatResponse([]));
+  try {
+    const Session = require('../models/Session');
+    const tests = await Session.find({ userId: req.user._id, module: 'listening' }).sort({ createdAt: -1 }).limit(20);
+    res.json(formatResponse(tests));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;
