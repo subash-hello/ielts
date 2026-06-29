@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, Brain, ArrowRight, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -14,6 +14,67 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Forgot password states
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [resetStep, setResetStep] = useState<1 | 2>(1);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [demoResetCode, setDemoResetCode] = useState<string | null>(null);
+
+  const handleRequestCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const res = await api.post('/auth/forgot-password', { email: resetEmail });
+      toast.success('Reset code generated successfully!');
+      if (res.demoCode) {
+        setDemoResetCode(res.demoCode);
+      }
+      setResetStep(2);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to request reset code.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetCode || !newPassword) {
+      toast.error('Please enter the reset code and your new password');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters long');
+      return;
+    }
+    setResetLoading(true);
+    try {
+      await api.post('/auth/reset-password', { 
+        email: resetEmail, 
+        code: resetCode, 
+        newPassword 
+      });
+      toast.success('Password reset successfully! Please sign in with your new password.');
+      setShowResetModal(false);
+      setResetEmail('');
+      setResetCode('');
+      setNewPassword('');
+      setResetStep(1);
+      setDemoResetCode(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to reset password.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,7 +174,13 @@ export default function LoginPage() {
             <input type="checkbox" className="w-4 h-4 rounded border-border-glass bg-surface text-accent focus:ring-accent/20" />
             <span className="text-sm text-text-muted">Remember me</span>
           </label>
-          <Link href="#" className="text-sm text-accent hover:text-accent-bright transition-colors">Forgot password?</Link>
+          <button 
+            type="button" 
+            onClick={() => setShowResetModal(true)} 
+            className="text-sm text-accent hover:text-accent-bright transition-colors bg-transparent border-none outline-none cursor-pointer"
+          >
+            Forgot password?
+          </button>
         </div>
 
         <button 
@@ -148,6 +215,99 @@ export default function LoginPage() {
         Don&apos;t have a student account?{' '}
         <Link href="/signup" className="text-accent hover:text-accent-bright font-medium transition-colors">Sign up</Link>
       </p>
+
+      {/* Password Reset Modal */}
+      <AnimatePresence>
+        {showResetModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="glass-card w-full max-w-md rounded-2xl p-6 border border-border-glass bg-surface/95 shadow-2xl relative"
+            >
+              <button 
+                onClick={() => {
+                  setShowResetModal(false);
+                  setResetStep(1);
+                  setDemoResetCode(null);
+                }}
+                className="absolute right-4 top-4 text-text-muted hover:text-white transition-colors text-sm font-semibold"
+              >
+                ✕
+              </button>
+
+              <h3 className="text-xl font-bold text-white mb-2">Reset Password</h3>
+              <p className="text-xs text-text-muted mb-6 leading-relaxed">
+                {resetStep === 1 
+                  ? "Enter your registered email address and we'll generate a password reset code." 
+                  : "Enter the 6-digit code and create your new password."}
+              </p>
+
+              {resetStep === 1 ? (
+                <form onSubmit={handleRequestCode} className="space-y-4">
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <input 
+                      type="email" 
+                      value={resetEmail} 
+                      onChange={(e) => setResetEmail(e.target.value)} 
+                      placeholder="Enter your email" 
+                      required
+                      className="w-full pl-11 pr-4 py-3 bg-surface border border-border-glass rounded-xl text-white placeholder-text-muted focus:border-accent outline-none text-sm transition-all"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={resetLoading}
+                    className="w-full py-3 bg-gradient-to-r from-accent to-accent-bright text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Request Reset Code"}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  {demoResetCode && (
+                    <div className="p-3 bg-accent/10 border border-accent/30 rounded-xl text-xs text-accent-bright font-semibold text-center mb-2">
+                      💡 Demo Reset Code: <span className="font-mono text-sm tracking-wider text-white select-all">{demoResetCode}</span>
+                    </div>
+                  )}
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <input 
+                      type="text" 
+                      value={resetCode} 
+                      onChange={(e) => setResetCode(e.target.value)} 
+                      placeholder="6-digit Reset Code" 
+                      required
+                      maxLength={6}
+                      className="w-full pl-11 pr-4 py-3 bg-surface border border-border-glass rounded-xl text-white placeholder-text-muted focus:border-accent outline-none text-sm transition-all text-center font-mono tracking-widest"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                    <input 
+                      type="password" 
+                      value={newPassword} 
+                      onChange={(e) => setNewPassword(e.target.value)} 
+                      placeholder="Create New Password" 
+                      required
+                      className="w-full pl-11 pr-4 py-3 bg-surface border border-border-glass rounded-xl text-white placeholder-text-muted focus:border-accent outline-none text-sm transition-all"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={resetLoading}
+                    className="w-full py-3 bg-gradient-to-r from-accent to-accent-bright text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {resetLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Reset Password"}
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
