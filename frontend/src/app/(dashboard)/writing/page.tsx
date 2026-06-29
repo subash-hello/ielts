@@ -24,6 +24,13 @@ const essays = [
 export default function WritingPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    api.get('/user/dashboard-stats')
+      .then((res) => setStats(res))
+      .catch((err) => console.error('Error fetching stats:', err));
+  }, []);
 
   useEffect(() => {
     const triggerMigration = async () => {
@@ -84,11 +91,43 @@ export default function WritingPage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div><h1 className="text-2xl font-bold text-white flex items-center gap-3"><PenTool className="w-7 h-7 text-accent" /> Writing Practice</h1><p className="text-text-muted mt-1">Improve your writing with AI-powered evaluation</p></div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[{ l: 'Avg Band', v: '6.5', i: Star }, { l: 'Essays', v: '18', i: FileText }, { l: 'Best Score', v: '7.5', i: TrendingUp }, { l: 'Words Written', v: '15K', i: BarChart3 }].map((s) => (
-          <div key={s.l} className="glass-card rounded-xl p-4 text-center"><s.i className="w-5 h-5 text-accent mx-auto mb-2" /><p className="text-xl font-bold font-mono text-white">{s.v}</p><p className="text-xs text-text-muted">{s.l}</p></div>
-        ))}
-      </div>
+      {(() => {
+        const writingProgress = stats?.progress?.writing;
+        const totalEssays = writingProgress?.totalSessions || 0;
+        const avgBand = writingProgress?.averageBand || 0;
+
+        let maxBand = 0;
+        if (writingProgress?.history && writingProgress.history.length > 0) {
+          writingProgress.history.forEach((h: any) => {
+            if (h.score > maxBand) {
+              maxBand = h.score;
+            }
+          });
+        }
+
+        const totalWords = totalEssays * 250;
+        const formatWords = (w: number) => {
+          if (w >= 1000) return `${(w / 1000).toFixed(1)}K`;
+          return w.toString();
+        };
+
+        return (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { l: 'Avg Band', v: avgBand > 0 ? avgBand.toFixed(1) : '-', i: Star },
+              { l: 'Essays', v: totalEssays.toString(), i: FileText },
+              { l: 'Best Score', v: maxBand > 0 ? maxBand.toFixed(1) : '-', i: TrendingUp },
+              { l: 'Words Written', v: formatWords(totalWords), i: BarChart3 }
+            ].map((s) => (
+              <div key={s.l} className="glass-card rounded-xl p-4 text-center">
+                <s.i className="w-5 h-5 text-accent mx-auto mb-2" />
+                <p className="text-xl font-bold font-mono text-white">{s.v}</p>
+                <p className="text-xs text-text-muted">{s.l}</p>
+              </div>
+            ))}
+          </div>
+        );
+      })()}
 
       <div className="grid md:grid-cols-2 gap-4">
         <motion.div whileHover={{ scale: 1.02 }} className="glass-card rounded-2xl p-6 group border-2 border-accent/30 bg-accent/5">

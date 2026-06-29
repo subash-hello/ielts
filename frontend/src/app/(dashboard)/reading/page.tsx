@@ -87,6 +87,13 @@ export default function ReadingPage() {
   const [expandedType, setExpandedType] = useState<string | null>(null);
   const [passagesList, setPassagesList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    api.get('/user/dashboard-stats')
+      .then((res) => setStats(res))
+      .catch((err) => console.error('Error fetching stats:', err));
+  }, []);
 
   // Skill Simulator state
   const [simulatorMode, setSimulatorMode] = useState<'none' | 'skimming' | 'scanning' | 'keywords'>('none');
@@ -186,19 +193,53 @@ export default function ReadingPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { label: 'Avg Score', value: '32 / 40', icon: Star, color: 'text-accent' },
-          { label: 'Completed', value: '14 Tests', icon: BarChart3, color: 'text-neon' },
-          { label: 'Current Band', value: '7.5', icon: Award, color: 'text-neon-green' }
-        ].map((s) => (
-          <div key={s.label} className="glass-card rounded-2xl p-4 text-center border border-border-glass relative overflow-hidden bg-gradient-to-br from-white/5 to-transparent">
-            <s.icon className={`w-5 h-5 ${s.color} mx-auto mb-1.5`} />
-            <p className="text-xl font-extrabold font-mono text-white leading-none">{s.value}</p>
-            <p className="text-[10px] text-text-muted mt-1 uppercase font-semibold tracking-wider">{s.label}</p>
+      {(() => {
+        const readingProgress = stats?.progress?.reading;
+        const completedTests = readingProgress?.totalSessions || 0;
+        const currentBand = readingProgress?.averageBand || 0;
+
+        let avgCorrect = 0;
+        let avgTotal = 13;
+        if (readingProgress?.history && readingProgress.history.length > 0) {
+          let sumCorrect = 0;
+          let sumTotal = 0;
+          let count = 0;
+          readingProgress.history.forEach((h: any) => {
+            if (h.feedback) {
+              const match = h.feedback.match(/score\s+(\d+)\/(\d+)/i);
+              if (match) {
+                sumCorrect += parseInt(match[1]);
+                sumTotal += parseInt(match[2]);
+                count++;
+              }
+            }
+          });
+          if (count > 0) {
+            avgCorrect = Number((sumCorrect / count).toFixed(1));
+            avgTotal = Math.round(sumTotal / count) || 13;
+          }
+        }
+        
+        // Scale to 40 questions to represent standard IELTS average score format
+        const scaledScore = avgCorrect > 0 && avgTotal > 0 ? Math.round((avgCorrect / avgTotal) * 40) : 0;
+        const avgScoreStr = scaledScore > 0 ? `${scaledScore} / 40` : '0 / 40';
+
+        return (
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label: 'Avg Score', value: avgScoreStr, icon: Star, color: 'text-accent' },
+              { label: 'Completed', value: `${completedTests} Test${completedTests === 1 ? '' : 's'}`, icon: BarChart3, color: 'text-neon' },
+              { label: 'Current Band', value: currentBand > 0 ? currentBand.toFixed(1) : '-', icon: Award, color: 'text-neon-green' }
+            ].map((s) => (
+              <div key={s.label} className="glass-card rounded-2xl p-4 text-center border border-border-glass relative overflow-hidden bg-gradient-to-br from-white/5 to-transparent">
+                <s.icon className={`w-5 h-5 ${s.color} mx-auto mb-1.5`} />
+                <p className="text-xl font-extrabold font-mono text-white leading-none">{s.value}</p>
+                <p className="text-[10px] text-text-muted mt-1 uppercase font-semibold tracking-wider">{s.label}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        );
+      })()}
 
       {/* Tab Navigation */}
       <div className="flex items-center gap-1 bg-surface p-1 rounded-2xl border border-border-glass max-w-2xl overflow-x-auto">

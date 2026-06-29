@@ -22,6 +22,13 @@ const fallbackSections = [
 export default function ListeningPage() {
   const [sectionsList, setSectionsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    api.get('/user/dashboard-stats')
+      .then((res) => setStats(res))
+      .catch((err) => console.error('Error fetching stats:', err));
+  }, []);
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -111,15 +118,59 @@ export default function ListeningPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {[{ l: 'Avg Score', v: '30/40', i: Star }, { l: 'Tests Done', v: '12', i: BarChart3 }, { l: 'Best Score', v: '36/40', i: TrendingUp }].map((s) => (
-          <div key={s.l} className="glass-card rounded-xl p-4 text-center">
-            <s.i className="w-5 h-5 text-accent mx-auto mb-2" />
-            <p className="text-xl font-bold font-mono text-white">{s.v}</p>
-            <p className="text-xs text-text-muted">{s.l}</p>
+      {(() => {
+        const listeningProgress = stats?.progress?.listening;
+        const completedTests = listeningProgress?.totalSessions || 0;
+        const currentBand = listeningProgress?.averageBand || 0;
+
+        let avgCorrect = 0;
+        let avgTotal = 40;
+        let maxCorrect = 0;
+        if (listeningProgress?.history && listeningProgress.history.length > 0) {
+          let sumCorrect = 0;
+          let sumTotal = 0;
+          let count = 0;
+          listeningProgress.history.forEach((h: any) => {
+            if (h.feedback) {
+              const match = h.feedback.match(/score\s+(\d+)\/(\d+)/i);
+              if (match) {
+                const correctVal = parseInt(match[1]);
+                sumCorrect += correctVal;
+                sumTotal += parseInt(match[2]);
+                count++;
+                if (correctVal > maxCorrect) {
+                  maxCorrect = correctVal;
+                }
+              }
+            }
+          });
+          if (count > 0) {
+            avgCorrect = Number((sumCorrect / count).toFixed(1));
+            avgTotal = Math.round(sumTotal / count) || 40;
+          }
+        }
+        
+        // Scale to 40 questions if total was different
+        const scaledAvg = avgTotal > 0 ? Math.round((avgCorrect / avgTotal) * 40) : 0;
+        const avgScoreStr = scaledAvg > 0 ? `${scaledAvg}/40` : '0/40';
+        const bestScoreStr = maxCorrect > 0 ? `${maxCorrect}/40` : '0/40';
+
+        return (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { l: 'Avg Score', v: avgScoreStr, i: Star },
+              { l: 'Tests Done', v: completedTests.toString(), i: BarChart3 },
+              { l: 'Best Score', v: bestScoreStr, i: TrendingUp }
+            ].map((s) => (
+              <div key={s.l} className="glass-card rounded-xl p-4 text-center">
+                <s.i className="w-5 h-5 text-accent mx-auto mb-2" />
+                <p className="text-xl font-bold font-mono text-white">{s.v}</p>
+                <p className="text-xs text-text-muted">{s.l}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        );
+      })()}
 
       <div className="grid md:grid-cols-2 gap-4">
         {sectionsList.map((s) => (

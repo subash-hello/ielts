@@ -1,8 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Mic, Clock, Star, TrendingUp, ArrowRight, MessageSquare, BookOpen, Users, Info, CheckCircle, XCircle } from 'lucide-react';
+import { api } from '@/lib/api';
 
 const partCards = [
   {
@@ -21,29 +23,29 @@ const partCards = [
   },
   {
     part: 2,
-    title: 'Cue Card / Long Turn',
+    title: 'Individual Long Turn',
     duration: '3–4 minutes',
-    color: 'from-pink-500 to-rose-400',
-    desc: 'You receive a topic card. You have 1 minute to prepare, then speak for 1–2 minutes on the topic.',
-    topics: ['Describe a person', 'Describe a place', 'Describe an event', 'Describe an object'],
-    tips: ['Use the 1 minute wisely — make short notes', 'Cover all bullet points on the card', 'Keep speaking until the examiner stops you'],
+    color: 'from-accent to-blue-500',
+    desc: 'You receive a topic card and have 1 minute to prepare notes. You then speak continuously for 1 to 2 minutes.',
+    topics: ['Describe a person', 'Describe a place', 'Describe an object', 'Describe an experience', 'Describe an event'],
+    tips: ['Use the 1-minute prep time to write bullet points', 'Speak until the examiner stops you (aim for 2 mins)', 'Organize with story structure'],
     cueCard: {
-      topic: 'Describe a person who inspired you.',
-      bullets: ['Who the person is', 'How you know them', 'Why they inspired you', 'How they influenced your life']
+      topic: 'Describe a place you visited recently.',
+      bullets: ['Where this place was', 'Who you went there with', 'What you did there', 'And explain why you liked it']
     }
   },
   {
     part: 3,
-    title: 'Discussion',
+    title: 'Two-Way Discussion',
     duration: '4–5 minutes',
     color: 'from-neon to-cyan-400',
-    desc: 'The examiner asks deeper, abstract questions related to the topic in Part 2. You discuss wider societal issues.',
-    topics: ['Role models & Society', 'Technology & Culture', 'Education & Environment', 'Future Trends'],
-    tips: ['Give opinions AND reasons', 'Use examples from society or experience', 'Compare ideas: "On the other hand..."'],
+    desc: 'The examiner discusses abstract topics related to Part 2. This requires expressing opinions and comparing ideas.',
+    topics: ['Education & Society', 'Technology & Progress', 'Media & Information', 'Travel & Culture', 'Work & Careers'],
+    tips: ['Expand answers with reasons and examples', 'Answer in 4–6 sentences', 'Use academic phrases: "it is argued that", "consequently"'],
     example: {
-      q: 'Can social media influencers be good role models?',
-      poor: 'No, I don\'t think so.',
-      good: 'In my opinion, it depends on the influencer. While some promote unrealistic standards, others like scientists and educators use social media to inspire millions.'
+      q: 'How has technology changed modern communication?',
+      poor: 'It is faster. People use phones.',
+      good: 'Without a doubt, technology has revolutionized how we connect. Primarily, modern platforms allow instant global exchange. However, this has also led to less face-to-face interaction, which some argue might weaken personal bonds.'
     }
   }
 ];
@@ -55,6 +57,14 @@ const recentHistory = [
 ];
 
 export default function SpeakingPage() {
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    api.get('/user/dashboard-stats')
+      .then((res) => setStats(res))
+      .catch((err) => console.error('Error fetching stats:', err));
+  }, []);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {/* Header */}
@@ -91,20 +101,43 @@ export default function SpeakingPage() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { l: 'Avg Band', v: '6.5', i: Star },
-          { l: 'Sessions', v: '24', i: MessageSquare },
-          { l: 'Best Band', v: '7.5', i: TrendingUp },
-          { l: 'Total Time', v: '12h', i: Clock }
-        ].map(s => (
-          <div key={s.l} className="glass-card rounded-xl p-4 text-center">
-            <s.i className="w-5 h-5 text-accent mx-auto mb-2" />
-            <p className="text-xl font-bold font-mono text-white">{s.v}</p>
-            <p className="text-xs text-text-muted">{s.l}</p>
+      {(() => {
+        const speakingProgress = stats?.progress?.speaking;
+        const totalSessions = speakingProgress?.totalSessions || 0;
+        const avgBand = speakingProgress?.averageBand || 0;
+        const totalTimeMins = speakingProgress?.totalTimeMinutes || 0;
+
+        let maxBand = 0;
+        if (speakingProgress?.history && speakingProgress.history.length > 0) {
+          speakingProgress.history.forEach((h: any) => {
+            if (h.score > maxBand) {
+              maxBand = h.score;
+            }
+          });
+        }
+
+        const formatHours = (mins: number) => {
+          const hrs = Math.ceil(mins / 60);
+          return `${hrs}h`;
+        };
+
+        return (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { l: 'Avg Band', v: avgBand > 0 ? avgBand.toFixed(1) : '-', i: Star },
+              { l: 'Sessions', v: totalSessions.toString(), i: MessageSquare },
+              { l: 'Best Band', v: maxBand > 0 ? maxBand.toFixed(1) : '-', i: TrendingUp },
+              { l: 'Total Time', v: formatHours(totalTimeMins), i: Clock }
+            ].map(s => (
+              <div key={s.l} className="glass-card rounded-xl p-4 text-center">
+                <s.i className="w-5 h-5 text-accent mx-auto mb-2" />
+                <p className="text-xl font-bold font-mono text-white">{s.v}</p>
+                <p className="text-xs text-text-muted">{s.l}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        );
+      })()}
 
       {/* Part Cards */}
       <div className="space-y-4">
