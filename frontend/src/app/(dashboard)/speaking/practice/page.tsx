@@ -226,7 +226,7 @@ function SpeakingPracticeContent() {
   const [customTopicInput, setCustomTopicInput] = useState('');
   const [showCustomTopicModal, setShowCustomTopicModal] = useState(false);
   const [isSessionStarted, setIsSessionStarted] = useState(false);
-  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('');
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string>('Realtype Voice');
 
   // Active part: 1, 2, or 3
   const [activePart, setActivePart] = useState<1 | 2 | 3>(
@@ -272,6 +272,7 @@ function SpeakingPracticeContent() {
 
   const recognitionRef = useRef<any>(null);
   const finalTranscriptRef = useRef('');
+  const premiumAudioRef = useRef<{ stop: () => void } | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const barsTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -287,16 +288,7 @@ function SpeakingPracticeContent() {
         if (saved) {
           setSelectedVoiceName(saved);
         } else {
-          const englishVoices = allVoices.filter(v => v.lang.startsWith('en-'));
-          const premiumVoice = englishVoices.find(v => 
-            v.name.toLowerCase().includes('google') || 
-            v.name.toLowerCase().includes('natural') || 
-            v.name.toLowerCase().includes('neural')
-          ) || englishVoices.find(v => v.name.toLowerCase().includes('microsoft')) || englishVoices[0];
-          
-          if (premiumVoice) {
-            setSelectedVoiceName(premiumVoice.name);
-          }
+          setSelectedVoiceName('Realtype Voice');
         }
       }
     };
@@ -408,13 +400,95 @@ function SpeakingPracticeContent() {
   }, [isRecording]);
 
   const stopSpeech = () => {
+    if (premiumAudioRef.current) {
+      premiumAudioRef.current.stop();
+    }
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
       setIsExaminerSpeaking(false);
     }
   };
 
+  const playPremiumTTS = (text: string) => {
+    stopSpeech();
+    setIsExaminerSpeaking(true);
+    const cleanText = text.replace(/<[^>]*>/g, '').replace(/["""]/g, '').trim();
+    
+    // Split sentences for 200 char limit
+    const sentences = cleanText.match(/[^.!?]+[.!?]*/g) || [cleanText];
+    let currentIdx = 0;
+    let currentAudio: HTMLAudioElement | null = null;
+    
+    const playNextSentence = () => {
+      if (currentIdx >= sentences.length) {
+        setIsExaminerSpeaking(false);
+        return;
+      }
+      const sentence = sentences[currentIdx].trim();
+      if (!sentence) {
+        currentIdx++;
+        playNextSentence();
+        return;
+      }
+      
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en-US&client=tw-ob&q=${encodeURIComponent(sentence)}`;
+      const audio = new Audio(url);
+      currentAudio = audio;
+      
+      audio.onended = () => {
+        currentIdx++;
+        playNextSentence();
+      };
+      
+      audio.onerror = () => {
+        console.warn('Realtype Voice failed, falling back to speech synthesis.');
+        playDefaultSynthesis(cleanText);
+      };
+      
+      audio.play().catch(err => {
+        console.warn('Audio play blocked, falling back to speech synthesis.', err);
+        playDefaultSynthesis(cleanText);
+      });
+    };
+
+    premiumAudioRef.current = {
+      stop: () => {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+        }
+        currentIdx = sentences.length;
+      }
+    };
+
+    playNextSentence();
+  };
+
+  const playDefaultSynthesis = (text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    const englishVoices = voices.filter(v => v.lang.startsWith('en-'));
+    const voice = englishVoices.find(v => 
+      v.name.toLowerCase().includes('google') || 
+      v.name.toLowerCase().includes('natural') || 
+      v.name.toLowerCase().includes('neural')
+    ) || englishVoices.find(v => v.name.toLowerCase().includes('microsoft')) || englishVoices[0];
+    
+    if (voice) utterance.voice = voice;
+    utterance.onstart = () => setIsExaminerSpeaking(true);
+    utterance.onend = () => setIsExaminerSpeaking(false);
+    utterance.onerror = () => setIsExaminerSpeaking(false);
+    synth.speak(utterance);
+  };
+
   const speakText = (text: string) => {
+    if (selectedVoiceName === 'Realtype Voice') {
+      playPremiumTTS(text);
+      return;
+    }
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
     const synth = window.speechSynthesis;
     synth.cancel();
@@ -846,15 +920,20 @@ function SpeakingPracticeContent() {
   // ────────────────────────────────────────────────────────────────────────────
   if (!isSessionStarted) {
     const englishVoices = voices.filter(v => v.lang.startsWith('en-'));
-    const sortedVoices = [...englishVoices].sort((a, b) => {
+    const sortedEnglishVoices = [...englishVoices].sort((a, b) => {
       const aName = a.name.toLowerCase();
       const bName = b.name.toLowerCase();
       const aScore = aName.includes('google') || aName.includes('natural') || aName.includes('neural') ? 3 : aName.includes('microsoft') ? 2 : 1;
       const bScore = bName.includes('google') || bName.includes('natural') || bName.includes('neural') ? 3 : bName.includes('microsoft') ? 2 : 1;
       return bScore - aScore;
     });
+    const sortedVoices = [{ name: 'Realtype Voice', lang: 'en-US (Premium)' } as any, ...sortedEnglishVoices];
 
     const handlePreviewVoice = (voiceName: string) => {
+      if (voiceName === 'Realtype Voice') {
+        playPremiumTTS("Welcome to the IELTS speaking test. My name is Alex, and I will be your examiner today.");
+        return;
+      }
       if (typeof window === 'undefined' || !window.speechSynthesis) return;
       const synth = window.speechSynthesis;
       synth.cancel();
@@ -948,7 +1027,7 @@ function SpeakingPracticeContent() {
             >
               {sortedVoices.map(v => (
                 <option key={v.name} value={v.name}>
-                  {v.name} ({v.lang}) {v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('neural') ? '🌟 Natural' : ''}
+                  {v.name} ({v.lang}) {v.name === 'Realtype Voice' ? '✨ Premium Natural' : (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('neural') ? '🌟 Natural' : '')}
                 </option>
               ))}
               {sortedVoices.length === 0 && (

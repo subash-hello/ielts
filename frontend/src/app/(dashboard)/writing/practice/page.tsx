@@ -23,6 +23,7 @@ function WritingPracticeContent() {
   const [evaluations, setEvaluations] = useState<any[]>([]);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60 * 60);
+  const [isTestStarted, setIsTestStarted] = useState(false);
 
   useEffect(() => {
     if (!testId && !isRandom) {
@@ -70,10 +71,10 @@ function WritingPracticeContent() {
   }, [testId, isRandom, randomTaskType]);
 
   useEffect(() => {
-    if (loading || timeLeft <= 0) return;
+    if (loading || timeLeft <= 0 || !isTestStarted) return;
     const t = setInterval(() => setTimeLeft((p) => Math.max(0, p - 1)), 1000);
     return () => clearInterval(t);
-  }, [loading, timeLeft]);
+  }, [loading, timeLeft, isTestStarted]);
 
   const handleSubmit = async () => {
     const content = contents[activeTab];
@@ -154,6 +155,50 @@ function WritingPracticeContent() {
 
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
+
+  if (!isTestStarted && !loading) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto py-10 space-y-6 text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-accent/15 flex items-center justify-center border border-accent/30 text-accent">
+          <Clock className="w-8 h-8 animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <span className="text-[10px] text-accent font-bold uppercase tracking-wider">IELTS Writing Module</span>
+          <h1 className="text-2xl font-bold text-white">{testData?.title || 'Writing Practice Test'}</h1>
+          <p className="text-text-muted text-sm max-w-md mx-auto">
+            You will have a maximum of {Math.floor(timeLeft / 60)} minutes to complete the writing {testData.parts.length > 1 ? 'tasks' : 'task'}. Once you click "Start Test", the timer will begin.
+          </p>
+        </div>
+        
+        <div className="bg-surface/50 border border-border-glass rounded-2xl p-6 text-left max-w-md mx-auto space-y-4">
+          <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
+            <span className="text-text-muted">Total Tasks:</span>
+            <span className="text-white font-bold">{testData.parts.length} Task{testData.parts.length > 1 ? 's' : ''}</span>
+          </div>
+          <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
+            <span className="text-text-muted">Allocated Time:</span>
+            <span className="text-white font-bold">{Math.floor(timeLeft / 60)} Minutes</span>
+          </div>
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-text-muted">Difficulty:</span>
+            <span className="text-neon-green font-bold capitalize">{testData?.difficulty || 'Medium'}</span>
+          </div>
+        </div>
+
+        <div className="pt-4 flex justify-center gap-4">
+          <Link href="/writing" className="px-6 py-3 rounded-xl bg-surface hover:bg-surface-hover border border-border-glass text-xs font-bold transition-all text-white">
+            Cancel
+          </Link>
+          <button 
+            onClick={() => setIsTestStarted(true)}
+            className="px-8 py-3 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-extrabold text-xs flex items-center gap-1.5 transition-all shadow hover:shadow-accent/25"
+          >
+            Start Writing Test
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 max-w-5xl mx-auto">

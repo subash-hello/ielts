@@ -28,14 +28,16 @@ function ReadingPracticeContent() {
   const [submitted, setSubmitted] = useState(false);
   const [timeSpent, setTimeSpent] = useState(0);
 
+  const [isTestStarted, setIsTestStarted] = useState(false);
+
   // Timer logic
   useEffect(() => {
-    if (submitted) return;
+    if (submitted || !isTestStarted) return;
     const interval = setInterval(() => {
       setTimeSpent((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [submitted]);
+  }, [submitted, isTestStarted]);
 
   // Fetch passage from backend API reactively when passageId changes
   useEffect(() => {
@@ -113,6 +115,50 @@ function ReadingPracticeContent() {
         <Loader2 className="w-10 h-10 text-accent animate-spin" />
         <p className="text-text-muted text-sm animate-pulse">Loading reading passage...</p>
       </div>
+    );
+  }
+
+  if (!isTestStarted && !loading) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto py-10 space-y-6 text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-accent/15 flex items-center justify-center border border-accent/30 text-accent">
+          <Clock className="w-8 h-8 animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <span className="text-[10px] text-accent font-bold uppercase tracking-wider">IELTS Reading Module</span>
+          <h1 className="text-2xl font-bold text-white">{testData?.title || 'Reading Passage Practice'}</h1>
+          <p className="text-text-muted text-sm max-w-md mx-auto">
+            You will have a maximum of 20 minutes to read the passage and answer the 13 questions. Once you click "Start Test", the timer will begin.
+          </p>
+        </div>
+        
+        <div className="bg-surface/50 border border-border-glass rounded-2xl p-6 text-left max-w-md mx-auto space-y-4">
+          <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
+            <span className="text-text-muted">Total Questions:</span>
+            <span className="text-white font-bold">{questions.length} Questions</span>
+          </div>
+          <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
+            <span className="text-text-muted">Suggested Time:</span>
+            <span className="text-white font-bold">20 Minutes</span>
+          </div>
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-text-muted">Passage Difficulty:</span>
+            <span className="text-neon-green font-bold capitalize">{testData?.difficulty || 'Medium'}</span>
+          </div>
+        </div>
+
+        <div className="pt-4 flex justify-center gap-4">
+          <Link href="/reading" className="px-6 py-3 rounded-xl bg-surface hover:bg-surface-hover border border-border-glass text-xs font-bold transition-all text-white">
+            Cancel
+          </Link>
+          <button 
+            onClick={() => setIsTestStarted(true)}
+            className="px-8 py-3 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-extrabold text-xs flex items-center gap-1.5 transition-all shadow hover:shadow-accent/25"
+          >
+            Start Reading Test
+          </button>
+        </div>
+      </motion.div>
     );
   }
 

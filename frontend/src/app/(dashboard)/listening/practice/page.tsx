@@ -694,6 +694,7 @@ function ListeningPracticeContent() {
   const [submitted, setSubmitted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isTestStarted, setIsTestStarted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -806,16 +807,82 @@ function ListeningPracticeContent() {
   }, [testData, answers, submitted]);
 
   useEffect(() => {
-    if (submitted && testId) {
-      api.post('/user/complete-test', { testId }).catch(console.error);
+    if (submitted && testId && testData) {
+      // Extract all questions for evaluation
+      const allQuestions = (testData.parts || []).flatMap((p: any) => p.questions || []);
+      const questionsFormatted = allQuestions.map((q: any) => ({
+        id: q.id,
+        text: q.text || '',
+        correctAnswer: q.correctAnswer || q.correct || ''
+      }));
+
+      api.post('/listening/submit', {
+        testId,
+        testTitle: testData.title || 'Listening Test',
+        answers: answers,
+        questions: questionsFormatted
+      }).catch(console.error);
     }
-  }, [submitted, testId]);
+  }, [submitted, testId, testData, answers]);
 
   if (loading) return (
     <div className="flex justify-center items-center h-full min-h-[500px]">
       <Loader2 className="animate-spin text-indigo-600 h-8 w-8" />
     </div>
   );
+
+  if (!isTestStarted && !loading && testData) {
+    const totalQuestions = (testData.parts || []).reduce((sum: number, p: any) => sum + (p.questions?.length || 0), 0);
+    return (
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto py-10 space-y-6 text-center">
+        <div className="w-16 h-16 mx-auto rounded-full bg-accent/15 flex items-center justify-center border border-accent/30 text-accent">
+          <Headphones className="w-8 h-8 animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <span className="text-[10px] text-accent font-bold uppercase tracking-wider">IELTS Listening Module</span>
+          <h1 className="text-2xl font-bold text-white">{testData?.title || 'Listening Practice Test'}</h1>
+          <p className="text-text-muted text-sm max-w-md mx-auto">
+            You will listen to a set of audio recordings and answer a total of {totalQuestions} questions. Once you click "Start Test", the audio and timer will begin.
+          </p>
+        </div>
+        
+        <div className="bg-surface/50 border border-border-glass rounded-2xl p-6 text-left max-w-md mx-auto space-y-4">
+          <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
+            <span className="text-text-muted">Total Questions:</span>
+            <span className="text-white font-bold">{totalQuestions} Questions</span>
+          </div>
+          <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
+            <span className="text-text-muted">Suggested Time:</span>
+            <span className="text-white font-bold">30 Minutes</span>
+          </div>
+          <div className="flex justify-between items-center text-xs">
+            <span className="text-text-muted">Test Difficulty:</span>
+            <span className="text-neon font-bold capitalize">{testData?.difficulty || 'Medium'}</span>
+          </div>
+        </div>
+
+        <div className="pt-4 flex justify-center gap-4">
+          <Link href="/listening" className="px-6 py-3 rounded-xl bg-surface hover:bg-surface-hover border border-border-glass text-xs font-bold transition-all text-white">
+            Cancel
+          </Link>
+          <button 
+            onClick={() => {
+              setIsTestStarted(true);
+              setTimeout(() => {
+                if (audioRef.current) {
+                  audioRef.current.play().catch(console.warn);
+                  setIsPlaying(true);
+                }
+              }, 300);
+            }}
+            className="px-8 py-3 rounded-xl bg-gradient-to-r from-accent to-accent-bright text-white font-extrabold text-xs flex items-center gap-1.5 transition-all shadow hover:shadow-accent/25"
+          >
+            Start Listening Test
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (error || !testData || !testData.parts || testData.parts.length === 0) return (
     <div className="flex flex-col items-center justify-center min-h-[500px] text-center px-4">
