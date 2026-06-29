@@ -471,6 +471,7 @@ Return a JSON response with this exact structure:
         }
       };
     }
+  }
   async generateSVGForPrompt(promptText) {
     try {
       const model = getModel();
