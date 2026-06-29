@@ -6,6 +6,13 @@ const { formatResponse } = require('../utils/helpers');
 
 const router = express.Router();
 
+router.get('/db-error', async (req, res) => {
+  res.json({
+    dbError: global.dbError || 'No connection error recorded. Connection might be active or pending.',
+    readyState: require('mongoose').connection.readyState
+  });
+});
+
 router.get('/migrate-writing', async (req, res) => {
   try {
     const TestContent = require('../models/TestContent');
