@@ -77,10 +77,10 @@ export default function ProgressPage() {
 
   // Hours mapping from totalTimeMinutes in DB
   const timeData = [
-    { module: 'Speaking', hours: Math.ceil((progress.speaking?.totalTimeMinutes || 0) / 60) },
-    { module: 'Writing', hours: Math.ceil((progress.writing?.totalTimeMinutes || 0) / 60) },
-    { module: 'Reading', hours: Math.ceil((progress.reading?.totalTimeMinutes || 0) / 60) },
-    { module: 'Listening', hours: Math.ceil((progress.listening?.totalTimeMinutes || 0) / 60) },
+    { module: 'Speaking', hours: Number(((progress.speaking?.totalTimeMinutes || 0) / 60).toFixed(2)) },
+    { module: 'Writing', hours: Number(((progress.writing?.totalTimeMinutes || 0) / 60).toFixed(2)) },
+    { module: 'Reading', hours: Number(((progress.reading?.totalTimeMinutes || 0) / 60).toFixed(2)) },
+    { module: 'Listening', hours: Number(((progress.listening?.totalTimeMinutes || 0) / 60).toFixed(2)) },
   ];
 
   // Map history data
@@ -216,6 +216,13 @@ export default function ProgressPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="module" tick={{ fill: '#94A3B8', fontSize: 12 }} axisLine={false} />
               <YAxis tick={{ fill: '#94A3B8', fontSize: 12 }} axisLine={false} />
+              <Tooltip 
+                formatter={(value: any) => {
+                  const mins = Math.round(Number(value) * 60);
+                  return [`${value} hrs (${mins} mins)`, 'Time Spent'];
+                }}
+                contentStyle={{ background: '#1E1B4B', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#F8FAFC' }}
+              />
               <Bar dataKey="hours" fill="url(#barGrad)" radius={[8, 8, 0, 0]} />
               <defs>
                 <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
