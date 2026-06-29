@@ -24,7 +24,8 @@ import {
   FileText,
   Folder,
   UploadCloud,
-  Download
+  Download,
+  Clock
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 import { api } from '@/lib/api';
@@ -402,6 +403,48 @@ function AdminDashboardContent() {
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isSandboxMode, setIsSandboxMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedUserProgress, setSelectedUserProgress] = useState<any>(null);
+  const [progressDetails, setProgressDetails] = useState<any>(null);
+  const [loadingProgress, setLoadingProgress] = useState(false);
+
+  const formatLastActive = (lastActiveDate: string) => {
+    if (!lastActiveDate) return 'Never';
+    const diffMs = Date.now() - new Date(lastActiveDate).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 5) return 'Active now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return new Date(lastActiveDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
+
+  const handleViewProgress = async (user: any) => {
+    setSelectedUserProgress(user);
+    setLoadingProgress(true);
+    setProgressDetails(null);
+    try {
+      if (isSandboxMode) {
+        setProgressDetails({
+          student: user,
+          progress: [
+            { module: 'speaking', averageBand: 6.5, totalSessions: 4, strengths: ['Good fluency'], weaknesses: ['Some hesitation'] },
+            { module: 'writing', averageBand: 6.0, totalSessions: 2, strengths: ['Clear structure'], weaknesses: ['Grammar errors'] }
+          ],
+          sessions: [
+            { module: 'speaking', type: 'practice', score: 6.5, feedback: 'Good job', createdAt: new Date(Date.now() - 3600000).toISOString(), data: { part: 2 } },
+            { module: 'writing', type: 'practice', score: 6.0, feedback: 'Fair work', createdAt: new Date(Date.now() - 86400000).toISOString(), data: { taskType: 2, prompt: 'Some prompt' } }
+          ]
+        });
+      } else {
+        const response = await api.get(`/admin/users/${user._id}/progress`);
+        setProgressDetails(response);
+      }
+    } catch (err: any) {
+      toast.error('Failed to load student progress');
+    } finally {
+      setLoadingProgress(false);
+    }
+  };
 
   const fetchLiveData = async (silent = false) => {
     if (!silent) setLoading(true);
@@ -778,6 +821,16 @@ function AdminDashboardContent() {
                                 {user.role.toLowerCase() === 'admin' && <Shield className="w-3.5 h-3.5 text-yellow-500" />}
                               </p>
                               <p className="text-xs text-text-muted">{user.email}</p>
+                              <div className="mt-1 flex items-center gap-1">
+                                {formatLastActive(user.lastActive) === 'Active now' ? (
+                                  <>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
+                                    <span className="text-[10px] text-neon-green font-bold">Online</span>
+                                  </>
+                                ) : (
+                                  <span className="text-[10px] text-text-muted">Active: {formatLastActive(user.lastActive)}</span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -795,6 +848,13 @@ function AdminDashboardContent() {
                         <td className="py-4 px-6 text-xs text-text-muted">{dateStr}</td>
                         <td className="py-4 px-6 text-right">
                           <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => handleViewProgress(user)}
+                              className="p-2 rounded-lg bg-surface hover:bg-surface-hover text-neon hover:text-white transition-all"
+                              title="View Progress & Activities"
+                            >
+                              <TrendingUp className="w-4 h-4" />
+                            </button>
                             <button 
                               onClick={() => handleOpenEdit(user)}
                               className="p-2 rounded-lg bg-surface hover:bg-surface-hover text-text-muted hover:text-white transition-all"
@@ -1508,6 +1568,136 @@ function AdminDashboardContent() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+
+        {selectedUserProgress && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-primary border border-border-glass rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] text-left"
+            >
+              {/* Modal Header */}
+              <div className="p-6 border-b border-border-glass bg-surface/50 flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-neon" /> 
+                    Student Activity & Progress: <span className="capitalize text-accent">{selectedUserProgress.name}</span>
+                  </h3>
+                  <p className="text-xs text-text-muted mt-0.5">{selectedUserProgress.email}</p>
+                </div>
+                <button 
+                  onClick={() => { setSelectedUserProgress(null); setProgressDetails(null); }}
+                  className="p-1.5 rounded-lg bg-surface hover:bg-surface-hover text-text-muted hover:text-white transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 overflow-y-auto flex-grow space-y-6">
+                {loadingProgress ? (
+                  <div className="flex flex-col items-center justify-center py-12 gap-3 text-text-muted">
+                    <div className="w-8 h-8 rounded-full border-2 border-accent border-t-transparent animate-spin" />
+                    <p className="text-sm">Fetching detailed student history...</p>
+                  </div>
+                ) : progressDetails ? (
+                  <>
+                    {/* General Stats Row */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-surface p-4 rounded-xl border border-border-glass">
+                        <span className="text-[10px] text-text-muted uppercase font-bold block mb-1">Goal Band Score</span>
+                        <span className="text-xl font-bold font-mono text-neon-green">{progressDetails.student?.ieltsGoal || '7.0'}</span>
+                      </div>
+                      <div className="bg-surface p-4 rounded-xl border border-border-glass">
+                        <span className="text-[10px] text-text-muted uppercase font-bold block mb-1">Total Experience</span>
+                        <span className="text-xl font-bold font-mono text-neon">{progressDetails.student?.xp || 0} XP</span>
+                      </div>
+                      <div className="bg-surface p-4 rounded-xl border border-border-glass">
+                        <span className="text-[10px] text-text-muted uppercase font-bold block mb-1">Current Level</span>
+                        <span className="text-xl font-bold capitalize text-white">{progressDetails.student?.currentLevel || 'Intermediate'}</span>
+                      </div>
+                    </div>
+
+                    {/* Section Progress */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">Module-Wise Performance</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {['speaking', 'writing', 'reading', 'listening'].map((mod) => {
+                          const modProgress = progressDetails.progress?.find((p: any) => p.module === mod);
+                          const avgBand = modProgress?.averageBand || 0;
+                          const totalSessions = modProgress?.totalSessions || 0;
+                          return (
+                            <div key={mod} className="bg-surface p-4 rounded-xl border border-border-glass flex flex-col justify-between">
+                              <span className="text-[10px] text-text-muted uppercase font-extrabold capitalize">{mod}</span>
+                              <div className="mt-3">
+                                <span className="text-2xl font-extrabold font-mono text-white">{avgBand > 0 ? avgBand.toFixed(1) : '-'}</span>
+                                <span className="text-[10px] text-text-muted block mt-1">{totalSessions} sessions</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Completed Sets / Recent Activity Timeline */}
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-3">Completed sets & sessions</h4>
+                      <div className="overflow-x-auto rounded-xl border border-border-glass bg-surface/30">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-border-glass bg-surface/50 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+                              <th className="py-3 px-4">Set / Task</th>
+                              <th className="py-3 px-4">Module</th>
+                              <th className="py-3 px-4">Score</th>
+                              <th className="py-3 px-4">Completed On</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-border-glass text-xs">
+                            {progressDetails.sessions && progressDetails.sessions.length > 0 ? (
+                              progressDetails.sessions.map((session: any, idx: number) => {
+                                const testTitle = session.data?.testTitle || session.data?.prompt || session.feedback || 'Practice Task';
+                                const dateStr = new Date(session.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                                return (
+                                  <tr key={idx} className="hover:bg-surface/20 text-white/90">
+                                    <td className="py-3 px-4 font-medium max-w-xs truncate" title={testTitle}>{testTitle}</td>
+                                    <td className="py-3 px-4 capitalize font-semibold text-accent">{session.module}</td>
+                                    <td className="py-3 px-4 font-mono font-bold text-neon-green">{session.score > 0 ? session.score.toFixed(1) : '-'}</td>
+                                    <td className="py-3 px-4 text-text-muted">{dateStr}</td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan={4} className="py-6 text-center text-text-muted italic">
+                                  No completed tests or practice tasks found for this student.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="py-12 text-center text-text-muted italic">
+                    Could not fetch progress.
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 border-t border-border-glass bg-surface/30 flex justify-end">
+                <button 
+                  onClick={() => { setSelectedUserProgress(null); setProgressDetails(null); }}
+                  className="px-5 py-2 rounded-xl bg-surface hover:bg-surface-hover border border-border-glass text-xs font-bold transition-all text-white"
+                >
+                  Close Progress View
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

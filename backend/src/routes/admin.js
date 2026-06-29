@@ -158,6 +158,26 @@ router.post('/approve-student', adminAuth, async (req, res) => {
   }
 });
 
+router.get('/users/:id/progress', adminAuth, async (req, res) => {
+  try {
+    const student = await User.findById(req.params.id).select('-password');
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+    const Progress = require('../models/Progress');
+    const Session = require('../models/Session');
+    const progress = await Progress.find({ userId: req.params.id });
+    const sessions = await Session.find({ userId: req.params.id }).sort({ createdAt: -1 });
+    res.json(formatResponse({
+      student,
+      progress,
+      sessions
+    }));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.delete('/users/:id', adminAuth, async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);

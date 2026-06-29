@@ -30,14 +30,19 @@ router.post('/evaluate', auth, async (req, res) => {
     });
     await essay.save();
 
-    await Progress.findOneAndUpdate(
-      { userId: req.user._id, module: 'writing' },
-      {
-        $push: { scores: evaluation.scores.overall, history: { score: evaluation.scores.overall, feedback: evaluation.feedback } },
-        $inc: { totalSessions: 1 }
-      },
-      { upsert: true, new: true }
-    );
+    const { recordActivity } = require('../utils/progressHelper');
+    await recordActivity({
+      userId: req.user._id,
+      module: 'writing',
+      score: evaluation.scores.overall,
+      feedback: evaluation.feedback,
+      timeSpent: 40,
+      data: {
+        essayId: essay._id,
+        taskType: taskType,
+        prompt: prompt
+      }
+    });
 
     res.json(formatResponse({ ...evaluation, essayId: essay._id }));
   } catch (error) {
