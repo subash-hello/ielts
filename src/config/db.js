@@ -71,6 +71,7 @@ const updateMismatchedWritingPrompts = async () => {
     const cambridgeWritingTests = require('../data/cambridgeWritingTests');
     
     let updatedCount = 0;
+    let insertedCount = 0;
     for (const test of cambridgeWritingTests) {
       const dbTest = await TestContent.findOne({ title: test.title, type: 'practice_task' });
       if (dbTest) {
@@ -83,10 +84,20 @@ const updateMismatchedWritingPrompts = async () => {
           await dbTest.save();
           updatedCount++;
         }
+      } else {
+        await TestContent.create({
+          title: test.title,
+          type: 'practice_task',
+          subType: 'writing',
+          difficulty: test.difficulty || 'medium',
+          content: test.content,
+          isActive: true
+        });
+        insertedCount++;
       }
     }
-    if (updatedCount > 0) {
-      console.log(`✅ Writing prompts migration: Updated ${updatedCount} tasks to match source files.`);
+    if (updatedCount > 0 || insertedCount > 0) {
+      console.log(`✅ Writing prompts migration: Updated ${updatedCount} and inserted ${insertedCount} tasks.`);
     }
   } catch (err) {
     console.error('❌ Failed to update writing prompts in database:', err.message);

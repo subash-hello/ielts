@@ -13,6 +13,7 @@ router.get('/migrate-writing', async (req, res) => {
     
     let logs = [];
     let updatedCount = 0;
+    let insertedCount = 0;
     
     const dbTestsCount = await TestContent.countDocuments({ type: 'practice_task', subType: 'writing' });
     logs.push(`Found ${dbTestsCount} writing practice tasks in database.`);
@@ -33,13 +34,23 @@ router.get('/migrate-writing', async (req, res) => {
           logs.push(`ℹ️ Already matched: "${test.title}"`);
         }
       } else {
-        logs.push(`❌ Not found in DB: "${test.title}"`);
+        await TestContent.create({
+          title: test.title,
+          type: 'practice_task',
+          subType: 'writing',
+          difficulty: test.difficulty || 'medium',
+          content: test.content,
+          isActive: true
+        });
+        insertedCount++;
+        logs.push(`🆕 Seeded missing test: "${test.title}"`);
       }
     }
     
     res.json({
       success: true,
       updatedCount,
+      insertedCount,
       logs
     });
   } catch (error) {
