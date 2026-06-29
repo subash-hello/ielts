@@ -56,6 +56,8 @@ Evaluate using the official IELTS Writing Band Descriptors:
 3. Lexical Resource (0-9): Vocabulary range, accuracy, sophistication
 4. Grammatical Range and Accuracy (0-9): Sentence variety, error frequency
 
+${taskType === 1 ? 'CRITICAL INSTRUCTION FOR TASK 1: You do not have the visual chart/diagram. Assume all data points, trends, and comparisons described by the student are factually correct. Do NOT penalize Task Achievement for missing or unverified data. Grade purely on how well they summarized and reported the data they provided.' : ''}
+
 Return a JSON response with this exact structure:
 {
   "scores": {
@@ -106,20 +108,130 @@ Return JSON:
     return extractJSON(text);
   }
 
+  async generateFullSpeakingSet(specificTopic = '') {
+    const model = getModel();
+    let topicToUse = specificTopic;
+    if (!topicToUse) {
+      const topics = [
+        'Travel & Tourism', 'Music & Instruments', 'Food & Cooking Traditions',
+        'Science & Space Inventions', 'Art, Craft & Creativity', 'Nature, Parks & Weather',
+        'Sports, Fitness & Health', 'Careers, Ambitions & Business', 'Reading, Books & Libraries',
+        'Modern Communication & Technology', 'History, Culture & Architecture', 'Childhood & Family Memories',
+        'Gifts, Festivals & Celebrations', 'Fashion, Clothes & Shopping', 'Public Transportation & Traffic',
+        'Dreams & Night Time', 'Laughter & Sense of Humour', 'Concentration & Meditation',
+        'Pets, Wildlife & Animals', 'Friendship & Social Life', 'Advertising & Social Media', 'Languages & Dialects'
+      ];
+      topicToUse = topics[Math.floor(Math.random() * topics.length)];
+    }
+
+    const prompt = `You are an expert IELTS Speaking content developer. Generate a full, cohesive IELTS Speaking Practice set for all 3 parts on the topic: "${topicToUse}".
+Make the topic name engaging and relevant.
+
+Ensure the questions are diverse, fresh, and not repetitive.
+The output MUST be a valid JSON object matching the following structure exactly:
+{
+  "theme": "${topicToUse}",
+  "part1": {
+    "title": "Introduction & Interview",
+    "duration": "4–5 minutes",
+    "questions": [
+      "<5 simple, direct questions about the candidate's connection to this topic>"
+    ]
+  },
+  "part2": {
+    "title": "Cue Card / Long Turn",
+    "duration": "3–4 minutes (1 min prep + 2 min speech)",
+    "cueCard": {
+      "topic": "Describe a specific aspect/experience related to ${topicToUse}.",
+      "points": [
+        "<bullet point 1: what/who/when>",
+        "<bullet point 2: where/how>",
+        "<bullet point 3: explain what you did/saw>",
+        "<bullet point 4: explain why you felt that way / why it was important>"
+      ]
+    }
+  },
+  "part3": {
+    "title": "Discussion",
+    "duration": "4–5 minutes",
+    "questions": [
+      "<4 abstract, deep, or analytical discussion questions related to the cue card topic, requiring critical thinking and comparison>"
+    ]
+  }
+}
+
+Important Instructions:
+- Provide exactly 5 questions for Part 1.
+- Provide exactly 4 bullet points for Part 2.
+- Provide exactly 4 questions for Part 3.
+- The Part 2 and Part 3 questions MUST logically flow from the Part 2 topic (Part 3 should discuss abstract societal or philosophical questions related to the Part 2 topic).
+- Return ONLY valid raw JSON, with no backticks, markdown wrappers, or surrounding text.`;
+
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+    return extractJSON(text);
+  }
+
   async generateWritingPrompt(taskType, specificTopic = '') {
+    if (taskType === 1) {
+      const task1Bank = [
+        {
+          prompt: "The bar chart below shows the percentage of energy consumption from different sources in three countries in 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Bar Chart - Energy",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/energy_bar_chart.png"
+        },
+        {
+          prompt: "The pie charts below show the average household expenditure in a European country in 1950 and 2010. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Pie Chart - Expenditure",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/expenditure_pie_chart.png"
+        },
+        {
+          prompt: "The line graph below shows the population trends in three different cities from 1990 to 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Line Graph - Population",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/population_line_graph.png"
+        },
+        {
+          prompt: "The diagram below shows the process for recycling plastic bottles. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Process Diagram - Recycling",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/recycling_process.png"
+        },
+        {
+          prompt: "The maps below show the town of Meadowside in 1990 and its planned development for 2030. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+          topic: "Map - Town Development",
+          difficulty: "medium",
+          wordLimit: 150,
+          timeLimit: 20,
+          imageUrl: "/tasks/town_map.png"
+        }
+      ];
+      return task1Bank[Math.floor(Math.random() * task1Bank.length)];
+    }
+
     const model = getModel();
     const topicFocus = specificTopic ? `The prompt MUST be specifically about the topic: "${specificTopic}".` : '';
     const prompt = `Generate an IELTS Writing Task ${taskType} prompt.
 ${topicFocus}
-${taskType === 1 ? 'Task 1: Describe a chart, graph, table, or process diagram related to the topic.' : 'Task 2: Create an essay question about this topic requiring discussion of views and/or opinion.'}
+Task 2: Create an essay question about this topic requiring discussion of views and/or opinion.
 
 Return JSON:
 {
   "prompt": "<the full task prompt>",
   "topic": "<topic category>",
   "difficulty": "medium",
-  "wordLimit": ${taskType === 1 ? 150 : 250},
-  "timeLimit": ${taskType === 1 ? 20 : 40}
+  "wordLimit": 250,
+  "timeLimit": 40
 }`;
 
     const result = await model.generateContent(prompt);
@@ -358,6 +470,32 @@ Return a JSON response with this exact structure:
           feedback: "Good try on the speaking response! The central AI service experienced a rate limit, but you spoke continuously. Practice expanding your sentences and pronunciation clarity."
         }
       };
+    }
+  async generateSVGForPrompt(promptText) {
+    try {
+      const model = getModel();
+      const prompt = `You are an expert data visualizer and professional SVG designer.
+Create a clean, modern, and professional vector SVG diagram (e.g., a bar chart, line graph, pie chart, table, map, or process flowchart) that perfectly represents the data/scenario described in this IELTS Writing Task 1 prompt:
+"${promptText}"
+
+Instructions:
+1. Return ONLY the raw SVG code. Do not wrap it in markdown code blocks (\`\`\`xml or \`\`\`svg) or add any explanations. It must start with "<svg" and end with "</svg>".
+2. Make sure it is fully responsive, using viewBox="0 0 600 400" (or similar ratio) instead of fixed width/height.
+3. Use a modern, beautiful color palette (e.g., sleek blues, greens, grays, accents).
+4. All text (labels, numbers, legend) must be clean, readable, and properly aligned.
+5. Draw actual data points, bars, lines, or diagram stages that accurately reflect the prompt description so the student can write about them.`;
+
+      const result = await model.generateContent(prompt);
+      let text = result.response.text().trim();
+      
+      // Clean up markdown wrapper formatting if Gemini includes it
+      if (text.startsWith("```")) {
+        text = text.replace(/^```[a-zA-Z]*\n/, "").replace(/\n```$/, "");
+      }
+      return text.trim();
+    } catch (error) {
+      console.error('Error generating SVG for prompt:', error);
+      return null;
     }
   }
 }
