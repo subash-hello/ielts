@@ -72,14 +72,50 @@ router.get('/test/:id', auth, async (req, res) => {
       const dbTest = await TestContent.findById(id);
       if (dbTest && dbTest.content) {
         let parts = dbTest.content.parts || [];
+        let modified = false;
+
         // Support legacy schema fallback
-        if (parts.length === 0 && (dbTest.content.prompt || dbTest.content.imageUrl)) {
-           parts = [{
+        if (parts.length === 0 && (dbTest.content.prompt || dbTest.content.imageUrl || dbTest.content.image)) {
+           const hasImage = dbTest.content.image || dbTest.content.imageUrl;
+           let legacyPart = {
              title: dbTest.content.taskType === 1 ? "Writing Task 1" : "Writing Task 2",
              instruction: dbTest.content.taskType === 1 ? "You should spend about 20 minutes on this task." : "You should spend about 40 minutes on this task.",
-             imageUrl: dbTest.content.image || dbTest.content.imageUrl,
+             imageUrl: hasImage,
              text: dbTest.content.prompt || dbTest.content.text,
-           }];
+           };
+           
+           if (hasImage && !dbTest.content.svg) {
+             const geminiService = require('../services/gemini.service');
+             console.log(`Generating legacy SVG for test "${dbTest.title}"...`);
+             const generatedSvg = await geminiService.generateSVGForPrompt(legacyPart.text);
+             if (generatedSvg) {
+               dbTest.content.svg = generatedSvg;
+               dbTest.markModified('content.svg');
+               await dbTest.save();
+             }
+           }
+           
+           if (dbTest.content.svg) {
+             legacyPart.svg = dbTest.content.svg;
+           }
+           parts = [legacyPart];
+        } else if (parts.length > 0) {
+          for (let i = 0; i < parts.length; i++) {
+            const part = parts[i];
+            if (part.imageUrl && !part.svg) {
+              const geminiService = require('../services/gemini.service');
+              console.log(`Generating SVG for test "${dbTest.title}" part ${i+1}...`);
+              const generatedSvg = await geminiService.generateSVGForPrompt(part.text);
+              if (generatedSvg) {
+                part.svg = generatedSvg;
+                modified = true;
+              }
+            }
+          }
+          if (modified) {
+            dbTest.markModified('content.parts');
+            await dbTest.save();
+          }
         }
         
         return res.json(formatResponse({

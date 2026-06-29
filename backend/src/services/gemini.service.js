@@ -471,6 +471,32 @@ Return a JSON response with this exact structure:
         }
       };
     }
+  async generateSVGForPrompt(promptText) {
+    try {
+      const model = getModel();
+      const prompt = `You are an expert data visualizer and professional SVG designer.
+Create a clean, modern, and professional vector SVG diagram (e.g., a bar chart, line graph, pie chart, table, map, or process flowchart) that perfectly represents the data/scenario described in this IELTS Writing Task 1 prompt:
+"${promptText}"
+
+Instructions:
+1. Return ONLY the raw SVG code. Do not wrap it in markdown code blocks (\`\`\`xml or \`\`\`svg) or add any explanations. It must start with "<svg" and end with "</svg>".
+2. Make sure it is fully responsive, using viewBox="0 0 600 400" (or similar ratio) instead of fixed width/height.
+3. Use a modern, beautiful color palette (e.g., sleek blues, greens, grays, accents).
+4. All text (labels, numbers, legend) must be clean, readable, and properly aligned.
+5. Draw actual data points, bars, lines, or diagram stages that accurately reflect the prompt description so the student can write about them.`;
+
+      const result = await model.generateContent(prompt);
+      let text = result.response.text().trim();
+      
+      // Clean up markdown wrapper formatting if Gemini includes it
+      if (text.startsWith("```")) {
+        text = text.replace(/^```[a-zA-Z]*\n/, "").replace(/\n```$/, "");
+      }
+      return text.trim();
+    } catch (error) {
+      console.error('Error generating SVG for prompt:', error);
+      return null;
+    }
   }
 }
 

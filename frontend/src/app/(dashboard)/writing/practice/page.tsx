@@ -219,12 +219,16 @@ function WritingPracticeContent() {
                   <div className="mb-6 bg-white/5 p-4 rounded-xl border border-white/10" dangerouslySetInnerHTML={{ __html: currentPart.text.replace(/\n/g, '<br/>') }} />
                 )}
                 
-                {currentPart.imageUrl && (
+                {currentPart.svg ? (
+                  <div className="rounded-xl overflow-hidden border border-border-glass bg-white p-4 flex justify-center mb-6 shadow-xl text-black">
+                    <div className="w-full flex justify-center" dangerouslySetInnerHTML={{ __html: currentPart.svg }} />
+                  </div>
+                ) : currentPart.imageUrl ? (
                   <div className="rounded-xl overflow-hidden border border-border-glass bg-white p-2 flex justify-center mb-6 shadow-xl">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={currentPart.imageUrl} alt={currentPart.title} className="w-full max-h-[400px] object-contain rounded-lg" />
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
           </div>
