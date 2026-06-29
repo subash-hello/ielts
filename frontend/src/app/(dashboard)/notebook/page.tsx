@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Save, Trash2, Clock, Plus, Folder, FileText } from 'lucide-react';
+import { api } from '@/lib/api';
+import toast from 'react-hot-toast';
 
 interface NoteEntry {
   id: string;
+  _id?: string;
   subject: string;
   content: string;
-  lastModified: number;
+  lastModified: number | string;
 }
 
 export default function NotebookPage() {
@@ -20,86 +23,142 @@ export default function NotebookPage() {
 
   // Load entries on mount
   useEffect(() => {
-    const saved = localStorage.getItem('ielts_notebook_entries');
-    if (saved) {
+    const fetchNotes = async () => {
       try {
-        const parsed = JSON.parse(saved);
-        setEntries(parsed);
-        if (parsed.length > 0) {
-          setActiveEntryId(parsed[0].id);
+        const res = await api.get('/notes');
+        if (res && res.length > 0) {
+          const mapped = res.map((n: any) => ({
+            id: n._id,
+            _id: n._id,
+            subject: n.subject,
+            content: n.content,
+            lastModified: new Date(n.lastModified).getTime()
+          }));
+          setEntries(mapped);
+          setActiveEntryId(mapped[0].id);
+        } else {
+          // If no backend notes exist, we can migrate local storage notes if they exist!
+          const saved = localStorage.getItem('ielts_notebook_entries');
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              const migratedNotes = [];
+              for (const item of parsed) {
+                const created = await api.post('/notes', { subject: item.subject, content: item.content });
+                migratedNotes.push({
+                  id: created._id,
+                  _id: created._id,
+                  subject: created.subject,
+                  content: created.content,
+                  lastModified: new Date(created.lastModified).getTime()
+                });
+              }
+              setEntries(migratedNotes);
+              if (migratedNotes.length > 0) setActiveEntryId(migratedNotes[0].id);
+              toast.success("Migrated local notes to cloud backup!");
+            } catch (err) {}
+          }
         }
-      } catch (e) {
-        console.error("Failed to parse notes", e);
+      } catch (err) {
+        console.error("Failed to load notes from DB, fallback to localStorage:", err);
+        const saved = localStorage.getItem('ielts_notebook_entries');
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            setEntries(parsed);
+            if (parsed.length > 0) setActiveEntryId(parsed[0].id);
+          } catch (e) {}
+        }
       }
-    } else {
-      // Migrate old single note if it exists
-      const oldNote = localStorage.getItem('ielts_user_notes');
-      if (oldNote) {
-        const initialEntry = {
-          id: Date.now().toString(),
-          subject: 'General Notes',
-          content: oldNote,
-          lastModified: Date.now()
-        };
-        setEntries([initialEntry]);
-        setActiveEntryId(initialEntry.id);
-        localStorage.setItem('ielts_notebook_entries', JSON.stringify([initialEntry]));
-      }
-    }
+    };
+    fetchNotes();
   }, []);
 
   const activeEntry = entries.find(e => e.id === activeEntryId);
 
-  // Auto-save logic
+  // Auto-save logic (1.5s debounce when typing halts)
   useEffect(() => {
-    if (!activeEntry) return;
+    if (!activeEntry || !activeEntryId) return;
     
-    const timer = setTimeout(() => {
-      const savedStr = localStorage.getItem('ielts_notebook_entries');
-      if (savedStr) {
-        const saved = JSON.parse(savedStr);
-        const savedActive = saved.find((e: NoteEntry) => e.id === activeEntry.id);
-        if (!savedActive || savedActive.content !== activeEntry.content || savedActive.subject !== activeEntry.subject) {
-          handleSave();
-        }
-      } else {
-        handleSave();
+    const timer = setTimeout(async () => {
+      try {
+        await api.put(`/notes/${activeEntry.id}`, {
+          subject: activeEntry.subject,
+          content: activeEntry.content
+        });
+        localStorage.setItem('ielts_notebook_entries', JSON.stringify(entries));
+        setLastSaved(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error("Failed to auto-save to DB:", err);
       }
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [entries, activeEntryId]);
+    }, 1500);
 
-  const handleSave = () => {
+    return () => clearTimeout(timer);
+  }, [activeEntry?.content, activeEntry?.subject, activeEntryId]);
+
+  const handleSave = async () => {
+    if (!activeEntry) return;
     setIsSaving(true);
-    localStorage.setItem('ielts_notebook_entries', JSON.stringify(entries));
-    
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      await api.put(`/notes/${activeEntry.id}`, {
+        subject: activeEntry.subject,
+        content: activeEntry.content
+      });
+      localStorage.setItem('ielts_notebook_entries', JSON.stringify(entries));
       setLastSaved(new Date().toLocaleTimeString());
-    }, 500);
+      toast.success("Saved successfully!");
+    } catch (err) {
+      console.error("Failed to manually save:", err);
+      toast.error("Failed to save to cloud. Saved locally.");
+      localStorage.setItem('ielts_notebook_entries', JSON.stringify(entries));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const createNewEntry = () => {
+  const createNewEntry = async () => {
     const subjectName = prompt('Enter a chapter or subject name (e.g., "Reading Tips", "Vocabulary")');
     if (!subjectName || !subjectName.trim()) return;
 
-    setEntries(prev => {
+    try {
+      const res = await api.post('/notes', { subject: subjectName.trim(), content: '' });
+      const newEntry: NoteEntry = {
+        id: res._id,
+        _id: res._id,
+        subject: res.subject,
+        content: res.content,
+        lastModified: new Date(res.lastModified).getTime()
+      };
+      setEntries(prev => [newEntry, ...prev]);
+      setActiveEntryId(newEntry.id);
+      toast.success("Chapter created!");
+    } catch (err) {
+      console.error("Failed to create note on DB:", err);
       const newEntry: NoteEntry = {
         id: Date.now().toString(),
         subject: subjectName.trim(),
         content: '',
         lastModified: Date.now()
       };
-      const newEntries = [newEntry, ...prev];
-      setActiveEntryId(newEntry.id);
-      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
-      return newEntries;
-    });
+      setEntries(prev => {
+        const newEntries = [newEntry, ...prev];
+        setActiveEntryId(newEntry.id);
+        localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
+        return newEntries;
+      });
+    }
   };
 
-  const deleteEntry = (id: string, e: React.MouseEvent) => {
+  const deleteEntry = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this chapter?')) {
+      try {
+        await api.delete(`/notes/${id}`);
+        toast.success("Chapter deleted!");
+      } catch (err) {
+        console.error("Failed to delete note on DB:", err);
+      }
+
       setEntries(prev => {
         const newEntries = prev.filter(entry => entry.id !== id);
         if (activeEntryId === id) {
@@ -112,23 +171,15 @@ export default function NotebookPage() {
   };
 
   const updateActiveContent = (content: string) => {
-    setEntries(prev => {
-      const newEntries = prev.map(e => 
-        e.id === activeEntryId ? { ...e, content, lastModified: Date.now() } : e
-      );
-      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
-      return newEntries;
-    });
+    setEntries(prev => prev.map(e => 
+      e.id === activeEntryId ? { ...e, content, lastModified: Date.now() } : e
+    ));
   };
 
   const updateActiveSubject = (subject: string) => {
-    setEntries(prev => {
-      const newEntries = prev.map(e => 
-        e.id === activeEntryId ? { ...e, subject, lastModified: Date.now() } : e
-      );
-      localStorage.setItem('ielts_notebook_entries', JSON.stringify(newEntries));
-      return newEntries;
-    });
+    setEntries(prev => prev.map(e => 
+      e.id === activeEntryId ? { ...e, subject, lastModified: Date.now() } : e
+    ));
   };
 
   return (
