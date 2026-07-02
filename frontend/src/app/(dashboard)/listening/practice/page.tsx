@@ -9,6 +9,7 @@ import {
   Headphones, Play, Pause, ChevronLeft, ChevronRight, 
   CheckCircle, Loader2, AlertTriangle, AlertCircle
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 // ─── Cambridge-style instruction text generator ───────────────────────────────
 function getCambridgeInstruction(type: string, isGrouped: boolean, optionCount: number, hasMap?: boolean): { heading: string; instruction: string } {
@@ -696,6 +697,44 @@ function ListeningPracticeContent() {
   const [isMounted, setIsMounted] = useState(false);
   const [isTestStarted, setIsTestStarted] = useState(false);
 
+  // Timer states
+  const [useTimer, setUseTimer] = useState<boolean>(true);
+  const [timeLeft, setTimeLeft] = useState<number>(30 * 60); // 30 minutes in seconds
+  const [timeSpent, setTimeSpent] = useState<number>(0);
+
+  // Timer countdown and stopwatch logic
+  useEffect(() => {
+    if (!isTestStarted || submitted) return;
+
+    const interval = setInterval(() => {
+      if (useTimer) {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setSubmitted(true);
+            if (audioRef.current) {
+              audioRef.current.pause();
+            }
+            setIsPlaying(false);
+            toast.error("Time is up! Your listening test has been submitted automatically.", { duration: 8000 });
+            return 0;
+          }
+          return prev - 1;
+        });
+      } else {
+        setTimeSpent((prev) => prev + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTestStarted, submitted, useTimer]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -847,13 +886,42 @@ function ListeningPracticeContent() {
         </div>
         
         <div className="bg-surface/50 border border-border-glass rounded-2xl p-6 text-left max-w-md mx-auto space-y-4">
+          <div className="pb-2 border-b border-border-glass">
+            <span className="text-xs font-bold text-accent tracking-wider uppercase">Timer Mode Option</span>
+            <div className="grid grid-cols-2 gap-3 mt-2.5">
+              <button 
+                type="button"
+                onClick={() => setUseTimer(true)}
+                className={`py-3.5 rounded-xl border text-xs font-extrabold flex flex-col items-center justify-center gap-1 transition-all ${
+                  useTimer 
+                    ? 'bg-accent/15 border-accent text-accent-bright shadow-lg shadow-accent/10' 
+                    : 'bg-surface/30 border-border-glass text-text-muted hover:text-white hover:bg-surface/50'
+                }`}
+              >
+                <span className="text-sm">⏱️</span>
+                <span>Timed (30 Min)</span>
+              </button>
+              <button 
+                type="button"
+                onClick={() => setUseTimer(false)}
+                className={`py-3.5 rounded-xl border text-xs font-extrabold flex flex-col items-center justify-center gap-1 transition-all ${
+                  !useTimer 
+                    ? 'bg-accent/15 border-accent text-accent-bright shadow-lg shadow-accent/10' 
+                    : 'bg-surface/30 border-border-glass text-text-muted hover:text-white hover:bg-surface/50'
+                }`}
+              >
+                <span className="text-sm">♾️</span>
+                <span>Untimed Practice</span>
+              </button>
+            </div>
+          </div>
           <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
             <span className="text-text-muted">Total Questions:</span>
             <span className="text-white font-bold">{totalQuestions} Questions</span>
           </div>
           <div className="flex justify-between items-center text-xs border-b border-border-glass pb-3">
             <span className="text-text-muted">Suggested Time:</span>
-            <span className="text-white font-bold">30 Minutes</span>
+            <span className="text-white font-bold">{useTimer ? "30 Minutes (Auto-Submit)" : "Unlimited"}</span>
           </div>
           <div className="flex justify-between items-center text-xs">
             <span className="text-text-muted">Test Difficulty:</span>
@@ -1429,9 +1497,22 @@ function ListeningPracticeContent() {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{testData.title || 'Listening Practice'}</h1>
-        <p className="mt-2 text-sm text-gray-500">IELTS Listening Format — 4 Parts, 40 Questions</p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{testData.title || 'Listening Practice'}</h1>
+          <p className="mt-2 text-sm text-gray-500">IELTS Listening Format — 4 Parts, 40 Questions</p>
+        </div>
+        {!submitted && (
+          <div className={`px-5 py-3 rounded-2xl border flex items-center gap-2 shadow-sm font-mono text-base font-extrabold ${
+            useTimer 
+              ? timeLeft < 300 
+                ? 'bg-red-50 border-red-200 text-red-600 animate-pulse' 
+                : 'bg-indigo-50 border-indigo-200 text-indigo-700'
+              : 'bg-gray-100 border-gray-200 text-gray-700'
+          }`}>
+            ⏱️ {useTimer ? `Time Left: ${formatTime(timeLeft)}` : `Time Elapsed: ${formatTime(timeSpent)}`}
+          </div>
+        )}
       </div>
 
       {/* Results Summary Card */}
